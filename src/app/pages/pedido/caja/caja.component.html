@@ -1,0 +1,82 @@
+<div class="example-container">
+  <div class="examenple-caja-container">
+    <mat-toolbar>APERTURA DE CAJA</mat-toolbar>
+    <div class="examenple-cabecera-container">
+      <form [formGroup]="form" (ngSubmit)="buscar()">
+
+        <mat-form-field>
+          <input matInput placeholder="Centro" [(ngModel)]="centro" formControlName="centro">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="fechaSeleccionada" placeholder="escoge una fecha"
+            [max]="maxFecha" formControlName="fecha">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit">Buscar</button>
+        <span class="example-spacer"></span>
+        <button mat-raised-button color="accent" type="button" (click)="regresar()">Cerrar</button>
+      </form>
+    </div>
+    <div class="examenple-table-container">
+      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="fecha">
+          <mat-header-cell mat-header-cell *matHeaderCellDef>Fecha</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.fecha | date:'dd-MM-yyyy'}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="hora">
+          <mat-header-cell *matHeaderCellDef>Hora</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.hora}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="codCaja">
+          <mat-header-cell *matHeaderCellDef>Caja</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.idArcaja.codCaja}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="cajera">
+          <mat-header-cell *matHeaderCellDef>Cajera</mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.cajera}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="saldoInicial">
+          <mat-header-cell *matHeaderCellDef>Saldo Inicial</mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.saldoInicial}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="estado">
+          <mat-header-cell *matHeaderCellDef>Estado</mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{row.estado}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="fechaCierre">
+          <mat-header-cell *matHeaderCellDef>Fecha Cierre</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.fechaCierre | date:'dd-MM-yyyy'}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="horaCierre">
+          <mat-header-cell *matHeaderCellDef>Hora Cierre</mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.horaCierre}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <mat-header-cell *matHeaderCellDef>Acciones</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-button color="primary" type="button" (click)="abrirDialogo(row)">
+              <mat-icon>ballot</mat-icon>
+            </button>
+            <button mat-button color="accent" (click)="eliminar(row)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;">
+        </mat-row>
+
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 5, 8,10]"></mat-paginator>
+      </table>
+    </div>
+    <button mat-fab color="accent" style="float: right" (click)="abrirDialogo()">
+      <mat-icon>create</mat-icon>
+    </button>
+  </div>
+</div>

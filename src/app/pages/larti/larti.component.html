@@ -1,0 +1,136 @@
+<div class="examenple-articulos-container">
+  <div class="cabecera-content">
+    <div class="cabecera-left">
+      <h3>Listado de Articulos</h3>
+      {{nombre_cia}}
+    </div>
+    <div class="cabecera-rigth">
+      <div class="cabecera-rigth-vende">
+        Vendedor: {{nombre_vendedor}}
+      </div>
+      <div class="cabecera-rigth-date">
+        {{fecha | date:'short'}}
+        <button mat-raised-button (click)="regresarLogin()" class="salir">Salir</button>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2">
+      <div class="content-filters">
+        <h2>Filtros</h2>
+        <mat-form-field>
+          <mat-select placeholder="Almacen" [(ngModel)]="almacen">
+            <mat-option *ngFor="let a of ( almacenes$ | async )" [value]="a.idArinb.codigo">
+              {{a.descripcion}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Precios" [(ngModel)]="tipo">
+            <mat-option *ngFor="let t of ( tipos$ | async )" [value]="t.idArfa.tipo">
+              {{t.descripcion}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Linea" [(ngModel)]="linea" (ngModelChange)="listarSubLineas()">
+            <mat-option *ngFor="let l of ( lineas$ | async )" [value]="l.idLinea.codigo">
+              {{l.descripcion}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Sub Linea" [(ngModel)]="sublinea" (ngModelChange)="listarFamilias()">
+            <mat-option *ngFor="let s of ( sublineas$ | async )" [value]="s.idArinc.codigo">
+              {{s.descripcion}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Familia" [(ngModel)]="familia" (ngModelChange)="filtrarCompleto()">
+            <mat-option *ngFor="let f of ( familias$ | async )" [value]="f.idArfa.codigo">
+              {{f.descripcion}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Marca" [(ngModel)]="marca" (ngModelChange)="filtrarMarca()">
+            <mat-option *ngFor="let m of ( marcas$ | async )" [value]="m.idMar.codigo">
+              {{m.descripcion}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="example-button-row">
+          <button mat-raised-button (click)="filtrarData()">Buscar</button>
+          <button mat-raised-button (click)="borrarFiltros()">Borrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-10">
+      <div class="example-header">
+        <mat-form-field>
+          <input matInput [(ngModel)]="nombre" (keyup)="filtrar($event.target.value)" placeholder="Buscar Articulo"
+            #input>
+        </mat-form-field>
+      </div>
+      <div class="example-container mat-elevation-z8">
+        <div class="example-table-container">
+          <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="idArti">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>ID</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row.no_arti}}</mat-cell>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="descripcion">
+              <mat-header-cell *matHeaderCellDef>Descripcion</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row.descripcion}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="medida">
+              <mat-header-cell *matHeaderCellDef>Medida</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.medida}} </mat-cell>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="precio">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Precio</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.precio | number:'1.00'}} </mat-cell>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="compromiso">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Stock General</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.stock}} </mat-cell>
+            </ng-container>
+
+            <!-- Weight Column -->
+            <ng-container matColumnDef="disponible">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Stok Disponible</mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row.stock - row.compromiso}} </mat-cell>
+            </ng-container>
+            <!--
+  <ng-container matColumnDef="fecha">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{row.fecha | date :'short'}} </mat-cell>
+  </ng-container>
+-->
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;">
+            </mat-row>
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell" colspan="4">No se tiene Stock o no se vende el articulo: "{{input.value}}"</td>
+            </tr>
+          </table>
+
+        </div>
+        <mat-paginator [pageSize]="5" [pageSizeOptions]="[1, 5, 8]" showFirstLastButtons></mat-paginator>
+        <!--<mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="[1, 5, 8]"
+(page)="pageEvent = $event"></mat-paginator>
+      <app-pagi-rgta1 *ngIf="paginador" [paginador]="paginador"></app-pagi-rgta1>-->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="col-md-12">
+    <div class="card">
+        <div class="row">
+            <!-- ASISTENCIA -->
+            <div *ngFor="let asistencia of asistencias" class="col-md-6 col-sm-6 col-lg-6">
+                <div (click)="save(asistencia,d)" #d class="card border-primarymb-3" style="cursor: pointer;">
+                    <div class="card-header border-primary"><strong>{{asistencia.nombre}}</strong></div>
+                    <div class="card-body text-primary border-primary" style="background-color: #87ceeb;">
+                        <div class="text-center">
+                            <img [src]="asistencia.foto" class="rounded">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,68 @@
+<div class="limiter animated fadeInLeft">
+    <div class="card-body">
+        <form *ngIf="formulario" [formGroup]="formulario" (ngSubmit)="guardar()">
+
+            <div class="form-row">
+                <div class="form-group col-6">
+                    <label>Usuario</label>
+                    <input type="text" class="form-control text-center form-control-sm" formControlName="usuario" [class.is-invalid]="validarUsername">
+                    <small class="text-danger animated fadeIn" *ngIf="validarUsername">Ingrese el Usuario</small>
+                </div>
+                <div class="form-group col-6">
+                    <label for="disabledTextInput">Estado</label>
+                    <select class="form-control form-control-sm" formControlName="estado" [class.is-invalid]="validarEstado">
+              <option [ngValue]="undefined">SELECCIONE UN ESTADO</option>
+              <option value="A">ACTIVO</option>
+              <option value="I">INACTIVO</option>
+            </select>
+                    <small class="text-danger animated fadeIn" *ngIf="validarEstado">Ingrese el estado</small>
+                    <!-- <input type="text" class="form-control form-control-sm" [value]="gelocation.estado == 'A'?'ACTIVO':'INACTIVO'"> -->
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-6">
+                    <label for="disabledTextInput">Cod.Emp</label>
+                    <input type="text" class="form-control text-center form-control-sm" formControlName="codEmp" [class.is-invalid]="validarCodEmp">
+                    <small class="text-danger animated fadeIn" *ngIf="validarCodEmp">Ingrese el codigo empleado</small>
+                </div>
+                <div class="form-group col-6">
+                    <label for="disabledTextInput">DNI</label>
+                    <input type="text" class="form-control text-center form-control-sm" formControlName="dni" [class.is-invalid]="validarDni">
+                    <small class="text-danger animated fadeIn" *ngIf="validarDni">Ingrese su DNI</small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-4">
+                    <label for="disabledTextInput">Longitud</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="longitud" [class.is-invalid]="validarLongitud">
+                    <small class="text-danger animated fadeIn" *ngIf="validarLongitud">Ingrese su longitud</small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="disabledTextInput">Latitud</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="latitud" [class.is-invalid]="validarLatitud">
+                    <small class="text-danger animated fadeIn" *ngIf="validarLatitud">Ingrese su latitud</small>
+                </div>
+                <div class="form-group col-4">
+                    <label for="disabledTextInput">Ubigeo</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="ubigeo" [class.is-invalid]="validarUbigeo">
+                    <small class="text-danger animated fadeIn" *ngIf="validarUbigeo">Ingrese su Ubigeo</small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    <label for="disabledTextInput">Dirección</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="direccion" [class.is-invalid]="validarDireccion">
+                    <small class="text-danger animated fadeIn" *ngIf="validarDireccion">Ingrese su Dirección</small>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-12">
+                    <label for="disabledTextInput">Urbanización</label>
+                    <input type="text" class="form-control form-control-sm" formControlName="urbanizacion" [class.is-invalid]="validarUrbanizacion">
+                    <small class="text-danger animated fadeIn" *ngIf="validarUrbanizacion">Ingrese su Urbanización</small>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-outline-success btn-lg btn-block"><span class="material-icons">save</span></button>
+        </form>
+    </div>
+</div>

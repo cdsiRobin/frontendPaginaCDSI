@@ -1,0 +1,37 @@
+import { IdArfatpe } from './IdArfatpe';
+export class Arfatpe {
+  idArfatpe: IdArfatpe;
+  clasPd: string;
+  descripcion: string;
+  tipArti: string;
+  indDoRef: string;
+  tipDcRe: string;
+  indCliEs: string;
+  cliEspec: string;
+  indCliDiEsp: string;
+  indNomCli: string;
+  indDirCli: string;
+  indLisPre: string;
+  indDsctA: string;
+  indDsctB: string;
+  indPedValor: string;
+  indCodFPago: string;
+  indVendedor: string;
+  indIgv: string;
+  indGuiaRem: string;
+  indBoleta: string;
+  indFactura: string;
+  tipoM: string;
+  almaDest: string;
+  motSunar: string;
+  indIncoterms: string;
+  indTraExt: string;
+  indAlmaOrigen: string;
+  indAlmaDestino: string;
+  codFpago: string;
+  codEntreEsp: string;
+  codObse: string;
+  indCodObs: string;
+  tipoObs: string;
+  indVtaAntici: string;
+}

@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-12">
+        <div class="login-box card">
+            <div class="card-body">
+                <form class="login100-form validate-form flex-sb flex-w" [formGroup]="form" #frmLog="ngForm"
+                    (ngSubmit)="obtenerVendedor()">
+                    <h2 class="box-title text-center text-info"><strong>LOGIN DE PUNTO DE VENTA</strong></h2>
+                    <hr>
+                    <mat-form-field>
+                        <mat-select placeholder="Compañias" [(value)]="companySeleccionada" formControlName="cia" >
+                            <mat-option *ngFor="let c of companys" [value]="c">
+                                {{c.nombre}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                    <div class="form-group col-xs-12">
+                        <label for="exampleInputuname">Usuario</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input class="form-control" type="text" required placeholder="Ingresar Usuario"
+                                formControlName="codigo">
+                        </div>
+                    </div>
+
+                    <div class="form-group col-xs-12">
+                        <label for="exampleInputuname">Contraseña</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-lock"></i></div>
+                            <input class="form-control" type="password" required placeholder="Ingresar Contraseña"
+                                formControlName="pass">
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit" [disabled]="frmLog.invalid">INGRESAR</button>
+                    </div>
+                    <!--<div class="form-group text-center m-t-20">
+                        <div class="col-xs-12">
+                            <button class="btn btn-info btn-lg btn-block text-uppercase btn-rounded" type="submit"
+                                [disabled]="frmLog.invalid">Ingresar</button>
+                        </div>
+                    </div>-->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

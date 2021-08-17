@@ -1,0 +1,6 @@
+<router-outlet></router-outlet>
+<div [hidden]="route.children.length !== 0">
+<button mat-raised-button color="primary" type="button" routerLink="/pedido/caja">Aperturar Caja</button>
+<button mat-raised-button color="primary" type="button" routerLink="/pedido/nuevo">Pedido</button>
+<button mat-raised-button color="accent" type="button" (click)="regresar()">Regresar</button>
+</div>

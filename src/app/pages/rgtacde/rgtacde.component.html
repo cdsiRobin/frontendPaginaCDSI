@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-12 m-2">
+        <app-cabezera></app-cabezera>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 m-3">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">USUARIO</th>
+                        <th scope="col">FECHA</th>
+                        <th scope="col">LATITUD</th>
+                        <th scope="col">LONGUITUD</th>
+                        <th scope="col">INGRESO</th>
+                        <th scope="col">
+                        </th>
+                        <th scope="col">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let rgta of rgtacdes">
+                    <tr>
+                        <th scope="row">{{rgta.id}}</th>
+                        <td>{{rgta.usuario}}</td>
+                        <td>{{rgta.fecha|date}} {{rgta.fecha|date:"mediumTime"}}</td>
+                        <td>{{rgta.latitud}}</td>
+                        <td>{{rgta.longuitud}}</td>
+                        <td>{{rgta.astenci.nombre}}</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-info">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger">
+                            <span class="material-icons">delete</span>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <app-pagi-rgta *ngIf="paginador" [paginador]="paginador"></app-pagi-rgta>
+        </div>
+    </div>
+</div>

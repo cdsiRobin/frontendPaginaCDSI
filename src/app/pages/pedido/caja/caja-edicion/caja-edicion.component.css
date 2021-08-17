@@ -1,0 +1,9 @@
+.example-spacer{
+  flex: 1 1 auto;
+}
+.input-izqueirda{
+  float: left;
+}
+.input-derecha{
+ float: right;
+}

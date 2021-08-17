@@ -1,0 +1,139 @@
+.examenple-articulos-container{
+  padding: 2em;
+}
+.cabecera-content{
+  width: 100%;
+  display: inline-block;
+  line-height: 1;
+  font-size: 0.9em;
+  padding-bottom: 0.1em;
+  box-sizing: border-box;
+}
+.cabecera-rigth{
+  float: right;
+  max-width: 40%;
+  /*border: 1px solid black;*/
+}
+.cabecera-rigth-date{
+  float: right;
+  /*border: 1px solid black;*/
+  width: 40%;
+  text-align: end;
+}
+.cabecera-rigth-vende{
+  float: right;
+  text-align: end;
+  /*border: 1px solid black;*/
+  padding-bottom: 0.5em;
+}
+.cabecera-left{
+  float: left;
+  max-width: 40%;
+}
+.example-container {
+  position: relative;
+  min-height: 200px;
+  /*border: 1px solid rgb(250, 39, 39);
+  padding:1em;
+  color: black;*/
+  width: 100%;
+  margin: auto;
+}
+.example-table-container {
+  position: relative;
+  max-height: 500px;
+  overflow: auto;
+  /*border: 1px solid blue /* rgb(25, 48, 255)*/;
+  /*border: 1px solid rgb(251, 255, 21);
+  border-radius: 10px;*/
+  color: black;
+  box-sizing: border-box;
+  width: 100%;
+}
+table {
+  width: 100%;
+  color: black;
+  font-size: 0.9em;
+}
+.mat-paginator{
+  width: 100%;
+  /*border: 1px solid rgb(23, 220, 255);*/
+  color: black;
+}
+.mat-sort-header-sorted {
+  color: black;
+}
+.mat-form-field{
+  font-size: 15px;
+  width: 100%;
+}
+.mat-column-idArti{
+  max-width: 90px;
+  font-size: 1em;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mat-column-compromiso,
+.mat-column-disponible{
+  max-width: 110px;
+  font-size: 1em;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mat-column-idArti{
+  margin-left: -20px;
+  box-sizing: border-box;
+}
+
+.mat-column-medida,
+.mat-column-marca,
+.mat-column-precio{
+  max-width: 65px;
+  font-size: 1em;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/*.mat-column-fecha{
+  max-width: 90px;
+  font-size: 1em;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}*/
+.mat-column-categoria,
+.mat-column-familia,
+.mat-column-clase,
+.mat-column-catalogo{
+  max-width: 90px;
+  font-size: 1em;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tit-cab{
+  float:left;
+  box-sizing: border-box;
+}
+.fecha-date{
+  float:right;
+  box-sizing: border-box;
+}
+
+.mat-header-cell {
+  color: black;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+}
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}

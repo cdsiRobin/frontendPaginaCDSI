@@ -1,0 +1,66 @@
+<div class="limiter animated fadeInRight">
+    <div class="container-login100">
+        <div class="wrap-login100 p-t-50 p-b-90">
+            <span class="login100-form-title">
+                Crear Nueva Cuenta
+            </span>
+            <form [formGroup]="formulario" class="login100-form validate-form flex-sb flex-w m-3" (ngSubmit)="guardar()">
+
+                <span *ngIf="validarUsername" class="text-danger animated fadeIn">El usuario debe tener más 3 letras</span>
+                <div class="wrap-input100 m-b-16">
+                    <input class="form-control input100" type="text" name="username" placeholder="Ingrese usuario" formControlName="username" [class.is-invalid]="validarUsername">
+                </div>
+
+                <span class="text-danger animated fadeIn" *ngIf="validarPassword">La contraseña debe tener más 3 letras</span>
+                <div class="wrap-input100 m-b-16">
+                    <input class="form-control input100" type="password" name="password" placeholder="Ingrese contraseña" formControlName="password" [class.is-invalid]="validarPassword">
+                </div>
+
+                <span class="text-danger animated fadeIn" *ngIf="validarPassword2">La contraseña no son iguales</span>
+                <div class="wrap-input100 m-b-16">
+                    <input class="form-control input100" type="password" name="password2" placeholder="Vuelve a ingresar contraseña" formControlName="password2" [class.is-invalid]="validarPassword2">
+                </div>
+
+                <span class="text-danger animated fadeIn" *ngIf="validarRol">Ingrese un Rol</span>
+                <div class="wrap-input100 m-b-16 input-group">
+                    <select class="custom-select input100" name="roles" formControlName="rol" (change)="agregarRoles()">
+                        <option [ngValue]="undefined">Seleccione un Rol</option>
+                        <option *ngFor="let rol of roles" [ngValue]="rol">{{rol.authority}}</option>
+                    </select>
+                </div>
+
+                <div formArrayName="sRoles" class="input-group mb-3" *ngFor="let rol of Roles.controls; let i = index">
+                    <div [formGroupName]="i">
+                        <!-- <span class="text-danger animated fadeIn">Debe ingresar un rol</span> -->
+                        <input type="text" class="form-control input100" formControlName="authority">
+                    </div>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-danger" type="button" (click)="eliminarRol(i)">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex-sb-m w-full p-t-3 p-b-24">
+                    <div class="contact100-form-checkbox">
+                        <input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+                        <label class="label-checkbox100" for="ckb1">Recordar mi usuario</label>
+                    </div>
+
+                    <div>
+                        <a routerLink="/login" class="txt1">
+                                ¿Ya tienes cuenta? / Ingresar
+                            </a>
+                    </div>
+                </div>
+
+                <div class="container-login100-form-btn m-t-17">
+                    <button class="login100-form-btn" type="submit">
+                            Crear cuenta <span class="material-icons">save</span>
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

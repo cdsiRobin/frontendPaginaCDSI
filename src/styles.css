@@ -1,0 +1,94 @@
+/* You can add global styles to this file, and also import other style files */
+
+.pasar {
+    color: black;
+}
+
+.logos {
+    height: 400px;
+    width: 90%;
+}
+
+.imgPro {
+    height: 90%;
+    width: 90%;
+}
+
+.cdsi,
+#txtRojo {
+    color: red;
+    font-weight: bold;
+}
+
+#tituloRojo {
+    color: red;
+    font-weight: 1em;
+    font-size: 1.5em;
+}
+
+.titulo {
+    color: #0A0A83;
+    font-size: large;
+    font-weight: bold;
+}
+
+body {
+    color: #010d14;
+}
+
+.login-register {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    height: 100%;
+    width: 100%;
+    padding: 10% 0;
+    position: fixed;
+}
+
+.login-box {
+    width: 400px;
+    margin: 0 auto;
+}
+
+.login-box .footer {
+    width: 100%;
+    left: 0px;
+    right: 0px;
+}
+
+.login-box .social {
+    display: block;
+    margin-bottom: 30px;
+}
+
+#recoverform {
+    display: none;
+}
+
+.login-sidebar {
+    padding: 0px;
+    margin-top: 0px;
+}
+
+.login-sidebar .login-box {
+    right: 0px;
+    position: absolute;
+    height: 100%;
+}
+
+.horaActual {
+    font-weight: bold;
+    color: black;
+    border: 0px;
+    background: white;
+    font-size: 3em;
+}
+
+.diaActual {
+    color: black;
+    font-weight: bold;
+    border: 0px;
+    background: white;
+    font-size: 200%;
+}

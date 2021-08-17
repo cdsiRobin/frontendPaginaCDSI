@@ -1,0 +1,68 @@
+<!-- TITULO -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="row page-titles">
+            <div class="col-md-5 align-self-center">
+                <h3 class="text-themecolor"><strong>LISTA DE USUARIO</strong></h3>
+            </div>
+            <div class="col-md-7 align-self-center">
+                <ol class="breadcrumb">
+                    <!-- <li class="breadcrumb-item">pages</li> -->
+                    <!-- <li class="breadcrumb-item active">Salir </li> -->
+                    <button class="btn btn-outline-success" (click)="abrirDialogo()">Nuevo
+                            <i class="ti-pencil-alt "></i>
+                    </button>
+                </ol>
+            </div>
+            <div>
+                <!-- <button class="right-side-toggle btn-inverse btn btn-circle btn-sm m-l-10">
+                        <i class="ti-unlock text-danger"></i>
+                    </button> -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <!-- <th scope="col">ID</th> -->
+                        <th scope="col">USUARIO</th>
+                        <th scope="col">PASSWORD</th>
+                        <th scope="col">ESTADO</th>
+                        <th scope="col">ROLES</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody *ngFor="let usuario of usuarios">
+                    <tr>
+                        <!-- <th scope="row">{{usuario.id}}</th> -->
+                        <td>{{usuario.username}}</td>
+                        <td>{{usuario.password}}</td>
+                        <td>{{usuario.enabled}}</td>
+                        <td>
+                            <select class="custom-select" name="roles">
+                              <option *ngFor="let rol of usuario.roles">{{rol.authority}}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-info" (click)="abrirDialogo(usuario)">
+                                <i class="ti-pencil"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger">
+                                <i class="ti-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <app-pagi-rgta *ngIf="paginador" [paginador]="paginador"></app-pagi-rgta>
+        </div>
+    </div>
+</div>

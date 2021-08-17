@@ -1,0 +1,27 @@
+<div class="limiter animated fadeInLeft">
+    <div class="container-login100">
+        <div class="wrap-login100 p-t-50 p-b-90">
+            <form class="login100-form validate-form flex-sb flex-w" [formGroup]="formulario" (ngSubmit)="onSumit()">
+                <div class="flex-sb-m w-full p-t-3 p-b-24">
+                    <label class="text-center font-weight-bold" style="width: 100%; font-size: 25px; font-family: Ubuntu-Bold;color: #403866;">COMPAÑIA</label>
+                </div>
+                <span class="text-danger animated fadeIn" *ngIf="validarRol">Debes seleccionar una compañia</span>
+                <div class="flex-sb-m w-full">
+                    <div class="wrap-input100 m-b-16">
+                        <select class="input100" name="company" formControlName="company">
+                           <!-- <option> SELECCIONAR UNA COMPAÑIA </option> -->
+                           <option *ngFor="let cia of cias" value="{{cia.cia}}" > {{cia.razonSocial}} </option>                           
+                        </select>
+                    </div>
+                </div>
+                <div class="container-login100-form-btn m-t-17">
+                    <button class="login100-form-btn" type="submit">INGRESAR
+                        <span class="material-icons">
+                            business
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

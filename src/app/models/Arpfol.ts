@@ -1,0 +1,34 @@
+import { IdArpfol } from './IdArpfol';
+export class Arpfol {
+  idArpfol: IdArpfol;
+  grupo: string;
+  noCliente: string;
+  tipoArti: string;
+  artiNuevo: string;
+  bodega: string;
+  cantComp: number;
+  cantSolicitada: number;
+  cantEntreg: number;
+  cantAsignada: number;
+  cantReasignada: number;
+  fechaRegistro: string;
+  precio: number;
+  total: number;
+  estado: string;
+  igv: number;
+  noLinea: number;
+  pDscto3: number;
+  mDscto1: number;
+  mDscto2: number;
+  mDscto3: number;
+  impIgv: number;
+  precioSIgv: number;
+  totalLin: number;
+  descripcion: string;
+  tipoAfectacion: string;
+  precioUni: number;
+  operGratuitas: number;
+  operGravadas: number;
+  operInafectas: number;
+  operExoneradas: number;
+}

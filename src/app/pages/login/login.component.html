@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-12">
+        <div class="login-box card">
+            <div class="card-body">
+
+                <form (ngSubmit)="onSumit( f )" #f="ngForm" class="login100-form validate-form flex-sb flex-w">
+
+                    <h2 class="box-title text-center text-info"><strong>LOGIN DE ASISTENCIA</strong></h2>
+                    <hr>
+                    <span *ngIf="f.submitted && f.controls['username'].errors" class="text-danger animated fadeIn">El usuario debe de ser más de 2 letras</span>
+                    <!-- <div class="wrap-input100 m-b-16">
+                                    <input class="input100" type="text" [(ngModel)]="usuario.username" required minlength="2" name="username" placeholder="Usuario">
+                                    <span class="focus-input100"></span>
+                                </div> -->
+                    <div class="form-group col-xs-12">
+                        <label for="exampleInputuname">Usuario</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-user"></i></div>
+                            <input type="text" class="form-control" [(ngModel)]="usuario.username" required minlength="2" name="username" placeholder="Ingresar Usuario">
+                        </div>
+                    </div>
+
+                    <span *ngIf="f.submitted && f.controls['password'].errors" class="text-danger animated fadeIn">La contraseña debe de ser más de 5 letras</span>
+                    <!-- <div class="wrap-input100 m-b-16">
+                                    <input class="input100" type="password" [(ngModel)]="usuario.password" required minlength="3" name="password" placeholder="Contraseña">
+                                    <span class="focus-input100"></span>
+                                </div> -->
+                    <div class="form-group col-xs-12">
+                        <label for="pwd1">Contraseña</label>
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="ti-lock"></i></div>
+                            <input type="password" class="form-control" [(ngModel)]="usuario.password" required minlength="3" name="password" placeholder="Ingresa tu Contraseña">
+                        </div>
+                    </div>
+
+                    <div class="flex-sb-m w-full p-t-3 p-b-24">
+                        <div class="contact100-form-checkbox">
+                            <input [(ngModel)]="recordar" class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
+                            <label class="label-checkbox100" for="ckb1">
+                                            Recordar mi usuario
+                                        </label>
+                        </div>
+
+                        <div>
+                            <!-- <a routerLink="/registro" class="txt1">
+                                            ¿No tienes cuenta?
+                                        </a> -->
+                        </div>
+                    </div>
+
+                    <div class="container">
+                        <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit">INGRESAR</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

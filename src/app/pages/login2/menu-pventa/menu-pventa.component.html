@@ -1,0 +1,18 @@
+<h2 class="mat-h2">Menu Punto de venta</h2>
+<mat-form-field>
+  <mat-select placeholder="Usuarios" [(ngModel)]="empleadoSeleccionado" (selectionChange)="cajasAbiertasCajero()">
+    <mat-option *ngFor="let e of empleados" [value]="e">
+      {{e.idUsuario.usuario}} {{e.nombre}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field>
+  <mat-select placeholder="Menu" [(ngModel)]="menuSeleccionado">
+    <mat-option *ngFor="let m of menu" [value]="m.codigo">
+      {{m.nombre}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+<button mat-raised-button color="primary" (click)="aceptar()">Aceptar</button>
+<span class="example-spacer"></span>
+<button mat-raised-button color="accent" (click)="cancelar()">Cerrar</button>

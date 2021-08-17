@@ -1,0 +1,13 @@
+<nav *ngIf="paginas?.length" aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" [ngClass]="paginador.number > 0?'':'disabled'">
+            <a class="page-link" [routerLink]="['/asistencia/page',paginador.number-1]">Atras</a>
+        </li>
+        <li class="page-item" *ngFor="let nPagina of paginas" [ngClass]="nPagina-1 == paginador.number?'active':''">
+            <a class="page-link" [routerLink]="['/asistencia/page',nPagina - 1]">{{nPagina}}</a>
+        </li>
+        <li class="page-item" [ngClass]="paginador.number < paginador.totalPages-1?'':'disabled'">
+            <a class="page-link" [routerLink]="['/asistencia/page',paginador.number+1]">Siguiente</a>
+        </li>
+    </ul>
+</nav>
