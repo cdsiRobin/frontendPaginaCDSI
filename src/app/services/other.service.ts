@@ -20,10 +20,9 @@ export class OtherService {
 
   // METODO QUE NOS TRAE LA URL
   public getUrl() {
-    // return this.url = 'https://dd52e49b.ngrok.io/api'; // http://localhost:8034/api
-    //return  this.url = 'http://209.45.54.54:8444/api';
-    return  this.url = 'http://localhost:8444/api';
-    // return this.url = 'http://209.45.54.54:8081/api';
+
+    // return  this.url = 'http://localhost:8444/api';
+    return this.url = 'http://localhost:8099/spring-boot-backend-pvCdsi';
   }
 
 // SET TOKEN

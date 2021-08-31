@@ -73,17 +73,17 @@ export class PedidoEdicionComponent implements OnInit {
       precio: new FormControl({ value: 0, disabled: true }, Validators.required),
       impIgv: new FormControl({ value: 0, disabled: true }, Validators.required),
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
-    })
+    });
     this.noOrden();
     this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
 
   }
   filtrarArticulos(val: any) {
     if (val != null) {
-      let filtro:string = String(val);
+      let filtro: string = String(val);
       this.arindaService.listaArtiDesc(sessionStorage.getItem('cia'), filtro.trim()).subscribe(data => {
         this.articulos = data;
-      })
+      });
       return this.articulos;
     }
 
