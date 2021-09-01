@@ -22,7 +22,7 @@ export class OtherService {
   public getUrl() {
 
     // return  this.url = 'http://localhost:8444/api';
-    return this.url = 'http://localhost:8099/spring-boot-backend-pvCdsi';
+    return this.url = 'http://localhost:8099/spring-boot-backend-pvCdsi/api';
   }
 
 // SET TOKEN

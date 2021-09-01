@@ -60,7 +60,7 @@ export class Login2Component implements OnInit {
     this.idVende.codigo = this.form.value['codigo'];
     this.vendedor.pass = this.form.value['pass'];
 
-    let vende = new VendedorDTO(this.companySeleccionada.cia, this.form.value['codigo'], this.form.value['pass'])
+    let vende = new VendedorDTO(this.companySeleccionada.cia, this.form.value['codigo'], this.form.value['pass']);
     this.venServ.getVendedor(vende).subscribe(data => {
       this.vendedor = data; // SE
       this.venServ.vendeCaja(vende).subscribe(x => {
@@ -79,7 +79,7 @@ export class Login2Component implements OnInit {
         this.guardarCampos();
         this.abrirDialogo();
         }
-      })
+      });
     }, err => {
       if (err.status == 404) {
         Swal.close();

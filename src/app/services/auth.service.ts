@@ -33,9 +33,9 @@ export class AuthService {
   }
   // METODO QUE NOS PERMITE HACER EL LOGIN
   login(usuario: Usuario): Observable<any> {
-    // const urlEndpoint = 'http://209.45.54.54:8081/oauth/token';
+
    // const urlEndpoint = 'https://dd52e49b.ngrok.io/oauth/token';
-    const urlEndpoint = 'https://www.cdsi.net.pe:8443/oauth/token';
+    const urlEndpoint = 'http://localhost:8099/spring-boot-backend-pvCdsi/oauth/token';
 
     const credenciales = btoa('cdsiapp' + ':' + 'r0bincdsi');
 
