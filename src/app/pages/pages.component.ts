@@ -40,7 +40,6 @@ export class PagesComponent implements OnInit {
             name: target.name,
             path: (index === 0) ? target.path : `${this.breadcrumbList[index-1].path}/${target.path.slice(2)}`
           });
-          
           if (index+1 !== routerList.length) {
             target = target.children;
           }

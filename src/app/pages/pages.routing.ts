@@ -32,6 +32,7 @@ const routes: Routes = [
     path: 'dashboard', component: PagesComponent,
     children: [
       { path: '', component: DashboardComponent },
+      { path: 'log_arti', component: Login2Component },
       { path: 'consulta-especial', component: ConsultaEspecialComponent },
       { path: 'cdsi', component: NuestraEmpresaComponent },
       {
@@ -65,7 +66,7 @@ const routes: Routes = [
 
     ]
   },
-  { path: 'log_arti', component: Login2Component },
+  // { path: 'log_arti', component: Login2Component },
   { path: 'articulo', component: LartiComponent },
   {
     path: 'pedido', component: PedidoComponent, children: [

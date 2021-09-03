@@ -6,7 +6,7 @@ import { ComponentsModule } from './../components/components.module';
 import { AppRoutingModule } from './../app-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PagesComponent } from './pages.component';
@@ -84,10 +84,12 @@ import { CajaEdicionComponent } from './pedido/caja/caja-edicion/caja-edicion.co
     PedidoComponent,
     PedidoEdicionComponent,
     MenuPventaComponent
-  ],exports: [
+  ],
+  exports: [
     ProgressComponent,
     Grafica1Component,
     PagesComponent,
+    SharedModule,
   ],
   imports: [
     CommonModule,
