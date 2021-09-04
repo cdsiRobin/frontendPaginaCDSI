@@ -25,6 +25,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { NuestroProductosComponent } from './nuestro-productos/nuestro-productos.component';
+import {PedidoRoutingModule} from './pedido/pedido-routing.module';
 
 const routes: Routes = [
 
@@ -62,25 +63,28 @@ const routes: Routes = [
       { path: 'alianzas', component: AlianzasComponent },
       { path: 'tra_rea', component: TrabajosRealizadosComponent },
       { path: 'reg_asis', component: LoginComponent },
-      { path: 'home', component: HomeComponent } // REGISTRO DE ASISTENCIA
+      { path: 'home', component: HomeComponent }, // REGISTRO DE ASISTENCIA
+      // {
+      //   path: 'pedido',
+      //   children: [
+      //     { path: '', component: PedidoComponent },
+      //     { path: 'nuevo', component: PedidoEdicionComponent },
+      //     { path: 'edicion/:orden', component: PedidoEdicionComponent },
+      //     { path: 'caja', component: CajaComponent }
+      //   ]
+      // }
 
     ]
   },
-  // { path: 'log_arti', component: Login2Component },
   { path: 'articulo', component: LartiComponent },
-  {
-    path: 'pedido', component: PedidoComponent, children: [
-      { path: 'nuevo', component: PedidoEdicionComponent },
-      { path: 'edicion/:orden', component: PedidoEdicionComponent },
-      { path: 'caja', component: CajaComponent }
-    ]
-  }
-
 
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [
+    RouterModule.forChild(routes),
+    PedidoRoutingModule
+  ],
   exports: [RouterModule]
 })
 export class PagesRoutingModule { }

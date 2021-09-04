@@ -56,7 +56,7 @@ export class MenuPventaComponent implements OnInit {
       if (this.empleadoSeleccionado.tipusua == "04") {
         this.cajaService.caja(datos).subscribe(data => {
           this.cajas = data;
-        })
+        });
       }
     }
   }
@@ -72,7 +72,8 @@ export class MenuPventaComponent implements OnInit {
               this.cajaService.cajasCreadas.next(data);
             })
             this.cancelar();
-            this.router.navigateByUrl('/pedido');
+            // this.router.navigateByUrl('/pedido');
+            this.router.navigateByUrl('/dashboard/pedido');
           } else {
             Swal.close();
             Swal.fire({

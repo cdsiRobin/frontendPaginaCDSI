@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PedidoComponent implements OnInit {
 
-  constructor(private router: Router,public route:ActivatedRoute) { }
+  constructor(private router: Router, public route: ActivatedRoute) { }
 
   ngOnInit(): void {
   }
