@@ -1,4 +1,3 @@
-
 <div class="example-container">
   <mat-toolbar color="primary" class="example-toolbar" >
     <button mat-icon-button (click)="sidenav.toggle()">
@@ -6,19 +5,29 @@
       <mat-icon *ngIf="sidenav.opened">close</mat-icon>
     </button>
 
-    <h1 class="example-app-name">MEDIAPP</h1>
+    <h1 class="titulopv">PUNTO DE VENTA</h1>
 
     <span class="example-spacer"></span>
-
     <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
 
     <mat-menu #menu="matMenu">
+      <button mat-menu-item >
+        <mat-icon>location_city</mat-icon>
+        <span>{{nomCia}}</span>
+      </button>
+      <button mat-menu-item >
+        <mat-icon>face</mat-icon>
+        <span>{{nombre}}</span>
+      </button>
+
+      <mat-divider></mat-divider>
       <button mat-menu-item routerLink="/perfil">
         <mat-icon>account_box</mat-icon>
         <span>Mi Perfil</span>
       </button>
+      <mat-divider></mat-divider>
       <button mat-menu-item (click)="sidenav.opened = false" >
         <mat-icon>exit_to_app</mat-icon>
         <span>Cerrar Sesión</span>
@@ -28,8 +37,8 @@
 
   <mat-sidenav-container class="example-sidenav-container">
     <mat-sidenav #sidenav style="width: 200px" mode="push">
-      <img src="assets/mitocode.png" width="128" style="margin-left: 20px">
-
+      <app-vendedor></app-vendedor>
+      <mat-divider></mat-divider>
       <button mat-menu-item (click)="sidenav.toggle()" routerLink="/buscar" style="cursor: pointer">
         <mat-icon>search</mat-icon>
         <span>Buscar</span>

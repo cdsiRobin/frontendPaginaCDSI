@@ -110,4 +110,13 @@ body {
 .example-spacer {
   flex: 1 1 auto;
 }
+
+.titulopv{
+  color: white;
+}
+.nCia{
+  font-size: 12px;
+  padding: 0px;
+  margin-bottom: 0px;
+}
 /*FIN*/

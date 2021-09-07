@@ -8,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class PedidoComponent implements OnInit {
 
+  nombre: string;
+  nomCia: string;
+
   constructor(private router: Router, public route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    this.nombre = sessionStorage.getItem('nombre');
+    this.nomCia = sessionStorage.getItem('nomCia');
   }
   regresar() {
     this.router.navigateByUrl('/log_arti');
