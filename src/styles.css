@@ -120,3 +120,16 @@ body {
   margin-bottom: 0px;
 }
 /*FIN*/
+
+/*COLOR DEL NAVEGADOR*/
+.navegador{
+  background: #054b78;
+  color: #fff;
+}
+/*FIN*/
+
+/*SHARED*/
+.sharedUsu{
+  font-weight:bold;
+}
+/*FIN*/

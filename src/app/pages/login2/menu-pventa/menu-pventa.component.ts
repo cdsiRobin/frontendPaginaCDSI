@@ -72,8 +72,7 @@ export class MenuPventaComponent implements OnInit {
               this.cajaService.cajasCreadas.next(data);
             })
             this.cancelar();
-            // this.router.navigateByUrl('/pedido');
-            this.router.navigateByUrl('/dashboard/pedido');
+            this.router.navigateByUrl('/pedido');
           } else {
             Swal.close();
             Swal.fire({

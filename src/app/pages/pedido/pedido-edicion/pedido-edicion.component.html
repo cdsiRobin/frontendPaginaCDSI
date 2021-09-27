@@ -1,73 +1,117 @@
-  <!-- End Page wrapper  -->
+<!-- Container fluid  -->
+<!-- ============================================================== -->
+<div class="container-fluid">
+  <!-- ============================================================== -->
+  <!-- Bread crumb and right sidebar toggle -->
+  <!-- ============================================================== -->
+  <div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+      <h3 class="text-themecolor">Creando Pedido</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item active">pedido</li>
+      </ol>
+    </div>
+    <div>
+      <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
+    </div>
+  </div>
+  <!-- ============================================================== -->
+  <!-- End Bread crumb and right sidebar toggle -->
+  <!-- ============================================================== -->
+
+  <!-- ============================================================== -->
+  <!-- Start Page Content -->
   <!-- ============================================================== -->
   <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <form class="example-container" [formGroup]="form" #frmCliente="ngForm" (ngSubmit)="operar()">
-              <h2>Pedido</h2>
-              <mat-form-field>
-                <input matInput type="text" placeholder="Cliente" [(ngModel)]="codCliente" formControlName="cliente">
-              </mat-form-field>
-              <button mat-raised-button [disabled]="estadoBotonCliente()" color="primary" type="button"
-                      (click)="traeCliente()">Valida Cliente</button>
-              <br>
-              <mat-form-field class="example-full-width">
-                <input matInput type="text" placeholder="Nombre" [(ngModel)]="nomCli" formControlName="nomCli">
-              </mat-form-field>
-              <mat-form-field class="example-full-width">
-                <input matInput type="text" placeholder="Direccion" [(ngModel)]="direccion" formControlName="direccion">
-              </mat-form-field>
-              <mat-form-field class="example-full-width">
-                <input matInput type="text" placeholder="Email" [(ngModel)]="email" formControlName="email">
-              </mat-form-field>
-              <h2>Detalle</h2>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-body">
+                  <form class="example-container" [formGroup]="form" #frmCliente="ngForm" (ngSubmit)="operar()">
+                    <h2>Pedido</h2>
+                    <mat-form-field>
+                      <input matInput type="text" placeholder="Cliente" [(ngModel)]="codCliente" formControlName="cliente">
+                    </mat-form-field>
+                    <button mat-raised-button [disabled]="estadoBotonCliente()" color="primary" type="button"
+                            (click)="traeCliente()">Valida Cliente</button>
+                    <br>
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="text" placeholder="Nombre" [(ngModel)]="nomCli" formControlName="nomCli">
+                    </mat-form-field>
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="text" placeholder="Direccion" [(ngModel)]="direccion" formControlName="direccion">
+                    </mat-form-field>
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="text" placeholder="Email" [(ngModel)]="email" formControlName="email">
+                    </mat-form-field>
+                    <h2>Detalle</h2>
 
-              <mat-form-field>
-                <input matInput type="text" placeholder="Articulo" [matAutocomplete]="autoArticulo"
-                       [formControl]="myControlArticulo" formControlName="articulo">
-              </mat-form-field>
-              <mat-autocomplete #autoArticulo="matAutocomplete" [displayWith]="mostrarArticulo"
-                                (optionSelected)="seleccionarArticulo($event)">
-                <mat-option *ngFor="let a of articulosFiltrados | async" [value]="a">
-                  {{a.idArti.noArti}} {{a.descripcion}}
-                </mat-option>
-              </mat-autocomplete>
+                    <mat-form-field>
+                      <input matInput type="text" placeholder="Articulo" [matAutocomplete]="autoArticulo"
+                             [formControl]="myControlArticulo" formControlName="articulo">
+                    </mat-form-field>
+                    <mat-autocomplete #autoArticulo="matAutocomplete" [displayWith]="mostrarArticulo"
+                                      (optionSelected)="seleccionarArticulo($event)">
+                      <mat-option *ngFor="let a of articulosFiltrados | async" [value]="a">
+                        {{a.idArti.noArti}} {{a.descripcion}}
+                      </mat-option>
+                    </mat-autocomplete>
 
-              <mat-form-field>
-                <input matInput placeholder="Cantidad" type="number" (change)="calcularImporte()" [(ngModel)]="cantAsignada" formControlName="cantAsignada">
-              </mat-form-field>
-              <mat-form-field>
-                <input matInput placeholder="Precio" type="number" [(ngModel)]="precio" formControlName="precio">
-              </mat-form-field>
-              <mat-form-field>
-                <input matInput placeholder="IGV" type="number" [(ngModel)]="impIgv" formControlName="impIgv">
-              </mat-form-field>
-              <mat-form-field>
-                <input matInput placeholder="Total" type="number" [(ngModel)]="totalLin" formControlName="totalLin">
-              </mat-form-field>
-              <button mat-raised-button color="primary" type="button" (click)="agregar()">Agregar detalle</button>
-              <!--<mat-expansion-panel *ngFor="let d of detallePedido; let i = index">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    {{i + 1}} Tipo: {{d.tipoArti}} Articulo:{{d.arti}} {{d.descripcion}} Cantidad:{{d.cantAsignada}} Precio:{{d.precio}} IGV:{{d.impIgv}} Total:{{d.totalLin}}
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <button mat-raised-button color="warn" type="button" (click)="removerDetalle(i)">Remover</button>
-              </mat-expansion-panel>-->
-              <mat-list role="list">
-                <mat-list-item role="listitem" *ngFor="let d of detallePedido; let i = index">
-                  {{i + 1}} Tipo: {{d.tipoArti}} Articulo:{{d.idArpfol.noArti}} Cantidad:{{d.cantAsignada}}
-                  Precio:{{d.precio}} IGV:{{d.impIgv}} Total:{{d.totalLin}}
-                  <button mat-raised-button color="warn" (click)="removerDetalle(i)">Remover</button>
-                </mat-list-item>
-              </mat-list>
+                    <mat-form-field>
+                      <input matInput placeholder="Cantidad" type="number" (change)="calcularImporte()" [(ngModel)]="cantAsignada" formControlName="cantAsignada">
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="Precio" type="number" [(ngModel)]="precio" formControlName="precio">
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="IGV" type="number" [(ngModel)]="impIgv" formControlName="impIgv">
+                    </mat-form-field>
+                    <mat-form-field>
+                      <input matInput placeholder="Total" type="number" [(ngModel)]="totalLin" formControlName="totalLin">
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" type="button" (click)="agregar()">Agregar detalle</button>
+                    <!--<mat-expansion-panel *ngFor="let d of detallePedido; let i = index">
+                      <mat-expansion-panel-header>
+                        <mat-panel-title>
+                          {{i + 1}} Tipo: {{d.tipoArti}} Articulo:{{d.arti}} {{d.descripcion}} Cantidad:{{d.cantAsignada}} Precio:{{d.precio}} IGV:{{d.impIgv}} Total:{{d.totalLin}}
+                        </mat-panel-title>
+                      </mat-expansion-panel-header>
+                      <button mat-raised-button color="warn" type="button" (click)="removerDetalle(i)">Remover</button>
+                    </mat-expansion-panel>-->
+                    <mat-list role="list">
+                      <mat-list-item role="listitem" *ngFor="let d of detallePedido; let i = index">
+                        {{i + 1}} Tipo: {{d.tipoArti}} Articulo:{{d.idArpfol.noArti}} Cantidad:{{d.cantAsignada}}
+                        Precio:{{d.precio}} IGV:{{d.impIgv}} Total:{{d.totalLin}}
+                        <button mat-raised-button color="warn" (click)="removerDetalle(i)">Remover</button>
+                      </mat-list-item>
+                    </mat-list>
 
-              <p><span>Sub Total:{{subTotal | currency}} impuesto:{{totalIGV | currency}} Total:{{totalGeneral | currency}}</span></p>
-              <button mat-raised-button color="primary"  type="submit">Grabar</button>
-            </form>
+                    <p><span>Sub Total:{{subTotal | currency}} impuesto:{{totalIGV | currency}} Total:{{totalGeneral | currency}}</span></p>
+                    <button mat-raised-button color="primary"  type="submit">Grabar</button>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
+  <!-- ============================================================== -->
+  <!-- End PAge Content -->
+  <!-- ============================================================== -->
+  <!-- ============================================================== -->
+  <!-- Right sidebar -->
+  <!-- ============================================================== -->
+
+  <!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+
 

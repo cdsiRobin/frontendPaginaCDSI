@@ -6,13 +6,15 @@
                     (ngSubmit)="obtenerVendedor()">
                     <h2 class="box-title text-center text-info"><strong>LOGIN DE PUNTO DE VENTA</strong></h2>
                     <hr>
-                    <mat-form-field>
+                    <div class="form-group col-xs-12">
+                      <mat-form-field class="form-control" >
                         <mat-select placeholder="Compañias" [(value)]="companySeleccionada" formControlName="cia" >
-                            <mat-option *ngFor="let c of companys" [value]="c">
-                                {{c.nombre}}
-                            </mat-option>
+                          <mat-option *ngFor="let c of companys" [value]="c">
+                            {{c.nombre}}
+                          </mat-option>
                         </mat-select>
-                    </mat-form-field>
+                      </mat-form-field>
+                    </div>
 
                     <div class="form-group col-xs-12">
                         <label for="exampleInputuname">Usuario</label>

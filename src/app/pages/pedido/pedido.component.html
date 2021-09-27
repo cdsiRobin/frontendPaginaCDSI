@@ -1,5 +1,5 @@
 <div class="example-container">
-  <mat-toolbar color="primary" class="example-toolbar" >
+  <mat-toolbar class="example-toolbar navegador" >
     <button mat-icon-button (click)="sidenav.toggle()">
       <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
       <mat-icon *ngIf="sidenav.opened">close</mat-icon>
@@ -39,9 +39,9 @@
     <mat-sidenav #sidenav style="width: 200px" mode="push">
       <app-vendedor></app-vendedor>
       <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.toggle()" routerLink="/caja" style="cursor: pointer">
+      <button mat-menu-item (click)="sidenav.toggle()" routerLink="nuevo" style="cursor: pointer">
         <mat-icon>search</mat-icon>
-        <span>Caja</span>
+        <span>Pedido</span>
       </button>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="sidenav.toggle()" routerLink="/consulta" style="cursor: pointer">
@@ -94,6 +94,7 @@
       <!--</div>-->
 <!--      <app-vendedor></app-vendedor>-->
       <router-outlet></router-outlet>
+
     </mat-sidenav-content>
 
   </mat-sidenav-container>
