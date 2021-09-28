@@ -67,7 +67,7 @@ export class PedidoEdicionComponent implements OnInit {
       cliente: new FormControl({ value: ''}, Validators.required),
       nomCli: new FormControl({ value: '', disabled: true }, Validators.required),
       direccion: new FormControl({ value: '', disabled: true }, Validators.required),
-      email: new FormControl({value: '',disabled: true }),
+      email: new FormControl({value: '', disabled: true }),
       articulo: this.myControlArticulo,
       cantAsignada: new FormControl({ value: 0, disabled: true }, Validators.required),
       precio: new FormControl({ value: 0, disabled: true }, Validators.required),
