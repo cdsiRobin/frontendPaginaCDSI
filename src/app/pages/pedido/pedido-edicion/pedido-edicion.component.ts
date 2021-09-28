@@ -58,7 +58,8 @@ export class PedidoEdicionComponent implements OnInit {
 
   constructor(public pedidoService: PedidoService,
     public clienteServices: ArccmcService,
-    public arindaService: ArticuloService) { }
+    public arindaService: ArticuloService,
+              public arfaccSe) { }
 
   ngOnInit(): void {
     this.form = new FormGroup({
