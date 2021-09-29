@@ -21,6 +21,8 @@ import {IArfacc} from '../../../interfaces/IArfacc';
 import {Arfacc} from '../../../models/arfacc';
 import {IarfaccPK} from '../../../interfaces/IarfaccPK';
 import {ArfaccPK} from '../../../models/arfaccPK';
+import {MatDialog} from '@angular/material/dialog';
+import {DialogSerieComponent} from '../dialog-serie/dialog-serie.component';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -62,16 +64,22 @@ export class PedidoEdicionComponent implements OnInit {
   articulosFiltrados: Observable<Arinda[]>;
 
   public arfacc: IArfacc;
+  public arfaccs: IArfacc[];
   public arfaccPK: IarfaccPK;
   public cia: string;
   public centro: string;
+  public nroPedido: string;
+  public fecha: Date;
 
-  constructor(public pedidoService: PedidoService, public clienteServices: ArccmcService, public arindaService: ArticuloService, public arfaccService: ArfaccService) { }
+  constructor(public pedidoService: PedidoService,
+              public clienteServices: ArccmcService,
+              public arindaService: ArticuloService,
+              public arfaccService: ArfaccService,
+              public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.cia = sessionStorage.getItem('cia');
     this.centro = sessionStorage.getItem('centro');
-
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -127,7 +135,6 @@ export class PedidoEdicionComponent implements OnInit {
     this.impIgv = (this.precio * this.cantAsignada) * 0.18;
     this.totalLin = (this.precio * this.cantAsignada) + this.impIgv;
   }
-
 
   noOrden() {
     this.pedidoService.noOrdern(sessionStorage.getItem('cia'), sessionStorage.getItem('centro')).subscribe(data => {
@@ -355,7 +362,7 @@ export class PedidoEdicionComponent implements OnInit {
 
   }
 
-  // METODO QUE NOS PERMITE TRAER LOS CORRELATIVOS
+  // METODO QUE NOS PERMITE TRAER LA SERIE Y CORRELATIVO DEL PEDIDO
   public serieCorrelativoPedido(): void{
     this.arfacc = new Arfacc();
     this.arfaccPK = new ArfaccPK();
@@ -365,11 +372,15 @@ export class PedidoEdicionComponent implements OnInit {
     this.arfacc.arfaccPK = this.arfaccPK;
     this.arfacc.activo = 'S';
     this.arfaccService.getSerieAndCorrelativoPedido(this.arfacc).subscribe(json => {
-      console.warn(json);
+      this.arfaccs = json.resultado;
     },
       error => {
        console.error(error);
       }
     );
+  }
+  // METODO QUE NOS DEJA ESCOGER LA SERIE DEL PEDIDO
+  public escogerSeriePedido(): void{
+    this.dialog.open(DialogSerieComponent,{ width: '300px'});
   }
 }

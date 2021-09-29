@@ -8,6 +8,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MaterialModule} from '../../material/material.module';
 import {AppRoutingModule} from '../../app-routing.module';
 import {VendedorComponent} from '../vendedor/vendedor.component';
+import { DialogSerieComponent } from './dialog-serie/dialog-serie.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {VendedorComponent} from '../vendedor/vendedor.component';
     CajaEdicionComponent,
     PedidoComponent,
     PedidoEdicionComponent,
-    VendedorComponent
+    VendedorComponent,
+    DialogSerieComponent
   ],
   imports: [
     CommonModule,

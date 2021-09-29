@@ -22,4 +22,5 @@ export class Arfacc implements IArfacc{
   usuModi: string;
   usuProv: string;
   usuario: string;
+
 }
