@@ -361,10 +361,9 @@ export class PedidoEdicionComponent implements OnInit {
     this.arfaccPK = new ArfaccPK();
     this.arfaccPK.noCia = this.cia;
     this.arfaccPK.centro = this.centro;
-    this.arfaccPK.tipoDoc = 'B';
+    this.arfaccPK.tipoDoc = 'P';
     this.arfacc.arfaccPK = this.arfaccPK;
-    this.arfacc.activo = 'A';
-    console.warn(this.arfacc);
+    this.arfacc.activo = 'S';
     this.arfaccService.getSerieAndCorrelativoPedido(this.arfacc).subscribe(json => {
       console.warn(json);
     },
