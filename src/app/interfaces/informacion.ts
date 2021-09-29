@@ -1,7 +1,7 @@
 import {Estado} from './estado';
 
-export interface Informacion {
+export interface Informacion<T> {
   apiVerision: string;
   estado: Estado;
-  resultado: [object];
+  resultado: Array<T>;
 }

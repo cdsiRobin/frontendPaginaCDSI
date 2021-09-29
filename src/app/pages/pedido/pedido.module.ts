@@ -9,8 +9,6 @@ import {MaterialModule} from '../../material/material.module';
 import {AppRoutingModule} from '../../app-routing.module';
 import {VendedorComponent} from '../vendedor/vendedor.component';
 
-
-
 @NgModule({
   declarations: [
     CajaComponent,

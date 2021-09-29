@@ -1,6 +1,6 @@
-import { IdArfacc } from './IdArfacc';
-export interface Arfacc{
-  idArfacc: IdArfacc;
+import { IarfaccPK } from './IarfaccPK';
+export interface IArfacc {
+  arfaccPK: IarfaccPK;
   anoDoc: string;
   consInicio: number;
   consDesde: number;

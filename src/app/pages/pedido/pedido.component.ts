@@ -20,7 +20,7 @@ export class PedidoComponent implements OnInit {
     this.nomCia = sessionStorage.getItem('nomCia');
     this.openSnackBar();
   }
-  public openSnackBar() {
+  public openSnackBar(): void {
       this.snackBar.open('Bienvenido '.concat(this.nombre).concat(' a la empresa ').concat(this.nomCia),'Done',
         {
           duration: 5000,

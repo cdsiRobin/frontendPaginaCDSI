@@ -1,4 +1,4 @@
-import { Arfacc } from '../interfaces/Arfacc';
+import { IArfacc } from '../interfaces/IArfacc';
 import { CorrelDTO } from './../DTO/CorrelDTO';
 import { Arpfol } from './../models/Arpfol';
 import { PedidoDTO } from './../DTO/PedidoDTO';

@@ -10,12 +10,17 @@ import { DatosClienteDTO } from './../../../DTO/DatosClienteDTO';
 import { ArccmcService } from './../../../services/arccmc.service';
 import { map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { Arccmc } from './../../../models/Arccmc';
+
 import { PedidoService } from './../../../services/pedido.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { IdArpfoe } from 'src/app/models/IdArpfoe';
 import * as moment from 'moment';
+import {ArfaccService} from '../../../services/arfacc.service';
+import {IArfacc} from '../../../interfaces/IArfacc';
+import {Arfacc} from '../../../models/arfacc';
+import {IarfaccPK} from '../../../interfaces/IarfaccPK';
+import {ArfaccPK} from '../../../models/arfaccPK';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -52,16 +57,21 @@ export class PedidoEdicionComponent implements OnInit {
   totalIGV:number=0;
   impuesto:number=18;
 
-  myControlArticulo: FormControl = new FormControl({value: '',disabled: true });
+  myControlArticulo: FormControl = new FormControl({value: '', disabled: true });
 
   articulosFiltrados: Observable<Arinda[]>;
 
-  constructor(public pedidoService: PedidoService,
-    public clienteServices: ArccmcService,
-    public arindaService: ArticuloService,
-              public arfaccSe) { }
+  public arfacc: IArfacc;
+  public arfaccPK: IarfaccPK;
+  public cia: string;
+  public centro: string;
+
+  constructor(public pedidoService: PedidoService, public clienteServices: ArccmcService, public arindaService: ArticuloService, public arfaccService: ArfaccService) { }
 
   ngOnInit(): void {
+    this.cia = sessionStorage.getItem('cia');
+    this.centro = sessionStorage.getItem('centro');
+
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -75,9 +85,9 @@ export class PedidoEdicionComponent implements OnInit {
       impIgv: new FormControl({ value: 0, disabled: true }, Validators.required),
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
-    this.noOrden();
-    this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
-
+   // this.noOrden();
+   // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
+    this.serieCorrelativoPedido();
   }
   filtrarArticulos(val: any) {
     if (val != null) {
@@ -343,5 +353,24 @@ export class PedidoEdicionComponent implements OnInit {
     this.fechaSeleccionada.setMilliseconds(0);
     this.myControlArticulo.reset();
 
+  }
+
+  // METODO QUE NOS PERMITE TRAER LOS CORRELATIVOS
+  public serieCorrelativoPedido(): void{
+    this.arfacc = new Arfacc();
+    this.arfaccPK = new ArfaccPK();
+    this.arfaccPK.noCia = this.cia;
+    this.arfaccPK.centro = this.centro;
+    this.arfaccPK.tipoDoc = 'B';
+    this.arfacc.arfaccPK = this.arfaccPK;
+    this.arfacc.activo = 'A';
+    console.warn(this.arfacc);
+    this.arfaccService.getSerieAndCorrelativoPedido(this.arfacc).subscribe(json => {
+      console.warn(json);
+    },
+      error => {
+       console.error(error);
+      }
+    );
   }
 }
