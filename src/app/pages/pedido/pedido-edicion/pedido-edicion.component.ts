@@ -23,6 +23,7 @@ import {IarfaccPK} from '../../../interfaces/IarfaccPK';
 import {ArfaccPK} from '../../../models/arfaccPK';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogSerieComponent} from '../dialog-serie/dialog-serie.component';
+import {TransaccionService} from '../../../services/transaccion.service';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -68,6 +69,7 @@ export class PedidoEdicionComponent implements OnInit {
   public arfaccPK: IarfaccPK;
   public cia: string;
   public centro: string;
+  public usuario: string;
   public nroPedido: string;
   public fecha: Date;
 
@@ -75,11 +77,13 @@ export class PedidoEdicionComponent implements OnInit {
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
               public arfaccService: ArfaccService,
+              public transaccionService: TransaccionService,
               public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.cia = sessionStorage.getItem('cia');
     this.centro = sessionStorage.getItem('centro');
+    this.usuario = sessionStorage.getItem('usuario');
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -95,6 +99,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
    // this.noOrden();
    // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
+    this.transaccionXCia();
     this.serieCorrelativoPedido();
   }
   filtrarArticulos(val: any) {
@@ -378,6 +383,15 @@ export class PedidoEdicionComponent implements OnInit {
        console.error(error);
       }
     );
+  }
+  // METODO QUE NOS PERMITE TRAER LA TRANSACCION POR USUARIO Y COMPAÑIA
+  public transaccionXCia(): void{
+      this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json =>{
+        console.log(json);
+      },
+        error => {
+          console.error(error);
+      });
   }
   // METODO QUE NOS DEJA ESCOGER LA SERIE DEL PEDIDO
   public escogerSeriePedido(): void{
