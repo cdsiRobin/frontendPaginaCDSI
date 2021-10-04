@@ -1,19 +1,16 @@
 import { MenuPventaComponent } from './menu-pventa/menu-pventa.component';
 import { MatDialog } from '@angular/material/dialog';
 import { TapUsuPven } from './../../models/TapUsuPven';
-import { TapusupvenService } from './../../services/tapusupven.service';
 import { VendedorDTO } from './../../DTO/VendedorDTO';
 import { Company } from './../../models/company';
 import { IdArccvc } from './../../models/IdArccvc';
 import { Arccvc } from './../../models/Arccvc';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
-import { Observable } from 'rxjs';
 import { ArccvcService } from './../../services/arccvc.service';
 import { CompanyService } from './../../services/company.service';
 import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
-import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login2',

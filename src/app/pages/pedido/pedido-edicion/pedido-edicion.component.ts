@@ -21,9 +21,9 @@ import {IArfacc} from '../../../interfaces/IArfacc';
 import {Arfacc} from '../../../models/arfacc';
 import {IarfaccPK} from '../../../interfaces/IarfaccPK';
 import {ArfaccPK} from '../../../models/arfaccPK';
-import {MatDialog} from '@angular/material/dialog';
-import {DialogSerieComponent} from '../dialog-serie/dialog-serie.component';
 import {TransaccionService} from '../../../services/transaccion.service';
+import {Transaccion} from '../../../models/transaccion';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -72,13 +72,15 @@ export class PedidoEdicionComponent implements OnInit {
   public usuario: string;
   public nroPedido: string;
   public fecha: Date;
-
+  public transacciones: Transaccion[];
+  public transaccion: Transaccion;
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
               public arfaccService: ArfaccService,
               public transaccionService: TransaccionService,
-              public dialog: MatDialog) { }
+              private snackBar: MatSnackBar
+              ) { }
 
   ngOnInit(): void {
     this.cia = sessionStorage.getItem('cia');
@@ -378,6 +380,16 @@ export class PedidoEdicionComponent implements OnInit {
     this.arfacc.activo = 'S';
     this.arfaccService.getSerieAndCorrelativoPedido(this.arfacc).subscribe(json => {
       this.arfaccs = json.resultado;
+      if (this.arfaccs.length === 1) {
+        this.arfacc = this.arfaccs[0];
+      }else{
+        this.snackBar.open('Debe elegir un Nro de Pedido para el centro: ' + this.centro,'Salir',
+          {
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+      }
     },
       error => {
        console.error(error);
@@ -386,15 +398,22 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // METODO QUE NOS PERMITE TRAER LA TRANSACCION POR USUARIO Y COMPAÑIA
   public transaccionXCia(): void{
-      this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json =>{
-        console.log(json);
+      this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json => {
+        this.transacciones = json.resultado;
+        this.buscarTransaccion('1315');
       },
         error => {
           console.error(error);
       });
   }
-  // METODO QUE NOS DEJA ESCOGER LA SERIE DEL PEDIDO
-  public escogerSeriePedido(): void{
-    this.dialog.open(DialogSerieComponent,{ width: '300px'});
+  // METODO QUE NOS PERMITE A BUSCAR TRANSACCION
+  public buscarTransaccion(codigo: string): void {
+      for (const t of this.transacciones) {
+          if (t.codTPed === codigo) {
+            this.transaccion = t;
+            break;
+          }
+      }
   }
+
 }
