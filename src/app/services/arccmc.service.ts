@@ -1,23 +1,25 @@
 import { DatosClienteDTO } from './../DTO/DatosClienteDTO';
 import { Arccmc } from './../models/Arccmc';
 import { HttpClient } from '@angular/common/http';
-import { OtherService } from './other.service';
 import { Injectable } from '@angular/core';
+import {GenericoService} from './generico/generico.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ArccmcService {
+export class ArccmcService extends GenericoService{
 
-  constructor(private http: HttpClient, private url: OtherService) { }
+  constructor(private http: HttpClient) { super(); }
 
-  listaClientes(datos:DatosClienteDTO) {
-    return this.http.post<Arccmc[]>(this.url.getUrl() + `/cli/list`,datos);
+ public listaClientes(datos: DatosClienteDTO) {
+    const body = JSON.stringify(datos);
+    return this.http.post<Arccmc[]>(this.url + `/cli/list`, body, this.options);
   }
-  totalClientes(cia:string) {
-    return this.http.get<Arccmc[]>(this.url.getUrl() + `/cli/list/${cia}`);
+ public totalClientes(cia: string) {
+    return this.http.get<Arccmc[]>(this.url + `/cli/list/${cia}`, this.options);
   }
-  traeCliente(datos:DatosClienteDTO){
-    return this.http.post<Arccmc>(this.url.getUrl() + `/cli/cliente`,datos);
+ public traeCliente(datos: DatosClienteDTO){
+    const body = JSON.stringify(datos);
+    return this.http.post<Arccmc>(this.url + `/cli/cliente`, body, this.options);
   }
 }
