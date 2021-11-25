@@ -6,12 +6,12 @@
   <!-- ============================================================== -->
   <div class="row page-titles">
     <div class="col-md-5 align-self-center">
-      <h3 class="text-themecolor font-weight-bold">Creando Pedido</h3>
+      <h3 class="text-themecolor font-weight-bold">Pedido</h3>
     </div>
     <div class="col-md-7 align-self-center">
       <ol class="breadcrumb">
         <li class="breadcrumb-item"><a routerLink="/pedido">Home</a></li>
-        <li class="breadcrumb-item active">Crear Pedido</li>
+        <li class="breadcrumb-item active">Nuevo Pedido</li>
       </ol>
     </div>
     <div>
@@ -24,12 +24,35 @@
 
   <!-- NUEVO INTERFAZ -->
   <div class="container mt-5 mb-5 border rounded p-5">
-
-    <hr class="mb-5">
-
     <form class="w-100">
         <div class="row">
             <div class="col-sm p-3" style="border-right: 1px solid lightgray;">
+                <!--TRANSACCION Y SERIE - CORRELATIVO DE PEDIDO-->
+                <div class="row">
+                    <!--TRANSACCION-->
+                    <div class="col-sm">
+                      <mat-form-field class="materialAncho"  appearance="outline">
+                        <mat-label>Transacción</mat-label>
+                        <mat-select [(ngModel)]="transaccion" name="transacion">
+                          <mat-option *ngFor="let t of transacciones" [value]="t">
+                            {{t.codTPed}}-{{t.descri}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    <!--SERRIE Y CORRELATIVO DE PEDIDO-->
+                    <div class="col-sm-4">
+                      <mat-form-field class="materialAncho" appearance="outline">
+                        <mat-label>Nro Pedido</mat-label>
+                        <mat-select [(ngModel)]="arfacc" name="food">
+                          <mat-option *ngFor="let food of arfaccs" [value]="arfacc">
+                            {{food.arfaccPK.serie}}-{{food.consDesde}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                </div>
+                <!--FIN-->
                 <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                         <mat-label>RUC</mat-label>
