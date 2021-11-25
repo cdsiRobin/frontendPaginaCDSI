@@ -4,8 +4,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-pedido',
-  templateUrl: './pedido.component.html',
-  styleUrls: ['./pedido.component.css']
+  templateUrl: './pedido.component.html'
 })
 export class PedidoComponent implements OnInit {
 

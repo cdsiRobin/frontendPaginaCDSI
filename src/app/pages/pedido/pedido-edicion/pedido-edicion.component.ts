@@ -19,20 +19,28 @@ import * as moment from 'moment';
 import {ArfaccService} from '../../../services/arfacc.service';
 import {IArfacc} from '../../../interfaces/IArfacc';
 import {Arfacc} from '../../../models/arfacc';
+import {Arccmc} from '../../../models/Arccmc';
 import {IarfaccPK} from '../../../interfaces/IarfaccPK';
 import {ArfaccPK} from '../../../models/arfaccPK';
 import {TransaccionService} from '../../../services/transaccion.service';
 import {Transaccion} from '../../../models/transaccion';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+
 @Component({
   selector: 'app-pedido-edicion',
-  templateUrl: './pedido-edicion.component.html',
-  styleUrls: ['./pedido-edicion.component.css']
+  templateUrl: './pedido-edicion.component.html'
 })
 export class PedidoEdicionComponent implements OnInit {
 
   form: FormGroup;
+  //NUEVO CAMBIOS
+  groupEmpresa:FormGroup;
+  groupArticulo:FormGroup;
+  factuOptions: Observable<Arccmc[]>;
+  //FIN
+
   fechaSeleccionada: Date = new Date();
   detallePedido: Arpfol[] = [];
   articulos: Arinda[] = [];
@@ -74,6 +82,11 @@ export class PedidoEdicionComponent implements OnInit {
   public fecha: Date;
   public transacciones: Transaccion[];
   public transaccion: Transaccion;
+
+  //NUEVO CAMBIOS
+  displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
+  //FIN
+
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
@@ -103,7 +116,36 @@ export class PedidoEdicionComponent implements OnInit {
    // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
     this.transaccionXCia();
     this.serieCorrelativoPedido();
+
+    this.groupEmpresa = new FormGroup({
+      ruc: new FormControl(),
+      racSoc: new FormControl()
+    });
+    this.groupArticulo = new FormGroup({
+      codProd: new FormControl(),
+      desProd: new FormControl(),
+      cantProd: new FormControl()
+    });
+
+    this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
+      if(valueChange.length > 3)
+      this.factuOptions = this.clienteServices.listaClientesRucLike('01',valueChange);
+      else
+      this.factuOptions = null;
+    });
+
   }
+  //NUEVO CAMBIOS
+  setFormData($event: MatAutocompleteSelectedEvent) {
+    let factuOptions = $event.option.value;
+    if(factuOptions){
+      this.groupEmpresa.controls['ruc'].setValue(factuOptions.ruc, {emitEvent: false});
+      this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
+    }
+  }
+
+
+  //FIN
   filtrarArticulos(val: any) {
     if (val != null) {
       let filtro: string = String(val);

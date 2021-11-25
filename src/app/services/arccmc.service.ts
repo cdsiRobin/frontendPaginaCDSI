@@ -22,4 +22,8 @@ export class ArccmcService extends GenericoService{
     const body = JSON.stringify(datos);
     return this.http.post<Arccmc>(this.url + `/cli/cliente`, body, this.options);
   }
+  // LISTA DE CLIENTES POR RUC LIKE
+  public listaClientesRucLike( cia: string, id: string){
+    return this.http.get<Arccmc[]>(this.url + `/cli/listRuc/${cia}/${id}`)
+  }
 }
