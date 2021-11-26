@@ -14,9 +14,9 @@ export class ArcgtcService extends GenericoService{
 
   constructor(public http: HttpClient) { super(); }
 
-  // VAMOS A TRAER EL TOTAL DE LOS TIPOS DE CAMBIO
-  public getTotalArcgtc(): Observable<Informacion<Arcgtc>> {
-    return this.http.get<Informacion<Arcgtc>>(this.url + `/arcgtc/listar`, this.options).pipe(
+  // VAMOS A TRAER EL TIPO DE CAMBIO POR LA CLASE 02 Y LA FECHA
+  public getTipoCambioClaseAndFecha( clase: string, fecha: string): Observable<Informacion<Arcgtc>> {
+    return this.http.get<Informacion<Arcgtc>>(this.url + `/arcgtc/id?clase=${clase}&fecha=${fecha}`, this.options).pipe(
       catchError(err => {
         if (err.status === 400 || err.status === 500) {
           console.error(err.erro.message);
@@ -29,7 +29,7 @@ export class ArcgtcService extends GenericoService{
       })
     );
   }
-  // VAMOS A TRAER EL TIPO DE CAMBIO POR ArcgtcPK
+  // VAMOS A TRAER TODAS LAS FECHAS
   public getTraerArcgtcFecha( arcgtcpk: ArcgtcPK): Observable<Informacion<Arcgtc>> {
     const body = JSON.stringify(arcgtcpk);
     return this.http.post<Informacion<Arcgtc>>( this.url + `/arcgtc/listar`, body, this.options ).pipe(

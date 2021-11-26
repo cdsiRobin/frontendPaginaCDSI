@@ -24,7 +24,7 @@
 
   <!-- NUEVO INTERFAZ -->
   <div class="container mt-5 mb-5 border rounded p-5">
-    <form class="w-100">
+    <form class="w-100" >
         <div class="row">
             <div class="col-sm p-3" style="border-right: 1px solid lightgray;">
                 <!--TRANSACCION Y SERIE - CORRELATIVO DE PEDIDO-->
@@ -59,7 +59,6 @@
                         <input  matInput
                         formControlName="ruc"
                         [matAutocomplete]="auto"
-
                         [matAutocompleteConnectedTo]="origin">
                         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
                             <mat-option *ngFor="let option of factuOptions | async" [value]="option">
@@ -102,7 +101,7 @@
                         <div class="row">
                             <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                                 <mat-label>Tipo</mat-label>
-                                <input matInput placeholder="Placeholder" value="Tipo">
+                                <input matInput placeholder="Placeholder"  >
                             </mat-form-field>
                             <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
                                 <mat-label>Numero</mat-label>
@@ -147,8 +146,8 @@
                     </div>
                     <div class="col-4">
                         <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>T.C.</mat-label>
-                            <input disabled="true" matInput placeholder="Cambio" value="0.00">
+                            <mat-label>T.C</mat-label>
+                            <input type="number" disabled="true" matInput placeholder="Cambio" [value]="tipocambio" >
                         </mat-form-field>
                     </div>
                 </div>

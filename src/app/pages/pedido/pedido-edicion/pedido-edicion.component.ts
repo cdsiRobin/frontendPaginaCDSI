@@ -27,6 +27,9 @@ import {Transaccion} from '../../../models/transaccion';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ArcgtcService } from '../../../services/arcgtc.service';
+import { Arcgtc } from '../../../models/arcgtc';
+import { IArcgtc } from '../../../interfaces/IArcgtc';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -83,6 +86,9 @@ export class PedidoEdicionComponent implements OnInit {
   public transacciones: Transaccion[];
   public transaccion: Transaccion;
 
+  public arcgtc: IArcgtc[];
+  public tipocambio: number;
+
   //NUEVO CAMBIOS
   displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
   //FIN
@@ -92,6 +98,7 @@ export class PedidoEdicionComponent implements OnInit {
               public arindaService: ArticuloService,
               public arfaccService: ArfaccService,
               public transaccionService: TransaccionService,
+              public arcgtcService: ArcgtcService,
               private snackBar: MatSnackBar
               ) { }
 
@@ -116,6 +123,7 @@ export class PedidoEdicionComponent implements OnInit {
    // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
     this.transaccionXCia();
     this.serieCorrelativoPedido();
+    this.buscarTipoCambioClaseAndFecha();
 
     this.groupEmpresa = new FormGroup({
       ruc: new FormControl(),
@@ -457,5 +465,27 @@ export class PedidoEdicionComponent implements OnInit {
           }
       }
   }
+
+  // METODO QUE TRAE EL TIPO DE CAMBIO DE FECHA ACTUAL
+  public buscarTipoCambioClaseAndFecha(): void{
+    let date = new Date();
+    let day = `${(date.getDate())}`.padStart(2,'0');
+    let month = `${(date.getMonth()+1)}`.padStart(2,'0');
+    let year = date.getFullYear();
+
+    this.arcgtcService.getTipoCambioClaseAndFecha('02',`${day}/${month}/${year}`).subscribe(json => {
+         this.arcgtc = json.resultado;
+         this.tipocambio = this.arcgtc.tipoCambio;
+    },
+    error => {
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'info',
+        title: `No tiene tipo cambio para la fecha: ${day}/${month}/${year}`
+      });
+      console.error(error);
+    });
+
+}
 
 }

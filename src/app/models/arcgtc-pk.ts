@@ -1,6 +1,4 @@
-import {IArcgtcpk} from '../interfaces/IArcgtcpk';
-
-export class ArcgtcPK implements IArcgtcpk{
+export class ArcgtcPK {
   claseCambio: string;
   fecha: Date;
 }
