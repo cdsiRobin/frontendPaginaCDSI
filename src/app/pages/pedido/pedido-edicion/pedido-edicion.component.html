@@ -142,25 +142,43 @@
                         <!--LISTA DE PRECIO-->
                         <mat-form-field class="materialAncho"  appearance="outline">
                           <mat-label>L.Precio</mat-label>
-                          <mat-select [(ngModel)]="arfatp" name="transacion">
+                          <mat-select [(ngModel)]="arfatp" name="lista_precio">
                             <mat-option *ngFor="let z of arfatps" [value]="z">
                               {{z.idArfa.tipo}}-{{z.descripcion}}
                             </mat-option>
                           </mat-select>
                         </mat-form-field>
-
                     </div>
                     <div class="col-4">
-                        <!--TIPO DE CAMBIO-->
+                        <!--MONEDA-->
                         <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>T.C</mat-label>
-                            <input type="number" disabled="true" matInput placeholder="Cambio" [value]="tipocambio" >
+                            <mat-label>Moneda</mat-label>
+                            <mat-select [(ngModel)]="tapfopa" name="moneda">
+                              <mat-option *ngFor="let m of monedas" [value]="m">
+                                {{z.descripcion}}
+                              </mat-option>
+                            </mat-select>
                         </mat-form-field>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm">
                         <!--FORMA DE PAGO-->
+                        <mat-form-field class="materialAncho"  appearance="outline">
+                          <mat-label>F.Pago</mat-label>
+                          <mat-select [(ngModel)]="tapfopa" name="forma_pago">
+                            <mat-option *ngFor="let z of tapfopas" [value]="z">
+                              {{z.descripcion}}
+                            </mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                      <!--TIPO DE CAMBIO-->
+                      <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>T.C</mat-label>
+                          <input type="number" disabled="true" matInput placeholder="Cambio" [value]="tipocambio" >
+                      </mat-form-field>
                     </div>
                 </div>
                 <div class="row">

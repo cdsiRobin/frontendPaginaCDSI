@@ -31,6 +31,9 @@ import { ArcgtcService } from '../../../services/arcgtc.service';
 import { IArcgtc } from '../../../interfaces/IArcgtc';
 import { Arfatp } from '../../../models/Arfatp';
 import { ArfatpService } from '../../../services/arfatp.service';
+import { TapfopaService } from '../../../services/tapfopa.service';
+import { Tapfopa } from '../../../models/tapfopa';
+import { Moneda } from '../../../models/moneda';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -87,11 +90,17 @@ export class PedidoEdicionComponent implements OnInit {
   public transacciones: Transaccion[];
   public transaccion: Transaccion;
 
-  public arcgtc: IArcgtc[];
+  public arcgtc: IArcgtc;
   public tipocambio: number;
 
   public arfatps: Arfatp[];
   public arfatp: Arfatp;
+
+  public tapfopas: Tapfopa[];
+  public tapfopa: Tapfopa;
+
+  public monedas: Moneda[];
+  public moneda: Moneda;
 
   //NUEVO CAMBIOS
   displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
@@ -104,6 +113,7 @@ export class PedidoEdicionComponent implements OnInit {
               public transaccionService: TransaccionService,
               public arcgtcService: ArcgtcService,
               public arfatpService: ArfatpService,
+              public tapfopaService: TapfopaService,
               private snackBar: MatSnackBar
               ) { }
 
@@ -130,6 +140,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.transaccionXCia();
     this.serieCorrelativoPedido();
     this.buscarTipoCambioClaseAndFecha();
+    this.listarFormaPago();
 
     this.groupEmpresa = new FormGroup({
       ruc: new FormControl(),
@@ -483,7 +494,7 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.arcgtcService.getTipoCambioClaseAndFecha('02',`${day}/${month}/${year}`).subscribe(json => {
          this.arcgtc = json.resultado;
-         //this.tipocambio = this.arcgtc.tipoCambio;
+         this.tipocambio = this.arcgtc.tipoCambio;
     },
     error => {
       Swal.fire({
@@ -521,5 +532,26 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
+  //BUSCAR FORMA DE PAGO
+  public buscarFormaPago(cod: string): void{
+    for (const t of this.tapfopas) {
+      if (t.tapfopaPK.codFpago === cod) {
+        this.tapfopa = t;
+        break;
+      }
+  }
+  }
+
+  //VAMOS A LISTAR LAS FORMAS DE PAGO
+  public listarFormaPago(): void{
+     this.tapfopaService.listarFormaPagoCiaAndEstado(this.cia,'A').subscribe(json => {
+        this.tapfopas = json.resultado;
+        this.buscarFormaPago('01');
+     })
+  }
+
+  public listaMonedas(): void{
+
+  }
 
 }
