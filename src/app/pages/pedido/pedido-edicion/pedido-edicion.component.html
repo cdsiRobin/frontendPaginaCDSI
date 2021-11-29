@@ -34,8 +34,8 @@
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Transacción</mat-label>
                         <mat-select [(ngModel)]="transaccion" name="transacion">
-                          <mat-option *ngFor="let t of transacciones" [value]="t">
-                            {{t.codTPed}}-{{t.descri}}
+                          <mat-option *ngFor="let ta of transacciones" [value]="ta">
+                            {{ta.codTPed}}-{{ta.descri}}
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
@@ -139,12 +139,19 @@
             <div class="col-sm-4 p-3">
                 <div class="row">
                     <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>L.Precios</mat-label>
-                            <input matInput value="Nom_precio">
+                        <!--LISTA DE PRECIO-->
+                        <mat-form-field class="materialAncho"  appearance="outline">
+                          <mat-label>L.Precio</mat-label>
+                          <mat-select [(ngModel)]="arfatp" name="transacion">
+                            <mat-option *ngFor="let z of arfatps" [value]="z">
+                              {{z.idArfa.tipo}}-{{z.descripcion}}
+                            </mat-option>
+                          </mat-select>
                         </mat-form-field>
+
                     </div>
                     <div class="col-4">
+                        <!--TIPO DE CAMBIO-->
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>T.C</mat-label>
                             <input type="number" disabled="true" matInput placeholder="Cambio" [value]="tipocambio" >
@@ -153,10 +160,7 @@
                 </div>
                 <div class="row">
                     <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>F.Pago</mat-label>
-                            <input matInput value="Descrip_Pago">
-                        </mat-form-field>
+                        <!--FORMA DE PAGO-->
                     </div>
                 </div>
                 <div class="row">

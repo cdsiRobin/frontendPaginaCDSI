@@ -28,8 +28,9 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { ArcgtcService } from '../../../services/arcgtc.service';
-import { Arcgtc } from '../../../models/arcgtc';
 import { IArcgtc } from '../../../interfaces/IArcgtc';
+import { Arfatp } from '../../../models/Arfatp';
+import { ArfatpService } from '../../../services/arfatp.service';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -89,6 +90,9 @@ export class PedidoEdicionComponent implements OnInit {
   public arcgtc: IArcgtc[];
   public tipocambio: number;
 
+  public arfatps: Arfatp[];
+  public arfatp: Arfatp;
+
   //NUEVO CAMBIOS
   displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
   //FIN
@@ -99,6 +103,7 @@ export class PedidoEdicionComponent implements OnInit {
               public arfaccService: ArfaccService,
               public transaccionService: TransaccionService,
               public arcgtcService: ArcgtcService,
+              public arfatpService: ArfatpService,
               private snackBar: MatSnackBar
               ) { }
 
@@ -121,6 +126,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
    // this.noOrden();
    // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
+    this.listaPrecio();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
     this.buscarTipoCambioClaseAndFecha();
@@ -458,9 +464,11 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // METODO QUE NOS PERMITE A BUSCAR TRANSACCION
   public buscarTransaccion(codigo: string): void {
+
       for (const t of this.transacciones) {
           if (t.codTPed === codigo) {
             this.transaccion = t;
+            console.log(this.transaccion);
             break;
           }
       }
@@ -475,7 +483,7 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.arcgtcService.getTipoCambioClaseAndFecha('02',`${day}/${month}/${year}`).subscribe(json => {
          this.arcgtc = json.resultado;
-         this.tipocambio = this.arcgtc.tipoCambio;
+         //this.tipocambio = this.arcgtc.tipoCambio;
     },
     error => {
       Swal.fire({
@@ -483,9 +491,35 @@ export class PedidoEdicionComponent implements OnInit {
         icon: 'info',
         title: `No tiene tipo cambio para la fecha: ${day}/${month}/${year}`
       });
-      console.error(error);
+
     });
 
-}
+  }
+
+  //METODO QUE NOS PERMITE TRAER LA LISTA DE PRECIO DE PUNTO DE VENTA
+  public listaPrecio(): void{
+    this.arfatpService.getAllListaPrecio(this.cia,'S').subscribe(json => {
+      this.arfatps = json.resultado;
+      this.buscarListaPrecio('A3');
+    },
+      error => {
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'info',
+          title: `No tiene Lista de Precio A3`
+        });
+    });
+  }
+
+  // METODO QUE NOS PERMITE A BUSCAR LISTA DE PRECIO
+  public buscarListaPrecio(codigo: string): void {
+    for (const t of this.arfatps) {
+        if (t.idArfa.tipo === codigo) {
+          this.arfatp = t;
+          break;
+        }
+    }
+  }
+
 
 }
