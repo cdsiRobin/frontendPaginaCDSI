@@ -24,7 +24,7 @@ import { DialogSerieComponent } from './dialog-serie/dialog-serie.component';
     FormsModule,
     ReactiveFormsModule,
     MaterialModule,
-    AppRoutingModule,
+    AppRoutingModule
   ]
 })
 export class PedidoModule { }

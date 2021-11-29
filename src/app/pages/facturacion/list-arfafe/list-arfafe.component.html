@@ -1,0 +1,32 @@
+<!-- html listas -->
+<!-- <button (click)="getAllArfafe()">listar</button> -->
+<div class="container mt-5">
+    <p class="text-center mb-4">Listado de Facturas y Boletas</p>
+    <table class="table">
+    <thead>
+        <tr>
+        <th scope="col">TD</th>
+        <th scope="col">Factura</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Guia</th>
+        <th scope="col">Orden</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Moneda</th>
+        <th scope="col">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let factura of facturas">
+        <td>{{ factura.arfafePK.tipoDoc }}</td>
+        <td>{{ factura.arfafePK.noFactu }}</td>
+        <td>{{ factura.fecha }}</td>
+        <td>{{ factura.no_GUIA }}</td>
+        <td>{{ factura.no_ORDEN }}</td>
+        <td>{{ factura.no_CLIENTE }}</td>
+        <td>{{ factura.moneda }}</td>
+        <td>{{ factura.total }}</td>
+        </tr>
+    </tbody>
+    </table>
+
+</div>
