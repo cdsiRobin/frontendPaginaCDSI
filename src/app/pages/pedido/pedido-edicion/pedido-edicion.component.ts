@@ -33,7 +33,8 @@ import { Arfatp } from '../../../models/Arfatp';
 import { ArfatpService } from '../../../services/arfatp.service';
 import { TapfopaService } from '../../../services/tapfopa.service';
 import { Tapfopa } from '../../../models/tapfopa';
-import { Moneda } from '../../../models/moneda';
+import { ArcgmoService } from '../../../services/arcgmo.service';
+import { Arcgmo } from '../../../models/arcgmo';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -99,8 +100,8 @@ export class PedidoEdicionComponent implements OnInit {
   public tapfopas: Tapfopa[];
   public tapfopa: Tapfopa;
 
-  public monedas: Moneda[];
-  public moneda: Moneda;
+  public arcgmos: Arcgmo[];
+  public arcgmo: Arcgmo;
 
   //NUEVO CAMBIOS
   displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
@@ -114,6 +115,7 @@ export class PedidoEdicionComponent implements OnInit {
               public arcgtcService: ArcgtcService,
               public arfatpService: ArfatpService,
               public tapfopaService: TapfopaService,
+              public arcgmoService: ArcgmoService,
               private snackBar: MatSnackBar
               ) { }
 
@@ -136,10 +138,11 @@ export class PedidoEdicionComponent implements OnInit {
     });
    // this.noOrden();
    // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
-    this.listaPrecio();
+    this.listaMonedas();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
     this.buscarTipoCambioClaseAndFecha();
+    this.listaPrecio();
     this.listarFormaPago();
 
     this.groupEmpresa = new FormGroup({
@@ -526,8 +529,9 @@ export class PedidoEdicionComponent implements OnInit {
   public buscarListaPrecio(codigo: string): void {
     for (const t of this.arfatps) {
         if (t.idArfa.tipo === codigo) {
-          this.arfatp = t;
-          break;
+            this.arfatp = t;
+            this.buscarMoneda(t.moneda);
+            break;
         }
     }
   }
@@ -539,7 +543,7 @@ export class PedidoEdicionComponent implements OnInit {
         this.tapfopa = t;
         break;
       }
-  }
+    }
   }
 
   //VAMOS A LISTAR LAS FORMAS DE PAGO
@@ -550,8 +554,21 @@ export class PedidoEdicionComponent implements OnInit {
      })
   }
 
-  public listaMonedas(): void{
+ //BUSCAR MONEDA
+ public buscarMoneda(cod: string): void{
+    for (const m of this.arcgmos) {
+      if (m.moneda === cod) {
+          this.arcgmo = m;
+          break;
+      }
+    }
+ }
 
+  // LISTA DE MONEDAS
+  public listaMonedas(): void{
+    this.arcgmoService.listarArcgmo().subscribe(json => {
+      this.arcgmos = json.resultado;
+   })
   }
 
 }

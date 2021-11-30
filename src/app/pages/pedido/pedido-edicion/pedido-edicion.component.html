@@ -153,9 +153,9 @@
                         <!--MONEDA-->
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Moneda</mat-label>
-                            <mat-select [(ngModel)]="tapfopa" name="moneda">
-                              <mat-option *ngFor="let m of monedas" [value]="m">
-                                {{z.descripcion}}
+                            <mat-select [(ngModel)]="arcgmo" name="moneda">
+                              <mat-option *ngFor="let m of arcgmos" [value]="m">
+                                {{m.simbolo}}-{{m.descripcion}}
                               </mat-option>
                             </mat-select>
                         </mat-form-field>
