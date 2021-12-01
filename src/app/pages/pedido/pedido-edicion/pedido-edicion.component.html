@@ -63,7 +63,7 @@
                         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
                             <mat-option *ngFor="let option of factuOptions | async" [value]="option">
                                 <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc | titlecase}}  -  {{option.nombre}}</span>
+                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc | titlecase}}-{{option.nombre}}</span>
                                   </div>
                             </mat-option>
                         </mat-autocomplete>

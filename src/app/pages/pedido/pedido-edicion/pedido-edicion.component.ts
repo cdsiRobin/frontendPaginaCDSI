@@ -46,7 +46,9 @@ export class PedidoEdicionComponent implements OnInit {
   //NUEVO CAMBIOS
   groupEmpresa:FormGroup;
   groupArticulo:FormGroup;
-  factuOptions: Observable<Arccmc[]>;
+
+  //factuOptions: Observable<Arccmc[]>;
+  factuOptions: Arccmc[];
   //FIN
 
   fechaSeleccionada: Date = new Date();
@@ -157,9 +159,13 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
       if(valueChange.length > 3)
-      this.factuOptions = this.clienteServices.listaClientesRucLike('01',valueChange);
+         //this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
+         this.clienteServices.listaClientesRucLike(this.cia,valueChange).subscribe(json => {
+          this.factuOptions = json.resultado;
+          console.log(this.factuOptions);
+        });
       else
-      this.factuOptions = null;
+        this.factuOptions = null;
     });
 
   }
@@ -171,7 +177,6 @@ export class PedidoEdicionComponent implements OnInit {
       this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
     }
   }
-
 
   //FIN
   filtrarArticulos(val: any) {
