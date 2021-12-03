@@ -1,7 +1,7 @@
 export class ArfafePK {
 
-    cia: String;
-    tipoDoc: String;
-    noFactu: String;
+    cia: string;
+    tipoDoc: string;
+    noFactu: string;
     
 }
