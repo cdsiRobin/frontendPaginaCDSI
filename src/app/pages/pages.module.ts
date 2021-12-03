@@ -43,6 +43,7 @@ import { Login2Component } from './login2/login2.component';
 import { MenuPventaComponent } from './login2/menu-pventa/menu-pventa.component';
 
 import {PedidoModule} from './pedido/pedido.module';
+import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
 
 
 @NgModule({
@@ -79,7 +80,8 @@ import {PedidoModule} from './pedido/pedido.module';
     RgtacdeComponent,
     UsuarioComponent,
     Login2Component,
-    MenuPventaComponent
+    MenuPventaComponent,
+    ItemsDialogoComponent
   ],
   exports: [
     ProgressComponent,

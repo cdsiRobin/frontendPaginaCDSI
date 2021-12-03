@@ -53,7 +53,9 @@
                     </div>
                 </div>
                 <!--FIN-->
-                <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                <!--CLIENTE-->
+                  <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                    <!--RUC DE CLIENTE-->
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                         <mat-label>RUC</mat-label>
                         <input  matInput
@@ -68,6 +70,7 @@
                             </mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
+                    <!--RAZON SOCIAL DE CLIENTE-->
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm">
                         <mat-label>Razón Social</mat-label>
                         <input matInput
@@ -77,19 +80,35 @@
                     </mat-form-field>
                 </div>
                 <div class="row">
+                    <!--DIRECCIONES DEL CLIENTE-->
                     <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
+                      <mat-form-field class="materialAncho"  appearance="outline">
+                        <mat-label>Direcciónes</mat-label>
+                        <mat-select [(ngModel)]="arcctda" name="direccion" (selectionChange)=" getDirecciones($event)">
+                          <mat-option *ngFor="let d of arcctdas" [value]="d">
+                            {{d.nombre}}-{{d.direccion}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+
+                      <!--
+                      <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Dirección</mat-label>
                             <input disabled="true" matInput placeholder="Placeholder" value="Direccion">
                         </mat-form-field>
+                      -->
                     </div>
+                    <!--UBIGEO-->
                     <div class="col-sm-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Ubigeo</mat-label>
-                            <input disabled="true" matInput placeholder="Placeholder" value="Ubigeo">
+                            <input disabled="true" matInput placeholder="Placeholder" [value]="ubigeo">
                         </mat-form-field>
                     </div>
                 </div>
+
+                <!--FIN CLIENTES-->
+                <!-- VENDEDOR
                 <div class="row">
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
@@ -99,9 +118,10 @@
                     </div>
                     <div class="col-sm-4">
                         <div class="row">
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
-                                <mat-label>Tipo</mat-label>
-                                <input matInput placeholder="Placeholder"  >
+                            <mat-form-field class="materialAncho"  appearance="outline" class="col-sm-4">
+                              <mat-label>Tipo</mat-label>
+                              <mat-select name="tipo">
+                              </mat-select>
                             </mat-form-field>
                             <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
                                 <mat-label>Numero</mat-label>
@@ -110,31 +130,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" [formGroup]="groupArticulo">
-                    <div class="col-sm-2">
-                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                            <mat-label>Codigo</mat-label>
-                            <input matInput placeholder="Placeholder" formControlName="codProd" name="codProd">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                            <mat-label>Descripcion</mat-label>
-                            <input matInput placeholder="Placeholder" formControlName="desProd" name="desProd">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm-2">
-                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                            <mat-label>Cant</mat-label>
-                            <input matInput type="number" formControlName="cantProd" name="cantProd">
-                        </mat-form-field>
-                    </div>
-                  <!--
-                    <div class="col-sm-2 p-1">
-                        <button mat-raised-button color="primary" type="button" (click)="addElement()">Agregar</button>
-                    </div>
-                  -->
-                </div>
+                -->
+
             </div>
             <div class="col-sm-4 p-3">
                 <div class="row">
@@ -149,17 +146,7 @@
                           </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-4">
-                        <!--MONEDA-->
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Moneda</mat-label>
-                            <mat-select [(ngModel)]="arcgmo" name="moneda">
-                              <mat-option *ngFor="let m of arcgmos" [value]="m">
-                                {{m.simbolo}}-{{m.descripcion}}
-                              </mat-option>
-                            </mat-select>
-                        </mat-form-field>
-                    </div>
+
                 </div>
                 <div class="row">
                     <div class="col-sm">
@@ -182,15 +169,28 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm">
-                        <mat-form-field appearance="outline">
-                            <mat-label>Choose a date</mat-label>
-                            <input matInput [matDatepicker]="picker">
-                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                            <mat-datepicker #picker></mat-datepicker>
+                    <!--FECHA-->
+                    <div class="col-sm-6">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Fecha</mat-label>
+                            <input matInput [matDatepicker]="picker1" [formControl]="fechaP">
+                            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                            <mat-datepicker #picker1></mat-datepicker>
                         </mat-form-field>
                     </div>
+                    <div class="col-sm-6">
+                    <!--MONEDA-->
+                    <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>Moneda</mat-label>
+                          <mat-select [(ngModel)]="arcgmo" name="moneda">
+                            <mat-option *ngFor="let m of arcgmos" [value]="m">
+                              {{m.simbolo}}-{{m.descripcion}}
+                            </mat-option>
+                          </mat-select>
+                      </mat-form-field>
+                    </div>
                 </div>
+                <!--
                 <div class="row">
                     <div class="col-sm-4">
                         <mat-form-field appearance="outline" class="w-100">
@@ -205,10 +205,68 @@
                         </mat-form-field>
                     </div>
                 </div>
+                -->
             </div>
         </div>
-        <br>
+        <!--TIPO DE ITEM-->
+        <div class="row">
+            <div class="col-sm-12">
+              <div class="col-sm-2">
+                <mat-radio-group aria-label="Select an option" [(ngModel)]="tipoItem" (change)="getTipoItem($event)">
+                  <mat-radio-button value="B" checked>Bien</mat-radio-button>
+                  <mat-radio-button value="L">Libre</mat-radio-button>
+                </mat-radio-group>
+              </div>
 
+            </div>
+        </div>
+        <!--FIN TIPO DE ITEM-->
+        <!--AÑADIR ITEMS-->
+        <div class="row">
+            <div class="col-sm-12">
+              <div class="row" [formGroup]="groupArticulo">
+                <div class="example-button-container">
+                  <button mat-fab color="primary" (click)="openDialogoItem()" aria-label="Buscar Item">
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </div>
+                <!--CODIGO DE ITEM-->
+                <div class="col-sm-2">
+                    <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                        <mat-label>Codigo</mat-label>
+                        <input matInput placeholder="Placeholder" formControlName="codProd" name="codProd">
+                    </mat-form-field>
+
+                </div>
+                <!--DESCRIPCION DEL ITEM-->
+                <div class="col-sm-6">
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
+                      <mat-label>Descripción</mat-label>
+                      <input matInput placeholder="Placeholder" formControlName="desProd" name="desProd">
+                    </mat-form-field>
+                    <!--
+                    <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                        <mat-label>Descripcion</mat-label>
+                        <input matInput placeholder="Placeholder" formControlName="desProd" name="desProd">
+                    </mat-form-field>
+                    -->
+                </div>
+                <!--CANTIDAD DEL ITEM-->
+                <div class="col-sm-2">
+                    <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                        <mat-label>Cant</mat-label>
+                        <input matInput type="number" formControlName="cantProd" name="cantProd">
+                    </mat-form-field>
+                </div>
+
+                <div class="col-sm-2 p-1"><!--(click)="addElement()"-->
+                    <button mat-raised-button color="primary" type="button" >Agregar</button>
+                </div>
+
+            </div>
+            </div>
+        </div>
+        <!--FIN AÑADIR ITEMS-->
     </form>
 
 </div>

@@ -27,7 +27,7 @@ export class ArccmcService extends GenericoService{
   }
   // LISTA DE CLIENTES POR RUC LIKE
   public listaClientesRucLike( cia: string, id: string): Observable<Informacion<Arccmc>> {
-    return this.http.get<Informacion<Arccmc>>(this.url + `cli/listRuc?cia=${cia}&id=${id}`, this.options).pipe(
+    return this.http.get<Informacion<Arccmc>>(this.url + `/cli/listRuc?cia=${cia}&id=${id}`, this.options).pipe(
       catchError(err => {
         if (err.status === 400 || err.status === 500) {
           console.error(err.erro.message);

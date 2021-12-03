@@ -35,6 +35,12 @@ import { TapfopaService } from '../../../services/tapfopa.service';
 import { Tapfopa } from '../../../models/tapfopa';
 import { ArcgmoService } from '../../../services/arcgmo.service';
 import { Arcgmo } from '../../../models/arcgmo';
+import { Informacion } from '../../../interfaces/informacion';
+import { ArcctdaEntity } from '../../../models/arcctda-entity';
+import { MatRadioChange } from '@angular/material/radio';
+import { MatDialog } from '@angular/material/dialog';
+import { ItemsDialogoComponent } from '../../articulo/items-dialogo/items-dialogo.component';
+import { BuscarItem } from '../../../models/buscar-item';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -47,8 +53,8 @@ export class PedidoEdicionComponent implements OnInit {
   groupEmpresa:FormGroup;
   groupArticulo:FormGroup;
 
-  //factuOptions: Observable<Arccmc[]>;
-  factuOptions: Arccmc[];
+  factuOptions: Observable<Arccmc[]>;
+  arccmcs: Arccmc[];
   //FIN
 
   fechaSeleccionada: Date = new Date();
@@ -105,6 +111,15 @@ export class PedidoEdicionComponent implements OnInit {
   public arcgmos: Arcgmo[];
   public arcgmo: Arcgmo;
 
+  public arcctdas: ArcctdaEntity[];
+  public arcctda: ArcctdaEntity;
+
+  public ubigeo = '';
+
+  public fechaP = new FormControl(new Date());
+
+  public tipoItem: string;
+
   //NUEVO CAMBIOS
   displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
   //FIN
@@ -118,7 +133,8 @@ export class PedidoEdicionComponent implements OnInit {
               public arfatpService: ArfatpService,
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
-              private snackBar: MatSnackBar
+              private snackBar: MatSnackBar,
+              private dialogItems: MatDialog
               ) { }
 
   ngOnInit(): void {
@@ -157,13 +173,14 @@ export class PedidoEdicionComponent implements OnInit {
       cantProd: new FormControl()
     });
 
+    this.getCliente('99999999998');
+
     this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
       if(valueChange.length > 3)
          //this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
-         this.clienteServices.listaClientesRucLike(this.cia,valueChange).subscribe(json => {
-          this.factuOptions = json.resultado;
-          console.log(this.factuOptions);
-        });
+         this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange).pipe(
+           map( value => value.resultado)
+         )
       else
         this.factuOptions = null;
     });
@@ -175,7 +192,14 @@ export class PedidoEdicionComponent implements OnInit {
     if(factuOptions){
       this.groupEmpresa.controls['ruc'].setValue(factuOptions.ruc, {emitEvent: false});
       this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
+      this.arcctdas = factuOptions.arcctdaEntity;
     }
+  }
+
+   //NUEVO CAMBIOS
+   public getDirecciones($event) {
+      this.arcctda = $event.value;
+      this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
   }
 
   //FIN
@@ -574,6 +598,39 @@ export class PedidoEdicionComponent implements OnInit {
     this.arcgmoService.listarArcgmo().subscribe(json => {
       this.arcgmos = json.resultado;
    })
+  }
+
+  //CLIENTE DE INICIO
+  public getCliente(ruc: string): void{
+    this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,ruc).pipe(
+      map( value => value.resultado)
+    );
+  }
+
+  //EVENTO CUANDO HACE UN CAMBIO EL RADIO BUTTON DE TIPO ITEMS
+  public getTipoItem(event: MatRadioChange){
+    //console.log(event.source.name, event.value);
+    if (event.value === 'B') {
+       console.log("Entro en el radio button : BIEN");
+    }else{
+      console.log("Entro en el radio button : LIBRE")
+    }
+
+  }
+  //FIN RADIO BUTTON DE TIPO ITEMS
+
+  public getDescripcionItem($event: MatAutocompleteSelectedEvent){
+
+  }
+
+  //ABRIR DIALOGO DE ITEMs
+  public openDialogoItem(): void{
+      console.log(this.groupArticulo.get('desProd').value);
+      let buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
+      this.dialogItems.open(ItemsDialogoComponent,{
+        width: '100%',
+        data:buscarItem
+      });
   }
 
 }

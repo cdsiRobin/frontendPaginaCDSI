@@ -10,6 +10,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
+//import {MatPaginator} from '@angular/material/paginator';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -21,6 +22,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DateAdapter, MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import {MatListModule} from '@angular/material/list';
+import {MatRadioModule} from '@angular/material/radio';
 
 @NgModule({
   declarations: [],
@@ -35,6 +37,7 @@ import {MatListModule} from '@angular/material/list';
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
+    //MatPaginator,
     MatToolbarModule,
     MatMenuModule,
     MatSidenavModule,
@@ -46,7 +49,8 @@ import {MatListModule} from '@angular/material/list';
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatListModule
+    MatListModule,
+    MatRadioModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useClass: MatPaginatorImpl },

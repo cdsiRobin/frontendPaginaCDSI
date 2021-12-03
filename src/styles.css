@@ -137,3 +137,18 @@ body {
 .materialAncho{
   width: 100%;
 }
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
+/*TABLA DE ITEMS*/
+table {
+  width: 100%;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+/*FIN TABLA DE ITEMS*/
