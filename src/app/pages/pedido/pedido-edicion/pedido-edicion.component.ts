@@ -35,12 +35,12 @@ import { TapfopaService } from '../../../services/tapfopa.service';
 import { Tapfopa } from '../../../models/tapfopa';
 import { ArcgmoService } from '../../../services/arcgmo.service';
 import { Arcgmo } from '../../../models/arcgmo';
-import { Informacion } from '../../../interfaces/informacion';
 import { ArcctdaEntity } from '../../../models/arcctda-entity';
 import { MatRadioChange } from '@angular/material/radio';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemsDialogoComponent } from '../../articulo/items-dialogo/items-dialogo.component';
 import { BuscarItem } from '../../../models/buscar-item';
+import { Varinda1ps } from '../../../models/varinda1ps';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -119,6 +119,8 @@ export class PedidoEdicionComponent implements OnInit {
   public fechaP = new FormControl(new Date());
 
   public tipoItem: string;
+
+  public varinda1pss: Varinda1ps[];
 
   //NUEVO CAMBIOS
   displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
@@ -278,16 +280,19 @@ export class PedidoEdicionComponent implements OnInit {
   estadoBotonCliente() {
     return (this.codCliente === '');
   }
-  agregar() {
+
+  // VAMOS AGREGAR LOS ITEMS
+  public agregar(): void {
     if (this.articuloSeleccionado) {
       let cont = 0;
       for (let i = 0; i < this.detallePedido.length; i++) {
         let detalle = this.detallePedido[i];
         if (detalle.idArpfol.noArti === this.articuloSeleccionado.idArti.noArti) {
-          cont++;
-          break;
+             cont++;
+             break;
         }
       }
+      //VERIFICAR SI EL ARTICULO ESTA DUPLICADO
       if (cont > 0) {
         Swal.close();
         Swal.fire({
@@ -326,7 +331,8 @@ export class PedidoEdicionComponent implements OnInit {
           this.pDSCTO3 = 0;
           this.impIgv = 0;
           this.totalLin = 0;
-        } else {
+        }
+        else {
           Swal.close();
           Swal.fire({
             allowOutsideClick: false,
@@ -627,9 +633,13 @@ export class PedidoEdicionComponent implements OnInit {
   public openDialogoItem(): void{
       console.log(this.groupArticulo.get('desProd').value);
       let buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
-      this.dialogItems.open(ItemsDialogoComponent,{
-        width: '100%',
-        data:buscarItem
+      const dialogRef = this.dialogItems.open(ItemsDialogoComponent,{
+                        width: '100%',
+                        data:buscarItem
+                      });
+      dialogRef.afterClosed().subscribe( result => {
+        //console.log(result)
+        this.varinda1pss = result;
       });
   }
 

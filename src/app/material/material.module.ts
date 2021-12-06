@@ -10,7 +10,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
-//import {MatPaginator} from '@angular/material/paginator';
+import {MatBadgeModule} from '@angular/material/badge';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -37,7 +37,7 @@ import {MatRadioModule} from '@angular/material/radio';
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
-    //MatPaginator,
+    MatBadgeModule,
     MatToolbarModule,
     MatMenuModule,
     MatSidenavModule,

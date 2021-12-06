@@ -151,4 +151,17 @@ table {
   font-size: 14px;
   width: 100%;
 }
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+  cursor: pointer;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
 /*FIN TABLA DE ITEMS*/
