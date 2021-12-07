@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 
 import { PedidoService } from './../../../services/pedido.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IdArpfoe } from 'src/app/models/IdArpfoe';
 import * as moment from 'moment';
 import {ArfaccService} from '../../../services/arfacc.service';
@@ -41,6 +41,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { ItemsDialogoComponent } from '../../articulo/items-dialogo/items-dialogo.component';
 import { BuscarItem } from '../../../models/buscar-item';
 import { Varinda1ps } from '../../../models/varinda1ps';
+import { Detpedido } from '../../../models/detpedido';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -120,11 +124,14 @@ export class PedidoEdicionComponent implements OnInit {
 
   public tipoItem: string;
 
-  public varinda1pss: Varinda1ps[];
-
+  public detPedidos :Detpedido[] =[];
   //NUEVO CAMBIOS
-  displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
+  //displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
+  displayedColumns: string[] = ['item','tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total'];
   //FIN
+  dataSource: MatTableDataSource<Detpedido>;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
@@ -282,7 +289,8 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
   // VAMOS AGREGAR LOS ITEMS
-  public agregar(): void {
+  public agregar(varinda1sp: Varinda1ps): void {
+
     if (this.articuloSeleccionado) {
       let cont = 0;
       for (let i = 0; i < this.detallePedido.length; i++) {
@@ -625,22 +633,66 @@ export class PedidoEdicionComponent implements OnInit {
   }
   //FIN RADIO BUTTON DE TIPO ITEMS
 
-  public getDescripcionItem($event: MatAutocompleteSelectedEvent){
-
-  }
-
   //ABRIR DIALOGO DE ITEMs
   public openDialogoItem(): void{
-      console.log(this.groupArticulo.get('desProd').value);
+      //console.log(this.groupArticulo.get('desProd').value);
       let buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
       const dialogRef = this.dialogItems.open(ItemsDialogoComponent,{
                         width: '100%',
                         data:buscarItem
                       });
       dialogRef.afterClosed().subscribe( result => {
-        //console.log(result)
-        this.varinda1pss = result;
+        //VAMOR A RECORRER EL ARREGLO DE ITEMS
+        result.forEach(element => {
+           //this.detPedidos.push(element);
+           this.verificarItems(element);
+        });
+        this.dataSource = new MatTableDataSource(this.detPedidos);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
       });
   }
+
+  //VERIFICAR DUPLICADO DE ITEMS
+  public verificarItems(dp: Detpedido): void {
+    if (this.detPedidos.length == 0){
+        this.detPedidos.push(dp);
+    } else {
+       let cod = dp.codigo;
+       let valor = 'N';
+       //VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
+       for (var i in this.detPedidos){
+            if(cod == this.detPedidos[i].codigo){
+              valor = 'S';
+              break;
+            }
+        }
+
+       if(valor == 'N'){
+         this.actualizarCorrelativo(dp);
+       }
+    }
+
+ }
+
+ //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
+  //LLENAR DETALLE DE PEDIDO
+  private actualizarCorrelativo(va: Detpedido): void{
+      let d = new Detpedido(this.detPedidos.length +1,'B',va.codigo,va.medida,va.descripcion,1,va.precio,va.precio*0.18,va.precio*1.18);
+      this.detPedidos.push(d);
+  }
+//FIN
+
+  //TOTAL DE ITEMS
+  public getTotalItems(){
+    return this.detPedidos.map(t => t.item).reduce((acc, value) => acc + value, 0);
+  }
+  //FIN
+
+  //TOTAL DE TOTAL
+   public getTotalPedido(){
+    return this.detPedidos.map(t => t.total).reduce((acc, value) => acc + value, 0);
+  }
+  //FIN
 
 }
