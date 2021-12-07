@@ -1,20 +1,23 @@
+import { Arfafl } from '../pages/facturacion/new-arfafe/arfafe-new.component';
 import { ArfafePK } from './ArfafePK';
 
 export class Arfafe {
 
     arfafePK: ArfafePK;
 
+    arfaflList: Arfafl[];
+
     GRUPO: string;
-    NO_CLIENTE: string;
-    CENTRO: string;
+    no_CLIENTE: string;
+    centro: string;
     BODEGA: string;
-    FECHA: string;
+    fecha: Date;
     TIPO_CLIENTE: string;
-    NBR_CLIENTE: string;
-    DIRECCION: string;
+    nbr_CLIENTE: string;
+    direccion: string;
     PLAZO: number;
     NO_VENDEDOR: string;
-    TIPO_PRECIO: string;
+    tipo_PRECIO: string;
     MONEDA: string;
     TIPO_CAMBIO: number;
     PORC_DESC: number;
@@ -30,7 +33,7 @@ export class Arfafe {
     TOTAL_DEV: number;
     OBSERV: string;
     ESTADO: string;
-    COD_FPAGO: string;
+    cod_FPAGO: string;
     IND_ANU_DEV: string;
     DOC_DEVOL: string;
     NO_DEVOL: string;
@@ -71,7 +74,7 @@ export class Arfafe {
     UBI_DIR: string;
     FECHA_ENTREGA: string;
     MOTIVO_TRASLADO: string;
-    CUSER: string;
+    cuser: string;
     CODI_ZONA: string;
     RUC: string;
     NO_LIQ: string;
@@ -94,17 +97,17 @@ export class Arfafe {
     VALOR_VENTA: number;
     M_DSCTO_GLOBAL: number;
     FECHA_VENCE: string;
-    CODI_DEPA: string;
-    CODI_PROV: string;
-    CODI_DIST: string;
+    codi_DEPA: string;
+    codi_PROV: string;
+    codi_DIST: string;
     NO_DOCU: string;
     NOMBRE_DIGI: string;
     DIRECCION_DIGI: string;
     COD_TIENDA: string;
     COD_DIR_ENTREGA: string;
     NO_SOLIC: string;
-    TIPO_DOC_CLI: string;
-    NUM_DOC_CLI: string;
+    tipo_DOC_CLI: string;
+    num_DOC_CLI: string;
     MOTIVO_ANULA: string;
     IMPRIME: string;
     ALMACEN_REF: string;
@@ -200,5 +203,6 @@ export class Arfafe {
     EST_RES_CON: string;
     COD_HASH: string;
     COD_BARRA_SUNAT: string;
-
+    
+    constructor(){}
 }

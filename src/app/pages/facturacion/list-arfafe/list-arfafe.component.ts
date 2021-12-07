@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ArfafeDTO } from "src/app/DTO/arfafeDTO";
 import { Arfafe } from "src/app/models/Arfafe";
 import { ArfafeService } from "src/app/services/arfafe.service";
 
@@ -35,15 +34,16 @@ export class ListArfafeComponent implements OnInit {
   constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.arfafeService.listaArfafe('01').subscribe(list => {
+    this.dataSource = new MatTableDataSource(ELEMENT_DATA);
+    this.dataSource.data = [];
+    this.arfafeService.listaArfafe('01','F').subscribe(list => {
       this.arfafe = list;
       for(var i = 0; i<list.length; i++){
-        ELEMENT_DATA.push(list[i]);
+        this.dataSource.data.push(list[i]);
         }
-      console.log(ELEMENT_DATA);
-      this.dataSource = new MatTableDataSource(ELEMENT_DATA);
       this.dataSource.paginator = this.paginator;
     });
+    console.log(this.dataSource.data);
   }
 
   // getAllArfafe(){
