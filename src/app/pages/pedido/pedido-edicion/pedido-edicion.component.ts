@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
 
 import { PedidoService } from './../../../services/pedido.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { IdArpfoe } from 'src/app/models/IdArpfoe';
 import * as moment from 'moment';
 import {ArfaccService} from '../../../services/arfacc.service';
@@ -27,6 +27,24 @@ import {Transaccion} from '../../../models/transaccion';
 import {MatSnackBar} from '@angular/material/snack-bar';
 
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { ArcgtcService } from '../../../services/arcgtc.service';
+import { IArcgtc } from '../../../interfaces/IArcgtc';
+import { Arfatp } from '../../../models/Arfatp';
+import { ArfatpService } from '../../../services/arfatp.service';
+import { TapfopaService } from '../../../services/tapfopa.service';
+import { Tapfopa } from '../../../models/tapfopa';
+import { ArcgmoService } from '../../../services/arcgmo.service';
+import { Arcgmo } from '../../../models/arcgmo';
+import { ArcctdaEntity } from '../../../models/arcctda-entity';
+import { MatRadioChange } from '@angular/material/radio';
+import { MatDialog } from '@angular/material/dialog';
+import { ItemsDialogoComponent } from '../../articulo/items-dialogo/items-dialogo.component';
+import { BuscarItem } from '../../../models/buscar-item';
+import { Varinda1ps } from '../../../models/varinda1ps';
+import { Detpedido } from '../../../models/detpedido';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -38,7 +56,9 @@ export class PedidoEdicionComponent implements OnInit {
   //NUEVO CAMBIOS
   groupEmpresa:FormGroup;
   groupArticulo:FormGroup;
+
   factuOptions: Observable<Arccmc[]>;
+  arccmcs: Arccmc[];
   //FIN
 
   fechaSeleccionada: Date = new Date();
@@ -83,16 +103,47 @@ export class PedidoEdicionComponent implements OnInit {
   public transacciones: Transaccion[];
   public transaccion: Transaccion;
 
+  public arcgtc: IArcgtc;
+  public tipocambio: number;
+
+  public arfatps: Arfatp[];
+  public arfatp: Arfatp;
+
+  public tapfopas: Tapfopa[];
+  public tapfopa: Tapfopa;
+
+  public arcgmos: Arcgmo[];
+  public arcgmo: Arcgmo;
+
+  public arcctdas: ArcctdaEntity[];
+  public arcctda: ArcctdaEntity;
+
+  public ubigeo = '';
+
+  public fechaP = new FormControl(new Date());
+
+  public tipoItem: string;
+
+  public detPedidos :Detpedido[] =[];
   //NUEVO CAMBIOS
-  displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
+  //displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
+  displayedColumns: string[] = ['item','tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total'];
   //FIN
+  dataSource: MatTableDataSource<Detpedido>;
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
               public arfaccService: ArfaccService,
               public transaccionService: TransaccionService,
-              private snackBar: MatSnackBar
+              public arcgtcService: ArcgtcService,
+              public arfatpService: ArfatpService,
+              public tapfopaService: TapfopaService,
+              public arcgmoService: ArcgmoService,
+              private snackBar: MatSnackBar,
+              private dialogItems: MatDialog
               ) { }
 
   ngOnInit(): void {
@@ -114,8 +165,12 @@ export class PedidoEdicionComponent implements OnInit {
     });
    // this.noOrden();
    // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
+    this.listaMonedas();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
+    this.buscarTipoCambioClaseAndFecha();
+    this.listaPrecio();
+    this.listarFormaPago();
 
     this.groupEmpresa = new FormGroup({
       ruc: new FormControl(),
@@ -127,11 +182,16 @@ export class PedidoEdicionComponent implements OnInit {
       cantProd: new FormControl()
     });
 
+    this.getCliente('99999999998');
+
     this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
       if(valueChange.length > 3)
-      this.factuOptions = this.clienteServices.listaClientesRucLike('01',valueChange);
+         //this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
+         this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange).pipe(
+           map( value => value.resultado)
+         )
       else
-      this.factuOptions = null;
+        this.factuOptions = null;
     });
 
   }
@@ -141,9 +201,15 @@ export class PedidoEdicionComponent implements OnInit {
     if(factuOptions){
       this.groupEmpresa.controls['ruc'].setValue(factuOptions.ruc, {emitEvent: false});
       this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
+      this.arcctdas = factuOptions.arcctdaEntity;
     }
   }
 
+   //NUEVO CAMBIOS
+   public getDirecciones($event) {
+      this.arcctda = $event.value;
+      this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
+  }
 
   //FIN
   filtrarArticulos(val: any) {
@@ -221,16 +287,20 @@ export class PedidoEdicionComponent implements OnInit {
   estadoBotonCliente() {
     return (this.codCliente === '');
   }
-  agregar() {
+
+  // VAMOS AGREGAR LOS ITEMS
+  public agregar(varinda1sp: Varinda1ps): void {
+
     if (this.articuloSeleccionado) {
       let cont = 0;
       for (let i = 0; i < this.detallePedido.length; i++) {
         let detalle = this.detallePedido[i];
         if (detalle.idArpfol.noArti === this.articuloSeleccionado.idArti.noArti) {
-          cont++;
-          break;
+             cont++;
+             break;
         }
       }
+      //VERIFICAR SI EL ARTICULO ESTA DUPLICADO
       if (cont > 0) {
         Swal.close();
         Swal.fire({
@@ -269,7 +339,8 @@ export class PedidoEdicionComponent implements OnInit {
           this.pDSCTO3 = 0;
           this.impIgv = 0;
           this.totalLin = 0;
-        } else {
+        }
+        else {
           Swal.close();
           Swal.fire({
             allowOutsideClick: false,
@@ -450,12 +521,185 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // METODO QUE NOS PERMITE A BUSCAR TRANSACCION
   public buscarTransaccion(codigo: string): void {
+
       for (const t of this.transacciones) {
           if (t.codTPed === codigo) {
             this.transaccion = t;
+            console.log(this.transaccion);
             break;
           }
       }
+  }
+
+  // METODO QUE TRAE EL TIPO DE CAMBIO DE FECHA ACTUAL
+  public buscarTipoCambioClaseAndFecha(): void{
+    let date = new Date();
+    let day = `${(date.getDate())}`.padStart(2,'0');
+    let month = `${(date.getMonth()+1)}`.padStart(2,'0');
+    let year = date.getFullYear();
+
+    this.arcgtcService.getTipoCambioClaseAndFecha('02',`${day}/${month}/${year}`).subscribe(json => {
+         this.arcgtc = json.resultado;
+         this.tipocambio = this.arcgtc.tipoCambio;
+    },
+    error => {
+      Swal.fire({
+        allowOutsideClick: false,
+        icon: 'info',
+        title: `No tiene tipo cambio para la fecha: ${day}/${month}/${year}`
+      });
+
+    });
+
+  }
+
+  //METODO QUE NOS PERMITE TRAER LA LISTA DE PRECIO DE PUNTO DE VENTA
+  public listaPrecio(): void{
+    this.arfatpService.getAllListaPrecio(this.cia,'S').subscribe(json => {
+      this.arfatps = json.resultado;
+      this.buscarListaPrecio('A3');
+    },
+      error => {
+        Swal.fire({
+          allowOutsideClick: false,
+          icon: 'info',
+          title: `No tiene Lista de Precio A3`
+        });
+    });
+  }
+
+  // METODO QUE NOS PERMITE A BUSCAR LISTA DE PRECIO
+  public buscarListaPrecio(codigo: string): void {
+    for (const t of this.arfatps) {
+        if (t.idArfa.tipo === codigo) {
+            this.arfatp = t;
+            this.buscarMoneda(t.moneda);
+            break;
+        }
+    }
+  }
+
+  //BUSCAR FORMA DE PAGO
+  public buscarFormaPago(cod: string): void{
+    for (const t of this.tapfopas) {
+      if (t.tapfopaPK.codFpago === cod) {
+        this.tapfopa = t;
+        break;
+      }
+    }
+  }
+
+  //VAMOS A LISTAR LAS FORMAS DE PAGO
+  public listarFormaPago(): void{
+     this.tapfopaService.listarFormaPagoCiaAndEstado(this.cia,'A').subscribe(json => {
+        this.tapfopas = json.resultado;
+        this.buscarFormaPago('01');
+     })
+  }
+
+ //BUSCAR MONEDA
+ public buscarMoneda(cod: string): void{
+    for (const m of this.arcgmos) {
+      if (m.moneda === cod) {
+          this.arcgmo = m;
+          break;
+      }
+    }
+ }
+
+  // LISTA DE MONEDAS
+  public listaMonedas(): void{
+    this.arcgmoService.listarArcgmo().subscribe(json => {
+      this.arcgmos = json.resultado;
+   })
+  }
+
+  //CLIENTE DE INICIO
+  public getCliente(ruc: string): void{
+    this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,ruc).pipe(
+      map( value => value.resultado)
+    );
+  }
+
+  //EVENTO CUANDO HACE UN CAMBIO EL RADIO BUTTON DE TIPO ITEMS
+  public getTipoItem(event: MatRadioChange){
+    //console.log(event.source.name, event.value);
+    if (event.value === 'B') {
+       console.log("Entro en el radio button : BIEN");
+    }else{
+      console.log("Entro en el radio button : LIBRE")
+    }
+
+  }
+  //FIN RADIO BUTTON DE TIPO ITEMS
+
+  //ABRIR DIALOGO DE ITEMs
+  public openDialogoItem(): void{
+      //console.log(this.groupArticulo.get('desProd').value);
+      let buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
+      const dialogRef = this.dialogItems.open(ItemsDialogoComponent,{
+                        width: '100%',
+                        data:buscarItem
+                      });
+      dialogRef.afterClosed().subscribe( result => {
+        //VAMOR A RECORRER EL ARREGLO DE ITEMS
+        result.forEach(element => {
+           //this.detPedidos.push(element);
+           this.verificarItems(element);
+        });
+        this.dataSource = new MatTableDataSource(this.detPedidos);
+        this.dataSource.sort = this.sort;
+        this.dataSource.paginator = this.paginator;
+      });
+  }
+
+  //VERIFICAR DUPLICADO DE ITEMS
+  public verificarItems(dp: Detpedido): void {
+    if (this.detPedidos.length == 0){
+        this.detPedidos.push(dp);
+    } else {
+       let cod = dp.codigo;
+       let valor = 'N';
+       //VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
+       for (var i in this.detPedidos){
+            if(cod == this.detPedidos[i].codigo){
+              valor = 'S';
+              break;
+            }
+        }
+
+       if(valor == 'N'){
+         this.actualizarCorrelativo(dp);
+       }
+    }
+
+ }
+
+ //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
+  //LLENAR DETALLE DE PEDIDO
+  private actualizarCorrelativo(va: Detpedido): void{
+      let d = new Detpedido(this.detPedidos.length +1,'B',va.codigo,va.medida,va.descripcion,1,va.precio,va.precio*0.18,va.precio*1.18);
+      this.detPedidos.push(d);
+  }
+//FIN
+
+  //TOTAL DE ITEMS
+  public getTotalItems(){
+    return this.detPedidos.map(t => t.item).reduce((acc, value) => acc + value, 0);
+  }
+  //FIN
+
+  //TOTAL DE TOTAL
+   public getTotalPedido(){
+    return this.detPedidos.map(t => t.total).reduce((acc, value) => acc + value, 0);
+  }
+  //FIN
+
+  //CALCULAR IGV Y TOTAL
+  public calcularIgvAndTotal(event: KeyboardEvent, dp: Detpedido): void{
+     console.log((event.target as HTMLInputElement).value);
+     console.log(dp);
+
   }
 
 }

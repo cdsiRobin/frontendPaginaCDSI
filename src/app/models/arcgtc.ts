@@ -1,7 +1,6 @@
-import {IArcgtc} from '../interfaces/IArcgtc';
-import {IArcgtcpk} from '../interfaces/IArcgtcpk';
+import { ArcgtcPK } from './arcgtc-pk';
 
-export class Arcgtc implements IArcgtc{
-  arcgtcPK: IArcgtcpk;
+export class Arcgtc {
+  arcgtcPK: ArcgtcPK;
   tipoCambio: number;
 }
