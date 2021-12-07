@@ -695,4 +695,11 @@ export class PedidoEdicionComponent implements OnInit {
   }
   //FIN
 
+  //CALCULAR IGV Y TOTAL
+  public calcularIgvAndTotal(event: KeyboardEvent, dp: Detpedido): void{
+     console.log((event.target as HTMLInputElement).value);
+     console.log(dp);
+
+  }
+
 }

@@ -290,6 +290,7 @@
                    <ng-container matColumnDef="medida">
                     <th mat-header-cell *matHeaderCellDef> UM </th>
                     <td mat-cell *matCellDef="let d"> {{d.medida}} </td>
+
                   </ng-container>
 
                   <!-- descripcion Column -->
@@ -301,7 +302,8 @@
                   <!-- cantidad Column -->
                   <ng-container matColumnDef="cantidad">
                     <th mat-header-cell *matHeaderCellDef> Cantidad </th>
-                    <td mat-cell *matCellDef="let d"> {{d.cantidad}} </td>
+                  <!--  <td mat-cell *matCellDef="let d"> {{d.cantidad}} </td> -->
+                    <input type="number" mat-cell *matCellDef="let d"  [value]="d.cantidad" (keyup)="calcularIgvAndTotal($event,d)" >
                   </ng-container>
 
                   <!-- precio Column -->
