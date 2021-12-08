@@ -45,6 +45,7 @@ import { Detpedido } from '../../../models/detpedido';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -127,11 +128,23 @@ export class PedidoEdicionComponent implements OnInit {
   public detPedidos :Detpedido[] =[];
   //NUEVO CAMBIOS
   //displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
-  displayedColumns: string[] = ['item','tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total'];
+  displayedColumns: string[] = ['tipo','codigo','medida','descripcion','resta','cantidad','suma','precio', 'igv', 'total','eliminar'];
   //FIN
   dataSource: MatTableDataSource<Detpedido>;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 1000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+  });
 
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
@@ -647,10 +660,14 @@ export class PedidoEdicionComponent implements OnInit {
            //this.detPedidos.push(element);
            this.verificarItems(element);
         });
-        this.dataSource = new MatTableDataSource(this.detPedidos);
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
+        this.llenarTablaArticulos();
       });
+  }
+  //LLENAR TABLA DE ARTICULOS
+  private llenarTablaArticulos(): void{
+    this.dataSource = new MatTableDataSource(this.detPedidos);
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 
   //VERIFICAR DUPLICADO DE ITEMS
@@ -672,33 +689,94 @@ export class PedidoEdicionComponent implements OnInit {
          this.actualizarCorrelativo(dp);
        }
     }
+  }
 
- }
-
- //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
+   //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
   //LLENAR DETALLE DE PEDIDO
   private actualizarCorrelativo(va: Detpedido): void{
-      let d = new Detpedido(this.detPedidos.length +1,'B',va.codigo,va.medida,va.descripcion,1,va.precio,va.precio*0.18,va.precio*1.18);
+      let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,va.cantidad,va.precio,va.igv,va.total);
       this.detPedidos.push(d);
-  }
-//FIN
-
-  //TOTAL DE ITEMS
-  public getTotalItems(){
-    return this.detPedidos.map(t => t.item).reduce((acc, value) => acc + value, 0);
   }
   //FIN
 
+  //FIN
+
   //TOTAL DE TOTAL
-   public getTotalPedido(){
+   private getTotalPedido(): number{
     return this.detPedidos.map(t => t.total).reduce((acc, value) => acc + value, 0);
   }
   //FIN
 
-  //CALCULAR IGV Y TOTAL
-  public calcularIgvAndTotal(event: KeyboardEvent, dp: Detpedido): void{
-     console.log((event.target as HTMLInputElement).value);
-     console.log(dp);
+  //CALCULAR RESTA
+  public calcularResta(dp: Detpedido): void{
+    let cantidad = dp.cantidad - 1;
+    if (cantidad > 0) {
+      let codigo = dp.codigo;
+      this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+           if(codigo === item.codigo){
+              item.cantidad = cantidad;
+              item.igv = item.calcularIgv();
+              item.total = item.calcularTotal();
+           }
+           return item;
+      } );
+      //total de general
+      this.totalGeneral = this.getTotalPedido();
+
+      this.Toast.fire({
+        icon: 'warning',
+        title: `Se resto la cantidad del cod: ${dp.codigo}`
+      });
+    }else{
+      this.snackBar.open(`La cantidad  del articulo ${dp.descripcion} no debe ser CERO`,'Salir',
+        {
+          duration: 1000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center'
+        });
+    }
+  }
+
+  //CALCULAR SUMA
+  public calcularSuma(dp: Detpedido): void{
+
+      let codigo = dp.codigo;
+      let cantidad = dp.cantidad + 1;
+
+      this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+           if(codigo === item.codigo){
+              item.cantidad = cantidad;
+              item.igv = item.calcularIgv();
+              item.total = item.calcularTotal();
+           }
+           return item;
+      } );
+      //total de general
+      this.totalGeneral = this.getTotalPedido();
+      this.Toast.fire({
+        icon: 'success',
+        title: `Se aumento la cantidad del cod: ${dp.codigo}`
+      });
+   }
+
+  //ELIMINAR ARTICULO
+  public eliminarArticulo(dp: Detpedido): void{
+    Swal.fire({
+      title: 'Estas seguro de eliminar?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then((result) => {
+      if (result.isConfirmed) {
+          let cod = dp.codigo;
+          this.detPedidos = this.detPedidos.filter( (item: Detpedido) => cod !== item.codigo );
+          console.log(this.detPedidos);
+          this.llenarTablaArticulos();
+      }
+
+    });
 
   }
 

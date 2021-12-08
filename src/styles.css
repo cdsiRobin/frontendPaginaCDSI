@@ -165,3 +165,11 @@ tr.example-element-row:not(.example-expanded-row):active {
   border-bottom-width: 0;
 }
 /*FIN TABLA DE ITEMS*/
+
+.centrarTexto {
+  text-align: center;
+}
+
+.derechoTexto {
+  text-align: right;
+}
