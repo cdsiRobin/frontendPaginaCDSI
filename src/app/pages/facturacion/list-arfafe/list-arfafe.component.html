@@ -67,6 +67,9 @@
           <mat-label class="h6 m-2">P.V.</mat-label>
             <mat-slide-toggle class="m-2" [(ngModel)]="pven"></mat-slide-toggle>
           <button class="float-right" mat-raised-button (click)="_filtrarList()" color="primary">Buscar</button>
+          <div *ngIf="spin">
+            <mat-spinner [diameter]="20"></mat-spinner> 
+          </div>
         </div>
         </div>
     <!-- <table class="table">

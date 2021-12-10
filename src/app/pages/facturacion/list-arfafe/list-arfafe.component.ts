@@ -25,6 +25,7 @@ export class ListArfafeComponent implements OnInit {
   tipoDoc = 'F';
   factu= '';
   pven= true;
+  spin= false;
   pv: string;
   fecHasta = new Date;
   fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
@@ -67,6 +68,7 @@ export class ListArfafeComponent implements OnInit {
   }
 
   _filtrarList(){
+    this.spin = true;
     this.dataSource.data = [];
     this.fec1 = this.datepipe.transform(this.fecDesde,'dd/MM/yyyy');
     this.fec2 = this.datepipe.transform(this.fecHasta,'dd/MM/yyyy');
@@ -77,6 +79,7 @@ export class ListArfafeComponent implements OnInit {
       for(var i = 0; i<list.length; i++){
         this.dataSource.data.push(list[i]);
         }
+      this.spin = false;
       this.dataSource.paginator = this.paginator;
     });
     console.log(this.dataSource.data);
