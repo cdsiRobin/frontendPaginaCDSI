@@ -1,16 +1,15 @@
 <!-- html listas -->
 <!-- <button (click)="getArfafeDetalle()">listar</button> -->
-<div class="container pt-3 h-100">
+<div class="container pt-2 h-100">
+  <p class="font-weight-light">{{compania}}</p>
     <p class="text-center mb-4 font-weight-bold">Listado de Facturas y Boletas</p>
-    <form>
+    
         <div class="row">
             <div class="col-sm-3">
                 <mat-form-field appearance="fill" floatLabel="always">
-                    <mat-label>Compañia:</mat-label>
-                    <input matInput maxlength="2" class="example-right-align" value="compania" [disabled]="true">
-                    <!-- <span matSuffix> - {{ centroEmi }}</span> -->
+                    <mat-label>N° Factura:</mat-label>
+                    <input matInput class="example-right-align" [(ngModel)]="factu">
                   </mat-form-field>
-                <!-- <p>Compañia: {{ compania }}</p> -->
             </div>
             <div class="col-sm-3">
                 <mat-form-field appearance="fill">
@@ -49,23 +48,27 @@
               </mat-form-field>
         </div>
           <div class="col-sm-3">
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="fill">
               <mat-label>Desde</mat-label>
-              <input matInput [(value)]="fecDesde" [matDatepicker]="picker">
+              <input matInput [(ngModel)]="fecDesde" [matDatepicker]="picker">
               <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-              <mat-datepicker #picker></mat-datepicker>
+              <mat-datepicker #picker [(ngModel)]="fecDesde" ngDefaultControl></mat-datepicker>
           </mat-form-field>
         </div>
         <div class="col-sm-3">
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="fill">
             <mat-label>Hasta</mat-label>
-            <input matInput [(value)]="fecHasta" [matDatepicker]="picker1">
+            <input matInput [(ngModel)]="fecHasta" [matDatepicker]="picker1">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-            <mat-datepicker #picker1></mat-datepicker>
+            <mat-datepicker #picker1 [(ngModel)]="fecHasta" ngDefaultControl></mat-datepicker>
         </mat-form-field>
       </div>
+        <div class="col-sm-3">
+          <mat-label class="h6 m-2">P.V.</mat-label>
+            <mat-slide-toggle class="m-2" [(ngModel)]="pven"></mat-slide-toggle>
+          <button class="float-right" mat-raised-button (click)="_filtrarList()" color="primary">Buscar</button>
         </div>
-    </form>
+        </div>
     <!-- <table class="table">
     <thead>
         <tr>
@@ -117,7 +120,7 @@
               </ng-container>
               <ng-container matColumnDef="fecha">
                 <th class="text-center" mat-header-cell *matHeaderCellDef> FECHA </th>
-                <td class="text-center" mat-cell *matCellDef="let element"> {{element.fecha.slice(0,10)}} </td>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.fecha | date:'dd-MM-yyyy'}} </td>
               </ng-container>
               <ng-container matColumnDef="no_GUIA">
                 <th class="text-center" mat-header-cell *matHeaderCellDef> GUIA </th>
@@ -142,7 +145,7 @@
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
-        <mat-paginator [pageSizeOptions]="[8]"
+        <mat-paginator [pageSizeOptions]="[6]"
                  showFirstLastButtons 
                  aria-label="Select page of arfafe">
   </mat-paginator>

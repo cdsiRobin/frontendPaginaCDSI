@@ -1,3 +1,4 @@
+import { DatePipe } from "@angular/common";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
@@ -22,8 +23,14 @@ export class ListArfafeComponent implements OnInit {
   public ConEstado = 'All';
   public ConCosto = 'Central';
   tipoDoc = 'F';
+  factu= '';
+  pven= true;
+  pv: string;
   fecHasta = new Date;
   fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
+
+  fec1: string;
+  fec2: string;
 
   arfafe: Arfafe[];
   displayedColumns: string[] = ['detalle','arfafePK.tipoDoc','arfafePK.noFactu',
@@ -34,13 +41,21 @@ export class ListArfafeComponent implements OnInit {
 
   arf: Arfafe;
 
-  constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute) { }
+  constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute,
+    public datepipe: DatePipe) { }
 
   ngOnInit(): void {
-    //console.log(new Date()+' - '+new Date().getDate()+'/'+(new Date().getMonth())+'/'+new Date().getFullYear());
+    this.cargarData();
+  }
+
+  cargarData(){
     this.dataSource = new MatTableDataSource(ELEMENT_DATA);
     this.dataSource.data = [];
-    this.arfafeService.listaArfafe('01','F').subscribe(list => {
+    this.fec1 = this.datepipe.transform(this.fecDesde,'dd/MM/yyyy');
+    this.fec2 = this.datepipe.transform(this.fecHasta,'dd/MM/yyyy');
+    if(this.pven) this.pv = 'S'; else this.pv = 'N';
+    this.arfafeService.listaArfafe('01',this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
+    .subscribe(list => {
       this.arfafe = list;
       for(var i = 0; i<list.length; i++){
         this.dataSource.data.push(list[i]);
@@ -48,33 +63,30 @@ export class ListArfafeComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
     console.log(this.dataSource.data);
-    console.log(this.fecDesde + '  --  '+this.fecHasta);
+    console.log(this.fec1 + '  --  '+this.fec2);
   }
 
-  // getAllArfafe(){
-  //   for(let i in this.arfafe){
-  //     // console.log(this.arfafe[i]);
-  //     ELEMENT_DATA.push(this.arfafe[i]);
-  //   }
-  //   // for(var i = 0; i<this.arfafe.length; i++){
-  //   //   facturas.push(this.arfafe[i]);
-  //   // }    
-  //   // this.arfafeService.listaArfafe(this.cia)
-  //   // .subscribe(list => {
-  //   //   this.facturas = list;
-  //   //   console.log(this.facturas);
-  //   // });
-  // }
+  _filtrarList(){
+    this.dataSource.data = [];
+    this.fec1 = this.datepipe.transform(this.fecDesde,'dd/MM/yyyy');
+    this.fec2 = this.datepipe.transform(this.fecHasta,'dd/MM/yyyy');
+    if(this.pven) this.pv = 'S'; else this.pv = 'N';
+    this.arfafeService.listaArfafe('01',this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
+    .subscribe(list => {
+      this.arfafe = list;
+      for(var i = 0; i<list.length; i++){
+        this.dataSource.data.push(list[i]);
+        }
+      this.dataSource.paginator = this.paginator;
+    });
+    console.log(this.dataSource.data);
+    console.log(this.tipoDoc);
+    console.log(this.factu);
+    console.log(this.fec1 + '  --  '+this.fec2);
+  }
 
   getArfafeDetalle(cia: string, doc: string, factu: string){
     this.router.navigate(['/arfafe/detail'],{ queryParams: {nocia: cia,docu: doc,factura: factu}});
-    // this.arfafeService.arfafeDetalle(new ArfafeDTO(cia,doc,factu)).
-    // subscribe(n => {
-    //   this.arfafe = n.resultado;
-    //   //this.arf = this.arfafe
-    //   console.log(this.arfafe);
-    //   this.router.navigate(['/arfafe/detail'],{ queryParams: {data: this.arfafe}});
-    // });
   }
 
 }

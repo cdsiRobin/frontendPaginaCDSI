@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { BrowserModule } from "@angular/platform-browser";
@@ -8,6 +8,7 @@ import { ArfafeComponent } from "./arfafe.component";
 import { DetailArfafeComponent } from "./detail-arfafe/detail-arfafe.component";
 import { ListArfafeComponent } from "./list-arfafe/list-arfafe.component";
 import { NewArfafeComponent } from "./new-arfafe/arfafe-new.component";
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @NgModule({
     imports: [
@@ -16,8 +17,8 @@ import { NewArfafeComponent } from "./new-arfafe/arfafe-new.component";
         FormsModule,
         ArfafeRoutingModule,
         MaterialModule,
-        ReactiveFormsModule
-        
+        ReactiveFormsModule,
+        MatSlideToggleModule        
     ],
     declarations: [
         ArfafeComponent,
@@ -26,7 +27,7 @@ import { NewArfafeComponent } from "./new-arfafe/arfafe-new.component";
         DetailArfafeComponent
     ],
     exports: [],
-    providers: []
+    providers: [DatePipe]
 })
 
 export class ArfafeModule {
