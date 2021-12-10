@@ -505,9 +505,10 @@ export class PedidoEdicionComponent implements OnInit {
     this.arfacc.arfaccPK = this.arfaccPK;
     this.arfacc.activo = 'S';
     this.arfaccService.getSerieAndCorrelativoPedido(this.arfacc).subscribe(json => {
-      this.arfaccs = json.resultado;
+      //this.arfaccs = json.resultado;
+      this.arfaccs = json;
       if (this.arfaccs.length === 1) {
-        this.arfacc = this.arfaccs[0];
+         this.arfacc = this.arfaccs[0];
       }else{
         this.snackBar.open('Debe elegir un Nro de Pedido para el centro: ' + this.centro,'Salir',
           {
@@ -534,11 +535,9 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // METODO QUE NOS PERMITE A BUSCAR TRANSACCION
   public buscarTransaccion(codigo: string): void {
-
       for (const t of this.transacciones) {
           if (t.codTPed === codigo) {
             this.transaccion = t;
-            console.log(this.transaccion);
             break;
           }
       }
@@ -592,6 +591,12 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
+  //CAMBIAR MONEDA POR LISTA DE PRECIO
+  public cambiarMoneda(arfatp :Arfatp): void{
+     this.buscarMoneda(arfatp.moneda);
+  }
+  //FIN
+
   //BUSCAR FORMA DE PAGO
   public buscarFormaPago(cod: string): void{
     for (const t of this.tapfopas) {
@@ -624,6 +629,7 @@ export class PedidoEdicionComponent implements OnInit {
   public listaMonedas(): void{
     this.arcgmoService.listarArcgmo().subscribe(json => {
       this.arcgmos = json.resultado;
+      //console.log(this.arcgmos);
    })
   }
 
@@ -657,10 +663,11 @@ export class PedidoEdicionComponent implements OnInit {
       dialogRef.afterClosed().subscribe( result => {
         //VAMOR A RECORRER EL ARREGLO DE ITEMS
         result.forEach(element => {
-           //this.detPedidos.push(element);
            this.verificarItems(element);
         });
         this.llenarTablaArticulos();
+        //total de general
+        this.totalGeneral = this.getTotalPedido();
       });
   }
   //LLENAR TABLA DE ARTICULOS
@@ -673,7 +680,8 @@ export class PedidoEdicionComponent implements OnInit {
   //VERIFICAR DUPLICADO DE ITEMS
   public verificarItems(dp: Detpedido): void {
     if (this.detPedidos.length == 0){
-        this.detPedidos.push(dp);
+          //this.detPedidos.push(dp);
+          this.actualizarCorrelativo(dp);
     } else {
        let cod = dp.codigo;
        let valor = 'N';
@@ -694,8 +702,27 @@ export class PedidoEdicionComponent implements OnInit {
    //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
   //LLENAR DETALLE DE PEDIDO
   private actualizarCorrelativo(va: Detpedido): void{
-      let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,va.cantidad,va.precio,va.igv,va.total);
-      this.detPedidos.push(d);
+      if(this.arfatp.moneda === this.arcgmo.moneda){
+        let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
+          va.cantidad,va.precio,va.igv,va.total);
+        this.detPedidos.push(d);
+      }else{
+        if(this.arfatp.moneda === 'SOL' && this.arcgmo.moneda === 'DOL' ){
+            let prec = va.precio / this.tipocambio;
+            let igv = prec * 0.18;
+            let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
+              va.cantidad,prec,igv,(prec+igv));
+            this.detPedidos.push(d);
+        }
+        if(this.arfatp.moneda === 'DOL' && this.arcgmo.moneda === 'SOL' ){
+            let prec = va.precio * this.tipocambio;
+            let igv = prec * 0.18;
+            let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
+              va.cantidad,prec,igv ,(prec+igv));
+            this.detPedidos.push(d);
+        }
+      }
+
   }
   //FIN
 
@@ -772,12 +799,97 @@ export class PedidoEdicionComponent implements OnInit {
       if (result.isConfirmed) {
           let cod = dp.codigo;
           this.detPedidos = this.detPedidos.filter( (item: Detpedido) => cod !== item.codigo );
-          console.log(this.detPedidos);
           this.llenarTablaArticulos();
+          //total de general
+          this.totalGeneral = this.getTotalPedido();
       }
 
     });
 
   }
+
+  //CAMBIAMOS EL TIPO DE MONEDA DEL DETALLE DEL PEDIDO
+  public cambiarMonedaDetPedido(a: Arcgmo): void{
+    if(this.arfatp.moneda === 'SOL' && a.moneda === 'SOL'){
+
+      this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+              item.precio = item.precio * this.tipocambio;
+              item.igv = item.calcularIgv();
+              item.total = item.calcularTotal();
+            return item;
+      } );
+      this.llenarTablaArticulos();
+      //total de general
+      this.totalGeneral = this.getTotalPedido();
+
+    } else if(this.arfatp.moneda === 'SOL' && a.moneda === 'DOL'){
+        this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+                  item.precio = item.precio / this.tipocambio;
+                  item.igv = item.calcularIgv();
+                  item.total = item.calcularTotal();
+                return item;
+        } );
+        this.llenarTablaArticulos();
+        //total de general
+        this.totalGeneral = this.getTotalPedido();
+
+    }else if(this.arfatp.moneda === 'DOL' && a.moneda === 'SOL'){
+      this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+              item.precio = item.precio * this.tipocambio;
+              item.igv = item.calcularIgv();
+              item.total = item.calcularTotal();
+            return item;
+      } );
+      this.llenarTablaArticulos();
+      //total de general
+      this.totalGeneral = this.getTotalPedido();
+
+    }else{
+      this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+              item.precio = item.precio / this.tipocambio;
+              item.igv = item.calcularIgv();
+              item.total = item.calcularTotal();
+            return item;
+      } );
+      this.llenarTablaArticulos();
+      //total de general
+      this.totalGeneral = this.getTotalPedido();
+    }
+  }
+  //FIN
+  //CREACION DE UNA FACTURA
+  public crearBoleta(){
+    Swal.fire({
+      title: '¿Está seguro de crear una BOLETA?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+      }
+
+    });
+  }
+  //FIN
+  //CREACION DE UNA FACTURA
+  public crearFactura(){
+    Swal.fire({
+      title: '¿Está seguro de crear una FACTURA?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+      }
+
+    });
+  }
+  //FIN
 
 }
