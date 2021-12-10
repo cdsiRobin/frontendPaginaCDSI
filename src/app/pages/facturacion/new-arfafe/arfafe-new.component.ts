@@ -21,7 +21,7 @@ export class NewArfafeComponent implements OnInit {
   detalle: Arfafl[];
   options: Arccmc[] = [];
 
-  factuOptions: Observable<Arccmc[]>;
+  factuOptions: Arccmc[];
   codProd = '';
   desProd = '';
   cantProd = 1;
@@ -64,7 +64,11 @@ export class NewArfafeComponent implements OnInit {
 
     this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
       if(valueChange.length > 3)
-      this.factuOptions = this.clienteServices.listaClientesRucLike('01',valueChange);
+      this.clienteServices.listaClientesRucLike('01',valueChange).subscribe(
+        rs => {
+          this.factuOptions = rs.resultado;
+        }
+      );
       else
       this.factuOptions = null;
     })
@@ -76,7 +80,7 @@ export class NewArfafeComponent implements OnInit {
     if(value.length > 3) {
       this.clienteServices.listaClientesRucLike('01',value).subscribe(
         datos => {
-          this.options = datos;
+          this.options = datos.resultado;
         }
       );
       return this.options;

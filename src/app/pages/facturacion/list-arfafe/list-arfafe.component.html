@@ -4,7 +4,7 @@
     <p class="text-center mb-4 font-weight-bold">Listado de Facturas y Boletas</p>
     <form>
         <div class="row">
-            <div class="col">
+            <div class="col-sm-3">
                 <mat-form-field appearance="fill" floatLabel="always">
                     <mat-label>Compañia:</mat-label>
                     <input matInput maxlength="2" class="example-right-align" value="compania" [disabled]="true">
@@ -12,7 +12,7 @@
                   </mat-form-field>
                 <!-- <p>Compañia: {{ compania }}</p> -->
             </div>
-            <div class="col">
+            <div class="col-sm-3">
                 <mat-form-field appearance="fill">
                     <mat-label>Estado</mat-label>
                     <mat-select [(value)]="ConEstado">
@@ -21,7 +21,7 @@
                     </mat-select>
                   </mat-form-field>
             </div>
-            <div class="col">
+            <div class="col-sm-3">
                 <mat-form-field appearance="fill">
                     <mat-label>C. Costo</mat-label>
                     <mat-select [(value)]="ConCosto">
@@ -30,13 +30,40 @@
                     </mat-select>
                   </mat-form-field>
             </div>
-            <div class="col">
+            <div class="col-sm-3">
                 <mat-form-field appearance="fill" floatLabel="always">
                     <mat-label>Centro emisor</mat-label>
                     <input matInput maxlength="2" class="example-right-align" placeholder="41">
                     <span matSuffix> - {{ centroEmi }}</span>
                   </mat-form-field>
             </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <mat-form-field appearance="fill">
+                <mat-label>tipo</mat-label>
+                <mat-select [(value)]="tipoDoc">
+                  <mat-option value="F">Factura</mat-option>
+                  <mat-option value="B">Boleta</mat-option>
+                </mat-select>
+              </mat-form-field>
+        </div>
+          <div class="col-sm-3">
+            <mat-form-field appearance="outline">
+              <mat-label>Desde</mat-label>
+              <input matInput [(value)]="fecDesde" [matDatepicker]="picker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-3">
+          <mat-form-field appearance="outline">
+            <mat-label>Hasta</mat-label>
+            <input matInput [(value)]="fecHasta" [matDatepicker]="picker1">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+      </div>
         </div>
     </form>
     <!-- <table class="table">

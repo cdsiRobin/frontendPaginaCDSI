@@ -21,6 +21,9 @@ export class ListArfafeComponent implements OnInit {
   centroEmi: string = 'Centro';
   public ConEstado = 'All';
   public ConCosto = 'Central';
+  tipoDoc = 'F';
+  fecHasta = new Date;
+  fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
 
   arfafe: Arfafe[];
   displayedColumns: string[] = ['detalle','arfafePK.tipoDoc','arfafePK.noFactu',
@@ -34,6 +37,7 @@ export class ListArfafeComponent implements OnInit {
   constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    //console.log(new Date()+' - '+new Date().getDate()+'/'+(new Date().getMonth())+'/'+new Date().getFullYear());
     this.dataSource = new MatTableDataSource(ELEMENT_DATA);
     this.dataSource.data = [];
     this.arfafeService.listaArfafe('01','F').subscribe(list => {
@@ -44,6 +48,7 @@ export class ListArfafeComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
     console.log(this.dataSource.data);
+    console.log(this.fecDesde + '  --  '+this.fecHasta);
   }
 
   // getAllArfafe(){

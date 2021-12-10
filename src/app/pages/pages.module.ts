@@ -44,6 +44,8 @@ import { MenuPventaComponent } from './login2/menu-pventa/menu-pventa.component'
 
 import {PedidoModule} from './pedido/pedido.module';
 import { ArfafeModule } from './facturacion/arfafe.module';
+import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
+
 
 
 @NgModule({
@@ -80,7 +82,8 @@ import { ArfafeModule } from './facturacion/arfafe.module';
     RgtacdeComponent,
     UsuarioComponent,
     Login2Component,
-    MenuPventaComponent
+    MenuPventaComponent,
+    ItemsDialogoComponent
   ],
   exports: [
     ProgressComponent,
