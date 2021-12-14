@@ -1,0 +1,156 @@
+<!-- html listas -->
+<!-- <button (click)="getArfafeDetalle()">listar</button> -->
+<div class="container pt-2 h-100">
+  <p class="font-weight-light">{{compania}}</p>
+    <p class="text-center mb-4 font-weight-bold">Listado de Facturas y Boletas</p>
+    
+        <div class="row">
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill" floatLabel="always">
+                    <mat-label>N° Factura:</mat-label>
+                    <input matInput class="example-right-align" [(ngModel)]="factu">
+                  </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill">
+                    <mat-label>Estado</mat-label>
+                    <mat-select [(value)]="ConEstado">
+                      <mat-option value="All">:: Todos ::</mat-option>
+                      <mat-option value="two">Second option</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill">
+                    <mat-label>C. Costo</mat-label>
+                    <mat-select [(value)]="ConCosto">
+                      <mat-option value="Central">Tienda Central</mat-option>
+                      <mat-option value="two">Second option</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill" floatLabel="always">
+                    <mat-label>Centro emisor</mat-label>
+                    <input matInput maxlength="2" class="example-right-align" placeholder="41">
+                    <span matSuffix> - {{ centroEmi }}</span>
+                  </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <mat-form-field appearance="fill">
+                <mat-label>tipo</mat-label>
+                <mat-select [(value)]="tipoDoc">
+                  <mat-option value="F">Factura</mat-option>
+                  <mat-option value="B">Boleta</mat-option>
+                </mat-select>
+              </mat-form-field>
+        </div>
+          <div class="col-sm-3">
+            <mat-form-field appearance="fill">
+              <mat-label>Desde</mat-label>
+              <input matInput [(ngModel)]="fecDesde" [matDatepicker]="picker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker [(ngModel)]="fecDesde" ngDefaultControl></mat-datepicker>
+          </mat-form-field>
+        </div>
+        <div class="col-sm-3">
+          <mat-form-field appearance="fill">
+            <mat-label>Hasta</mat-label>
+            <input matInput [(ngModel)]="fecHasta" [matDatepicker]="picker1">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1 [(ngModel)]="fecHasta" ngDefaultControl></mat-datepicker>
+        </mat-form-field>
+      </div>
+        <div class="col-sm-3">
+          <mat-label class="h6 m-2">P.V.</mat-label>
+            <mat-slide-toggle class="m-2" [(ngModel)]="pven"></mat-slide-toggle>
+          <button class="float-right" mat-raised-button (click)="_filtrarList()" color="primary">Buscar</button>
+          <div *ngIf="spin">
+            <mat-spinner [diameter]="20"></mat-spinner> 
+          </div>
+        </div>
+        </div>
+    <!-- <table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th scope="col">TD</th>
+            <th scope="col">Factura</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Guia</th>
+            <th scope="col">Orden</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Moneda</th>
+            <th scope="col">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor ="let factura of arfafe">
+            <td><button (click)="getArfafeDetalle(factura.arfafePK.noCia,factura.arfafePK.tipoDoc,
+                factura.arfafePK.noFactu)" class="btn">D</button></td>
+            <td>{{ factura.arfafePK.tipoDoc }}</td>
+            <td>{{ factura.arfafePK.noFactu }}</td>
+            <td>{{ factura.fecha }}</td>
+            <td>{{ factura.no_GUIA }}</td>
+            <td>{{ factura.no_ORDEN }}</td>
+            <td>{{ factura.no_CLIENTE }}</td>
+            <td>{{ factura.moneda }}</td>
+            <td>{{ factura.total }}</td>
+        </tr>
+    </tbody>
+    </table> -->
+    <div class="mat-elevation-z8">
+        <table style="width: 100%;" mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="detalle">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element">
+                    <button class="btn btn-secondary"
+                    (click)="getArfafeDetalle(element.arfafePK.noCia,element.arfafePK.tipoDoc,
+                    element.arfafePK.noFactu)"
+                    style="font-family: Roboto, 'Helvetica Neue', sans-serif;
+                    font-size: 14px; font-weight: bold;">D</button>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="arfafePK.tipoDoc">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> TD </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.arfafePK.tipoDoc}} </td>
+              </ng-container>
+              <ng-container matColumnDef="arfafePK.noFactu">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> FACTURA </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.arfafePK.noFactu}} </td>
+              </ng-container>
+              <ng-container matColumnDef="fecha">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> FECHA </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.fecha | date:'dd-MM-yyyy'}} </td>
+              </ng-container>
+              <ng-container matColumnDef="no_GUIA">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> GUIA </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.no_GUIA}} </td>
+              </ng-container>
+              <ng-container matColumnDef="no_ORDEN">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> NO ORDEN </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.no_ORDEN}} </td>
+              </ng-container>
+              <ng-container matColumnDef="no_CLIENTE">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> CLIENTE </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.no_CLIENTE}} </td>
+              </ng-container>
+              <ng-container matColumnDef="moneda">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> MONEDA </th>
+                <td class="text-center" mat-cell *matCellDef="let element"> {{element.moneda}} </td>
+              </ng-container>
+              <ng-container matColumnDef="total">
+                <th class="text-center" mat-header-cell *matHeaderCellDef> TOTAL </th>
+                <td class="text-right" mat-cell *matCellDef="let element"> {{element.total}} </td>
+              </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[6]"
+                 showFirstLastButtons 
+                 aria-label="Select page of arfafe">
+  </mat-paginator>
+    </div>
+</div>

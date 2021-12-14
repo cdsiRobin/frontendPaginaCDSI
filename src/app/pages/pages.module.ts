@@ -43,7 +43,9 @@ import { Login2Component } from './login2/login2.component';
 import { MenuPventaComponent } from './login2/menu-pventa/menu-pventa.component';
 
 import {PedidoModule} from './pedido/pedido.module';
+import { ArfafeModule } from './facturacion/arfafe.module';
 import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
+
 
 
 @NgModule({
@@ -99,7 +101,8 @@ import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.co
     BrowserModule,
     BrowserAnimationsModule,
     PedidoModule,
-    MaterialModule,
+    ArfafeModule,
+    MaterialModule
   ]
 })
 export class PagesModule { }

@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core';
-import {RouterModule, Routes} from '@angular/router';
-
 import {PedidoComponent} from './pedido.component';
 import {PedidoEdicionComponent} from './pedido-edicion/pedido-edicion.component';
 import {CajaComponent} from './caja/caja.component';
+import { RouterModule, Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
 
 const routes: Routes = [
   {

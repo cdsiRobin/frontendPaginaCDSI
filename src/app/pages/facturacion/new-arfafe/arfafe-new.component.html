@@ -1,0 +1,227 @@
+<!-- html new factura -->
+<div class="container mt-5 mb-5 border rounded p-5">
+    <p>factuacion works!</p>
+
+    <hr class="mb-5">
+
+    <form class="w-100">
+        <div class="row">
+            <div class="col-sm p-3" style="border-right: 1px solid lightgray;">
+                <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                        <mat-label>RUC</mat-label>
+                        <input  matInput
+                        formControlName="ruc"
+                        [matAutocomplete]="auto"
+
+                        [matAutocompleteConnectedTo]="origin">
+                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
+                            <mat-option *ngFor="let option of factuOptions" [value]="option">
+                                <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc | titlecase}}  -  {{option.nombre}}</span>
+                                  </div>
+                            </mat-option>
+                        </mat-autocomplete>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm">
+                        <mat-label>Razón Social</mat-label>
+                        <input matInput
+                        formControlName="racSoc"
+                        [matAutocomplete]="auto"
+                        [matAutocompleteConnectedTo]="origin">
+                    </mat-form-field>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Dirección</mat-label>
+                            <input disabled="true" matInput placeholder="Placeholder" value="Direccion">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Ubigeo</mat-label>
+                            <input disabled="true" matInput placeholder="Placeholder" value="Ubigeo">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Vendedor</mat-label>
+                            <input matInput placeholder="Placeholder" value="Nombre vendedor">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="row">
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                                <mat-label>Tipo</mat-label>
+                                <input matInput placeholder="Placeholder" value="Tipo">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
+                                <mat-label>Numero</mat-label>
+                                <input matInput placeholder="Placeholder" value="Num">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" [formGroup]="groupArticulo">
+                    <div class="col-sm-2">
+                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                            <mat-label>Codigo</mat-label>
+                            <input matInput placeholder="Placeholder" formControlName="codProd" name="codProd">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                            <mat-label>Descripcion</mat-label>
+                            <input matInput placeholder="Placeholder" formControlName="desProd" name="desProd">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-2">
+                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                            <mat-label>Cant</mat-label>
+                            <input matInput type="number" formControlName="cantProd" name="cantProd">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-2 p-1">
+                        <button mat-raised-button color="primary" type="button" (click)="addElement()">Agregar</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 p-3">
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>L.Precios</mat-label>
+                            <input matInput value="Nom_precio">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>T.C.</mat-label>
+                            <input disabled="true" matInput placeholder="Cambio" value="0.00">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>F.Pago</mat-label>
+                            <input matInput value="Descrip_Pago">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Choose a date</mat-label>
+                            <input matInput [matDatepicker]="picker">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Centro</mat-label>
+                            <input matInput value="Nro">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Nombre Centro</mat-label>
+                            <input matInput value="Non_centro">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <table mat-table [dataSource]="dataSource" class="w-100">
+                <ng-container matColumnDef="item">
+                  <th mat-header-cell *matHeaderCellDef>Item</th>
+                  <td mat-cell *matCellDef="let element"> {{element.item}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="codigo">
+                  <th mat-header-cell *matHeaderCellDef> Codigo </th>
+                  <td mat-cell *matCellDef="let element"> {{element.codigo}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="medida">
+                  <th mat-header-cell *matHeaderCellDef> Medida </th>
+                  <td mat-cell *matCellDef="let element"> {{element.medida}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="descripcion">
+                  <th mat-header-cell *matHeaderCellDef> Descripcion </th>
+                  <td mat-cell *matCellDef="let element"> {{element.descripcion}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="tipoAfec">
+                    <th mat-header-cell *matHeaderCellDef> T.A. </th>
+                    <td mat-cell *matCellDef="let element"> {{element.tipoAfec}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="cantidad">
+                    <th mat-header-cell *matHeaderCellDef> Cant </th>
+                    <td mat-cell *matCellDef="let element"> {{element.cantidad}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="pu">
+                    <th mat-header-cell *matHeaderCellDef> P.U. </th>
+                    <td mat-cell *matCellDef="let element"> {{element.pu}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="descu">
+                    <th mat-header-cell *matHeaderCellDef> Descuento </th>
+                    <td mat-cell *matCellDef="let element"> {{element.descu}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="icbCop">
+                    <th mat-header-cell *matHeaderCellDef> IcbCop </th>
+                    <td mat-cell *matCellDef="let element"> {{element.icbCop}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="IGV">
+                    <th mat-header-cell *matHeaderCellDef> IGV </th>
+                    <td mat-cell *matCellDef="let element"> {{element.IGV}} </td>
+                </ng-container>
+
+                <ng-container matColumnDef="total">
+                    <th mat-header-cell *matHeaderCellDef> Total </th>
+                    <td mat-cell *matCellDef="let element"> {{element.total}} </td>
+                </ng-container>
+                <ng-container matColumnDef="eliminar" style="margin: 0;">
+                    <th mat-header-cell *matHeaderCellDef style="margin: 0;">Eliminar</th>
+                    <td mat-cell *matCellDef="let element">
+                        <button mat-icon-button color="warn" (click)="deleteDetail(element.item)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-sm d-flex justify-content-center">
+                <button mat-raised-button color="primary">btn1</button>
+            </div>
+            <div class="col-sm d-flex justify-content-center">
+                <button mat-raised-button color="primary">btn2</button>
+            </div>
+            <div class="col-sm d-flex justify-content-center">
+                <button mat-raised-button color="primary">btn3</button>
+            </div>
+            <div class="col-sm d-flex justify-content-center">
+                <button mat-raised-button color="primary">btn3</button>
+            </div>
+        </div>
+    </form>
+
+</div>

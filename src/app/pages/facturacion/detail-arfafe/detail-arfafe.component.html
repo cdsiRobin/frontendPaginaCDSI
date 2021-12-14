@@ -1,0 +1,151 @@
+<!-- html new factura -->
+<div class="container mt-5 mb-5 border rounded">
+    <mat-label>fecha: </mat-label>
+    <span> {{ detalle.fecha | date }} </span>
+    <p class="text-center">Detalle de {{ tipoComprobante }}</p>
+
+    <hr class="mb-3">
+    <form class="w-100">
+        <div class="row">
+            <div class="col-sm m-3" style="border-right: 1px solid lightgray;">
+                <div class="row">
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                        <mat-label>RUC</mat-label>
+                        <input  matInput name="ruc" [(ngModel)]="detalle.no_CLIENTE">
+                    </mat-form-field>
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm">
+                        <mat-label>Razón Social</mat-label>
+                        <input matInput name="racsoc" [(ngModel)]="detalle.nbr_CLIENTE">
+                    </mat-form-field>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                            <mat-label>Dirección</mat-label>
+                            <input disabled="true" matInput placeholder="Placeholder" name="direc"
+                            [(ngModel)]="detalle.direccion">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Ubigeo</mat-label>
+                            <input disabled="true" matInput placeholder="Placeholder" name="ubigeo"
+                            [(ngModel)]="detalle.codi_DEPA + detalle.codi_PROV + detalle.codi_DIST">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Vendedor</mat-label>
+                            <input matInput placeholder="Placeholder" name="vendor"
+                            [(ngModel)]="detalle.cuser">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="row">
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                                <mat-label>Tipo</mat-label>
+                                <input matInput placeholder="Placeholder" name="tipoDoc"
+                                [(ngModel)]="detalle.tipo_DOC_CLI">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
+                                <mat-label>Numero</mat-label>
+                                <input matInput placeholder="Placeholder" name="numCli"
+                                [(ngModel)]="detalle.num_DOC_CLI">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-4 m-3">
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>L.Precios</mat-label>
+                            <input matInput name="Nom_precio" [(ngModel)]="detalle.tipo_PRECIO">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>T.C.</mat-label>
+                            <input disabled="true" matInput placeholder="Cambio" value="0.00">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>F.Pago</mat-label>
+                            <input matInput name="Descrip_Pago" [(ngModel)]="detalle.cod_FPAGO">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
+                    <!-- <div class="col-sm">
+                        <mat-form-field appearance="outline">
+                            <mat-label>fecha</mat-label>
+                            <input matInput type="date" name="fecha" 
+                            [(ngModel)]="detalle.fecha">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+
+                    </div> -->
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Centro</mat-label>
+                            <input matInput name="centroEmi" [(ngModel)]="detalle.centro">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Nombre Centro</mat-label>
+                            <input matInput value="Non_centro">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="text-center" scope="col">Item</th>
+                        <th class="text-center" scope="col">Codigo</th>
+                        <th class="text-center" scope="col">Medida</th>
+                        <th class="text-center" scope="col">Descripcion</th>
+                        <th class="text-center" scope="col">tipoAfec</th>
+                        <th class="text-center" scope="col">cant</th>
+                        <th class="text-center" scope="col">P.U.</th>
+                        <th class="text-center" scope="col">desc</th>
+                        <th class="text-center" scope="col">icbCop</th>
+                        <th class="text-center" scope="col">IGV</th>
+                        <th class="text-center" scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor ="let data of detalle.arfaflList">
+                        <td class="text-right">{{ data.arfaflPK.consecutivo }}</td>
+                        <td>{{ data.no_ARTI }}</td>
+                        <td>und</td>
+                        <td>descrip</td>
+                        <td class="text-right">{{ data.tipo_AFECTACION }}</td>
+                        <td class="text-right">{{ data.cantidad_FACT }}</td>
+                        <td class="text-right">{{ data.precio_UNIT }}</td>
+                        <td class="text-right">{{ data.p_DSCTO3 }}%</td>
+                        <td class="text-right">{{ data.cantidad_FACT }}</td>
+                        <td class="text-right">{{ data.imp_IGV }}</td>
+                        <td class="text-right">{{ data.total }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </form>
+
+
+</div>

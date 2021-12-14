@@ -26,6 +26,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { NuestroProductosComponent } from './nuestro-productos/nuestro-productos.component';
 import {PedidoRoutingModule} from './pedido/pedido-routing.module';
+import { ArfafeRoutingModule } from './facturacion/arfafe-routing.module';
 
 const routes: Routes = [
 
@@ -83,7 +84,8 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forChild(routes),
-    PedidoRoutingModule
+    PedidoRoutingModule,
+    ArfafeRoutingModule
   ],
   exports: [RouterModule]
 })
