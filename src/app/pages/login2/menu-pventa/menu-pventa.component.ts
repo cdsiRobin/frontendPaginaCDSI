@@ -56,6 +56,7 @@ export class MenuPventaComponent implements OnInit {
       if (this.empleadoSeleccionado.tipusua == "04") {
         this.cajaService.caja(datos).subscribe(data => {
           this.cajas = data;
+         // console.log(this.cajas);
         });
       }
     }
@@ -69,6 +70,7 @@ export class MenuPventaComponent implements OnInit {
         if (this.cajas.length >= 1) {
           if (this.empleadoSeleccionado.centro != null) {
             this.cajaService.totalCajas(datos).subscribe(data => {
+              console.log(data);
               this.cajaService.cajasCreadas.next(data);
             })
             this.cancelar();

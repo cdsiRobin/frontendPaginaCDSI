@@ -60,7 +60,9 @@ export class Login2Component implements OnInit {
     let vende = new VendedorDTO(this.companySeleccionada.cia, this.form.value['codigo'], this.form.value['pass']);
     this.venServ.getVendedor(vende).subscribe(data => {
       this.vendedor = data; // SE
+      //console.log(this.vendedor);
       this.venServ.vendeCaja(vende).subscribe(x => {
+        //console.log(x);
         this.codEmpleado = x.codEmp;
         Swal.close();
         this.guardarCampos();

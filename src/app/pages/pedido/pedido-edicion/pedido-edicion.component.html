@@ -66,7 +66,7 @@
                             <mat-option *ngFor="let option of factuOptions | async" [value]="option">
                                 <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
                                     <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc | titlecase}}-{{option.nombre}}</span>
-                                  </div>
+                                </div>
                             </mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
@@ -84,7 +84,7 @@
                     <div class="col-sm">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Direcciónes</mat-label>
-                        <mat-select [(ngModel)]="arcctda" name="direccion" (selectionChange)=" getDirecciones($event)">
+                        <mat-select name="direccion" (selectionChange)=" getDirecciones($event)">
                           <mat-option *ngFor="let d of arcctdas" [value]="d">
                             {{d.nombre}}-{{d.direccion}}
                           </mat-option>
@@ -211,56 +211,96 @@
         <!--TIPO DE ITEM-->
         <div class="row">
             <div class="col-sm-12">
+              <!--
               <div class="col-sm-2">
                 <mat-radio-group aria-label="Select an option" [(ngModel)]="tipoItem" (change)="getTipoItem($event)">
                   <mat-radio-button value="B" checked>Bien</mat-radio-button>
                   <mat-radio-button value="L">Libre</mat-radio-button>
                 </mat-radio-group>
               </div>
+              -->
+              <mat-tab-group animationDuration="0ms">
+                <mat-tab label="Bien">
+                  <!--AÑADIR ITEMS-->
+                  <div class="row">
+                    <div class="col-sm-12">
+                      <div class="row">
+                        <!--DESCRIPCION DEL ITEM-->
+                        <div class="col-sm-6">
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
+                              <mat-label>Descripción</mat-label>
+                              <input matInput placeholder="Placeholder" name="descripItem">
+                            </mat-form-field>
+                        </div>
+                        <div class="example-button-container">
+                          <button mat-fab color="primary" (click)="openDialogoItem()" aria-label="Buscar Item">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                    </div>
+                  </div>
+                  </div>
+                <!--FIN AÑADIR ITEMS-->
+                </mat-tab>
+                <mat-tab label="Libre">
+                  <!--AÑADIR ITEMS LIBRE-->
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <div class="row" [formGroup]="groupArticulo">
+                          <!--CODIGO DE ITEM-->
+                          <div class="col-sm-2">
+                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                  <mat-label>Codigo</mat-label>
+                                  <input matInput type="text" placeholder="Ingrese Cod" formControlName="codProd" name="codProd">
+                              </mat-form-field>
+                          </div>
+                          <!--UM DEL ITEM-->
+                          <div class="col-sm-1">
+                            <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                <mat-label>UM</mat-label>
+                                <input matInput type="text" formControlName="umProd" name="umProd">
+                            </mat-form-field>
+                          </div>
+                          <!--DESCRIPCION DEL ITEM-->
+                          <div class="col-sm-5">
+                              <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
+                                <mat-label>Descripción</mat-label>
+                                <input matInput placeholder="Ingrese descripción" formControlName="desProd" name="desProd">
+                              </mat-form-field>
+                          </div>
+                          <!--CANTIDAD DEL ITEM-->
+                          <div class="col-sm-1">
+                            <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                <mat-label>Cant</mat-label>
+                                <input matInput type="number" formControlName="cantProd" name="cantProd">
+                            </mat-form-field>
+                          </div>
+                          <!--PRECIO DEL ITEM-->
+                          <div class="col-sm-2">
+                            <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                <mat-label>Precio</mat-label>
+                                <input matInput type="number" formControlName="precProd" name="precProd">
+                            </mat-form-field>
+                          </div>
+
+                          <div class="col-sm-1 p-1">
+                              <button mat-raised-button color="primary" type="button" (click)="addItem()">
+                                <mat-icon aria-hidden="false" aria-label="Example home icon">add_shopping_cart</mat-icon>
+                              </button>
+                          </div>
+
+                      </div>
+                    </div>
+                    </div>
+                  <!--FIN AÑADIR ITEMS-->
+                </mat-tab>
+              </mat-tab-group>
+
 
             </div>
         </div>
         <!--FIN TIPO DE ITEM-->
-        <!--AÑADIR ITEMS-->
-        <div class="row">
-            <div class="col-sm-12">
-              <div class="row" [formGroup]="groupArticulo">
-                <div class="example-button-container">
-                  <button mat-fab color="primary" (click)="openDialogoItem()" aria-label="Buscar Item">
-                    <mat-icon>search</mat-icon>
-                  </button>
-                </div>
-                <!--CODIGO DE ITEM-->
-                <div class="col-sm-2">
-                    <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                        <mat-label>Codigo</mat-label>
-                        <input matInput placeholder="Placeholder" formControlName="codProd" name="codProd">
-                    </mat-form-field>
 
-                </div>
-                <!--DESCRIPCION DEL ITEM-->
-                <div class="col-sm-6">
-                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
-                      <mat-label>Descripción</mat-label>
-                      <input matInput placeholder="Placeholder" formControlName="desProd" name="desProd">
-                    </mat-form-field>
-                </div>
-                <!--CANTIDAD DEL ITEM-->
-                <div class="col-sm-2">
-                    <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                        <mat-label>Cant</mat-label>
-                        <input matInput type="number" formControlName="cantProd" name="cantProd">
-                    </mat-form-field>
-                </div>
-                <!--
-                <div class="col-sm-2 p-1">
-                    <button mat-raised-button color="primary" type="button" (click)="addElement()">Agregar</button>
-                </div>
-                -->
-            </div>
-          </div>
-        </div>
-        <!--FIN AÑADIR ITEMS-->
          <!--DETALLE (TABLA) DE PEDIDO-->
         <div class="row">
           <div class="col-sm-12">
@@ -323,7 +363,7 @@
 
                   <!-- precio Column -->
                   <ng-container matColumnDef="precio">
-                    <th mat-header-cell *matHeaderCellDef>P.U({{arcgmo.simbolo}}) </th>
+                    <th mat-header-cell *matHeaderCellDef>P.U</th>
                     <td mat-cell *matCellDef="let d"> {{d.precio | number : '1.4-4'}} </td>
                   </ng-container>
 
@@ -360,8 +400,8 @@
         <br>
         <!--TOTALES-->
         <mat-card>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
+            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{totalGeneral | number : '1.2-2'}}</button>
+            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{totalGeneral | number : '1.2-2'}}</button>
         </mat-card>
         <!--FIN DE TOTALES-->
     </form>

@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { DatosClienteDTO } from './../../../DTO/DatosClienteDTO';
 import { ArccmcService } from './../../../services/arccmc.service';
 import { map, switchMap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { PedidoService } from './../../../services/pedido.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -40,12 +40,12 @@ import { MatRadioChange } from '@angular/material/radio';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemsDialogoComponent } from '../../articulo/items-dialogo/items-dialogo.component';
 import { BuscarItem } from '../../../models/buscar-item';
-import { Varinda1ps } from '../../../models/varinda1ps';
 import { Detpedido } from '../../../models/detpedido';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { LEADING_TRIVIA_CHARS } from '@angular/compiler/src/render3/view/template';
+
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -189,10 +189,13 @@ export class PedidoEdicionComponent implements OnInit {
       ruc: new FormControl(),
       racSoc: new FormControl()
     });
+
     this.groupArticulo = new FormGroup({
       codProd: new FormControl(),
       desProd: new FormControl(),
-      cantProd: new FormControl()
+      umProd: new FormControl({ value: 'NIU', disabled: false }, Validators.required),
+      precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
+      cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
     });
 
     this.getCliente('99999999998');
@@ -302,6 +305,7 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
   // VAMOS AGREGAR LOS ITEMS
+  /*
   public agregar(varinda1sp: Varinda1ps): void {
 
     if (this.articuloSeleccionado) {
@@ -372,6 +376,7 @@ export class PedidoEdicionComponent implements OnInit {
     }
 
   }
+  */
   removerDetalle(index: number) {
     this.detallePedido.splice(index, 1);
     this.getTotal();
@@ -384,24 +389,25 @@ export class PedidoEdicionComponent implements OnInit {
   operar() {
 
     let idPedido = new IdArpfoe;
-    idPedido.cia = sessionStorage.getItem('cia');
+    idPedido.noCia = sessionStorage.getItem('cia');
     idPedido.noOrden = this.orden;
     let pedido = new Arpfoe;
-    pedido.idArpfoe = idPedido;
+    pedido.arpfoePK = idPedido;
     pedido.grupo = '00';
     pedido.noCliente = this.codCliente;
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = '1315';
     pedido.codFPago ='01';
+    /*
     pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fechaEntrega = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fechaEntregaReal =moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    pedido.fechaVence =moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    pedido.fechaVence =moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');*/
     pedido.tipoPrecio = 'F8';
     pedido.moneda = 'SOL';
-    pedido.tipoCambio = '3.50';
+    //pedido.tipoCambio = '3.50';
     pedido.subTotal =this.subTotal;
     pedido.tImpuesto = this.totalIGV;
     pedido.tPrecio = this.totalGeneral;
@@ -417,11 +423,11 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.tValorVenta = this.subTotal;
     pedido.almaOrigen = '1A001';
     pedido.almaDestino = '1XLIE';
-    pedido.noClienteSalida = this.codCliente;
+    //pedido.noClienteSalida = this.codCliente;
     pedido.totalBruto= this.subTotal;
-    pedido.codTPed1='1352';
+    /*pedido.codTPed1='1352';
     pedido.codTPedb='1353';
-    pedido.codTPedn='1214';
+    pedido.codTPedn='1214';*/
     pedido.centro=sessionStorage.getItem('centro');
     pedido.codCaja ='C12';
     pedido.cajera = '000002';
@@ -440,8 +446,8 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.pedidoService.registraPedido(ped).pipe(switchMap(()=>{
       let correl = new CorrelDTO();
-      correl.cia = ped.pedido.idArpfoe.cia;
-      correl.orden = ped.pedido.idArpfoe.noOrden;
+      /*correl.cia = ped.pedido.idArpfoe.no;
+      correl.orden = ped.pedido.idArpfoe.noOrden;*/
       correl.centro = ped.pedido.centro;
       return null;
       //return this.pedidoService.actualizaCorrel(correl);
@@ -455,7 +461,9 @@ export class PedidoEdicionComponent implements OnInit {
       setTimeout(() => {
         this.limpiarControles();
       }, 2000)
-    })
+    });
+
+
   }
   limpiarControles() {
     this.detallePedido = [];
@@ -734,6 +742,18 @@ export class PedidoEdicionComponent implements OnInit {
   }
   //FIN
 
+  //TOTAL DE IGV
+  private getTotalIgv(): number{
+    return this.detPedidos.map(t => t.igv).reduce((acc, value) => acc + value, 0);
+  }
+  //FIN
+
+  //TOTAL DE P.U
+  private getTotalPU(): number{
+    return this.detPedidos.map(t => t.precio).reduce((acc, value) => acc + value, 0);
+  }
+  //FIN
+
   //CALCULAR RESTA
   public calcularResta(dp: Detpedido): void{
     let cantidad = dp.cantidad - 1;
@@ -766,25 +786,26 @@ export class PedidoEdicionComponent implements OnInit {
 
   //CALCULAR SUMA
   public calcularSuma(dp: Detpedido): void{
-
+      //console.log(dp);
       let codigo = dp.codigo;
       let cantidad = dp.cantidad + 1;
 
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
            if(codigo === item.codigo){
               item.cantidad = cantidad;
-              item.igv = item.calcularIgv();
-              item.total = item.calcularTotal();
+              item.igv = (dp.precio * 0.18 )* cantidad;
+              item.total = (dp.precio * 1.18 )* cantidad;
            }
            return item;
       } );
+
       //total de general
       this.totalGeneral = this.getTotalPedido();
-      this.Toast.fire({
+      /*this.Toast.fire({
         icon: 'success',
         title: `Se aumento la cantidad del cod: ${dp.codigo}`
-      });
-   }
+      });*/
+  }
 
   //ELIMINAR ARTICULO
   public eliminarArticulo(dp: Detpedido): void{
@@ -857,7 +878,7 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
   //FIN
-  //CREACION DE UNA FACTURA
+  //CREACION DE UNA BOLETA
   public crearBoleta(){
     Swal.fire({
       title: '¿Está seguro de crear una BOLETA?',
@@ -868,7 +889,7 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-
+          this.crear_pedido();
       }
 
     });
@@ -885,11 +906,163 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-
+        this.crear_pedido();
       }
 
     });
   }
   //FIN
 
+  //CREAR PEDIDO
+  public crear_pedido(): void{
+    let correlativo = '0000000';
+    let cortar = this.arfacc.consDesde.toString().length  * -1;
+    this.orden = this.arfacc.arfaccPK.serie+correlativo.slice(0,cortar)+this.arfacc.consDesde;
+    //PEDIDO PK
+    let arpfoePK = new IdArpfoe();
+    arpfoePK.noCia = sessionStorage.getItem('cia');
+    arpfoePK.noOrden = this.orden;
+    //PEDIDO
+    let pedido = new Arpfoe();
+    pedido.arpfoePK = arpfoePK;
+    pedido.grupo = '00';
+    pedido.noCliente = this.groupEmpresa.get("ruc").value;
+    pedido.division = '003';
+    pedido.noVendedor = sessionStorage.getItem('cod');
+    pedido.codTPed = this.transaccion.codTPed;
+    pedido.codFPago =this.tapfopa.tapfopaPK.codFpago;
+
+    pedido.fechaRegistro = new Date( moment(this.fechaSeleccionada).format('YYYY-MM-DD') );
+    pedido.fAprobacion = new Date( moment(this.fechaSeleccionada).format('YYYY-MM-DD') );
+    pedido.fRecepcion = new Date( moment(this.fechaSeleccionada).format('YYYY-MM-DD') );
+
+    pedido.tipoPrecio = this.arfatp.idArfa.tipo;
+    pedido.moneda = this.arcgmo.moneda;
+    pedido.tipoCambio = this.tipocambio;
+
+    pedido.subTotal =this.getTotalPU();
+    pedido.tImpuesto = this.getTotalIgv();
+    pedido.tPrecio = this.getTotalPU();
+    pedido.impuesto = 18;
+    pedido.estado= 'E';
+    pedido.bodega = '1A001';
+    pedido.igv = 18;
+    pedido.direccionComercial = this.direccion;
+    pedido.motivoTraslado = '1';
+    pedido.nombreCliente = this.nomCli;
+    pedido.codClasPed ='V';
+    pedido.tipoPago = '20';
+    pedido.tValorVenta = this.getTotalPU();
+    pedido.almaOrigen = '1A001';
+    pedido.almaDestino = '1XLIE';
+    //pedido.noClienteSalida = this.codCliente;
+    pedido.totalBruto= this.getTotalPU();
+    /*pedido.codTPed1='1352';
+    pedido.codTPedb='1353';
+    pedido.codTPedn='1214';*/
+    pedido.centro=sessionStorage.getItem('centro');
+    pedido.codCaja ='C11';
+    pedido.cajera = '000002';
+    pedido.centroCosto='3201';
+
+    pedido.operExoneradas = 0;
+    pedido.operGratuitas = 0;
+    pedido.operGravadas=this.getTotalPU();
+    pedido.operInafectas = 0;
+    pedido.tipoOperacion = '0101';
+    pedido.emailPedido = this.email;
+
+    let contador = 0;
+    let dps: Arpfol[] = [];
+    for(let x of this.detPedidos){
+        let dPedidoPK = new IdArpfol();
+        dPedidoPK.noArti = sessionStorage.getItem('cia');
+        dPedidoPK.noOrden = this.orden;
+        dPedidoPK.noArti = x.codigo;
+
+        let dPedido = new Arpfol();
+        dPedido.arpfolPK = dPedidoPK;
+        dPedido.noCliente = this.groupEmpresa.get("ruc").value;
+        dPedido.tipoArti = 'C';
+        dPedido.artiNuevo = 'N';
+        dPedido.bodega = '1A001';
+        dPedido.cantComp = x.cantidad;
+        dPedido.cantSolicitada = x.cantidad;
+        dPedido.cantEntreg = x.cantidad;
+        dPedido.cantAsignada = x.cantidad;
+        dPedido.cantReasignada = 0;
+        dPedido.precio = x.precio;
+        dPedido.totLinea = x.cantidad * x.precio;
+        dPedido.igv = 18;
+        dPedido.noLinea = contador++;
+        dPedido.impIgv = x.igv;
+        dPedido.totalLin = x.total;
+        dPedido.descripcion = x.descripcion;
+        dPedido.tipoBs = x.tipo;
+        dPedido.operExoneradas = 0;
+        dPedido.operGratuitas = 0;
+        dPedido.operGravadas = x.cantidad * x.precio;
+        dPedido.tipoAfectacion = '10';
+        dPedido.medida = x.medida;
+        dPedido.icbper = 0;
+        dPedido.precioUni = 0;
+        dps.push(dPedido);
+    }
+    pedido.arpfolList = dps;
+
+    console.log(pedido);
+
+  }
+
+  //AÑADIR ITEMS LIBRES
+  public addItem(){
+    //console.log(this.groupArticulo.value);
+    let cod: string = this.groupArticulo.get('codProd').value;
+    let um: string = this.groupArticulo.get('umProd').value;
+    let descrip: string = this.groupArticulo.get('desProd').value;
+    let cantidad: number = this.groupArticulo.get('cantProd').value;
+
+    let precio: number = this.groupArticulo.get('precProd').value / 1.18;
+    let igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+
+    let total = (precio * cantidad) + igv;
+
+    let d = new Detpedido(this.detPedidos.length +1,'L',cod.toUpperCase(),um.toUpperCase(),descrip.toUpperCase(),cantidad,precio,igv,total);
+    //console.log(d);
+    if (precio <= 0){
+      this.snackBar.open(`El precio no debe ser CERO.`,'Salir',
+      {
+        duration: 1000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center'
+      });
+    }else{
+        //BUSCAMOS SI EXISTE ITEM
+        let dp = this.detPedidos.find(x => x.codigo === d.codigo);
+        //console.log(dp);
+        if (dp === undefined) {
+          this.detPedidos.push(d);
+          this.snackBar.open(`Se agrego el articulo`,'Salir',
+          {
+            duration: 1000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+          this.llenarTablaArticulos();
+          //total de general
+          this.totalGeneral = this.getTotalPedido();
+        }else{
+          //EL CODIGO YA EXISTE
+          this.snackBar.open(`El codigo ya existe del articulo ${dp.descripcion}`,'Salir',
+          {
+            duration: 1000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+        }
+    }
+
+
+  }
+ //FIN
 }

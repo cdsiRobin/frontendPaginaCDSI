@@ -1,5 +1,3 @@
-
-
 export class Detpedido {
   item: number;
   tipo: string;
