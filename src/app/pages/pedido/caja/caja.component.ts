@@ -9,9 +9,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Arcaaccaj } from 'src/app/models/Arcaaccaj';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import * as moment from 'moment';
 import { CajaEdicionComponent } from './caja-edicion/caja-edicion.component';
+import {MatSnackBar} from '@angular/material/snack-bar';
 @Component({
   selector: 'app-caja',
   templateUrl: './caja.component.html',
@@ -39,9 +39,7 @@ export class CajaComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    //this.verUsuarios();
-    this.centro=sessionStorage.getItem('centro');
+    this.centro = sessionStorage.getItem('centro');
     this.maxFecha.setHours(0);
     this.maxFecha.setMinutes(0);
     this.maxFecha.setSeconds(0);
@@ -61,13 +59,13 @@ export class CajaComponent implements OnInit {
       });
     });
   }
-  regresar() {
+  regresar(): void {
     this.router.navigateByUrl('/pedido');
   }
-  buscar() {
+  buscar(): void {
     this.datosCaja();
   }
-  datosCaja() {
+  datosCaja(): void {
     this.fechaSeleccionada.setHours(0);
     this.fechaSeleccionada.setMinutes(0);
     this.fechaSeleccionada.setSeconds(0);
@@ -84,7 +82,7 @@ export class CajaComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
     });
   }
-  eliminar(caja: Arcaaccaj) {
+  eliminar(caja: Arcaaccaj): void {
     this.fechaSeleccionada.setHours(0);
     this.fechaSeleccionada.setMinutes(0);
     this.fechaSeleccionada.setSeconds(0);
@@ -99,7 +97,7 @@ export class CajaComponent implements OnInit {
     })
   }
 
-  abrirDialogo(caja?: Arcaaccaj) {
+  abrirDialogo(caja?: Arcaaccaj): void {
     let caj = caja != null ? caja : new Arcaaccaj();
     this.dialog.open(CajaEdicionComponent, {
       maxWidth: '35%',

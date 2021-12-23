@@ -3,7 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  //URL_BASE: 'http://cdsiapi.hopto.org/spring-boot-backend-inve/api'
+  URL_BASE: 'http://localhost:8444/api'
+  //URL_BASE: 'http://190.43.6.142:8444/api'
 };
 
 /*

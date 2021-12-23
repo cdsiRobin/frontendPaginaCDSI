@@ -99,6 +99,86 @@ body {
     font-size: 200%;
 }
 
-.mdi-whatsapp{
-  font-size: 20px;
+/*MENU DE VENDEDOR*/
+.example-container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.example-sidenav-container {
+  flex: 1;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.titulopv{
+  color: white;
+}
+.nCia{
+  font-size: 12px;
+  padding: 0px;
+  margin-bottom: 0px;
+}
+/*FIN*/
+
+/*COLOR DEL NAVEGADOR*/
+.navegador{
+  background: #054b78;
+  color: #fff;
+}
+/*FIN*/
+
+/*SHARED*/
+.sharedUsu{
+  font-weight:bold;
+}
+/*FIN*/
+
+.materialAncho{
+  width: 100%;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
+/*TABLA DE ITEMS*/
+table {
+  width: 100%;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+  cursor: pointer;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+/*FIN TABLA DE ITEMS*/
+
+.centrarTexto {
+  text-align: center;
+}
+
+.derechoTexto {
+  text-align: right;
+}
+
 }

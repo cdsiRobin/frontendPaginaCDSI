@@ -1,8 +1,8 @@
 import { IdArpfoe } from './IdArpfoe';
+import { Arpfol } from './Arpfol';
 export class Arpfoe {
 
-  idArpfoe: IdArpfoe;
-
+  arpfoePK: IdArpfoe;
   grupo: string;
   noCliente: string;
   division: string;
@@ -12,21 +12,19 @@ export class Arpfoe {
   fRecepcion: string;
   fechaRegistro: string;
   fAprobacion: string;
-  fechaEntrega: string;
-  fechaEntregaReal: string;
-  fechaVence: string;
   tipoPrecio: string;
   moneda: string;
-  tipoCambio: string;
+  tipoCambio: number;
   subTotal: number;
   tImpuesto: number;
   tPrecio: number;
   impuesto: number;
   estado: string;
   bodega: string;
-  cuser:string;
   igv: number;
   indGuiado: string;
+  noSolic: string;
+  observa: string;
   perDeGracia: number;
   direccionComercial: string;
   codiDepa: string;
@@ -35,8 +33,9 @@ export class Arpfoe {
   motivoTraslado: string;
   nombreCliente: string;
   ruc: string;
-  noFactu: string;
-  tDescuento: string;
+  tDescuento: number;
+  fechaDocRef: Date;
+  tipoDocRef: string;
   codClasPed: string;
   tipoPago: string;
   tDsctoGlobal: number;
@@ -47,22 +46,10 @@ export class Arpfoe {
   almaOrigen: string;
   almaDestino: string;
   tipoArti: string;
-  nombreDiji: string;
-  direccionDigi: string;
   tipoDocCli: string;
   numDocCli: string;
-  codDirEntrada: string;
-  codDirSalida: string;
-  noClienteSalida: string;
-  estadoAsignacion: string;
-  vigPrecInicio: string;
-  vigPrecFinal: string;
-  listaPrecAnt: string;
-  usuarioAprob: string;
   totalBruto: number;
-  codTPed1: string;
-  codTPedb: string;
-  codTPedn: string;
+  tipo: string;
   indPvent: string;
   centro: string;
   indFactura1: string;
@@ -70,17 +57,20 @@ export class Arpfoe {
   codCaja: string;
   cajera: string;
   centroCosto: string;
+  indNotaCred: string;
+  indExportacion: string;
+  consumo: string;
   indFerias: string;
   indProvincia: string;
   redondeo: number;
   indCodBarra: string;
-  usuCrea: string;
-  fecModi: string;
-  usuModi: string;
-  tipoOperacion: string;
-  operGravadas: number;
-  operInafectas: number;
   operExoneradas: number;
   operGratuitas: number;
+  operGravadas: number;
+  operInafectas: number;
+  tipoOperacion: string;
   emailPedido: string;
+
+  arpfolList: Arpfol[];
+
 }

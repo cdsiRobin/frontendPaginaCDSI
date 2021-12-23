@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { Company } from '../models/company';
-import { map } from 'rxjs/operators';
 import { OtherService } from './other.service';
 import { Usuario } from '../models/usuario';
 
@@ -19,7 +18,7 @@ export class CompanyService {
   }
   // METODO QUE NOS TRAE UNA COMPAÑIA
   public getCompany(cia: Usuario): Observable<Company> {
-    return this.http.get<Company>(this.other.getUrl() + `/company/${cia}`)
+    return this.http.get<Company>(this.other.getUrl() + `/company/${cia}`);
   }
 
 

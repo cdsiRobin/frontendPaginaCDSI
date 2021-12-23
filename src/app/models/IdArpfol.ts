@@ -1,5 +1,5 @@
 export class IdArpfol {
-  cia: string;
+  noCia: string;
   noOrden: string;
   noArti: string;
 }

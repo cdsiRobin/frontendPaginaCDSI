@@ -6,7 +6,7 @@ import { ComponentsModule } from './../components/components.module';
 import { AppRoutingModule } from './../app-routing.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PagesComponent } from './pages.component';
@@ -39,11 +39,14 @@ import { RegistroComponent } from './registro/registro.component';
 import { RgtacdeComponent } from './rgtacde/rgtacde.component';
 import { UsuarioComponent } from './usuario/usuario.component';
 import { Login2Component } from './login2/login2.component';
-import { PedidoComponent } from './pedido/pedido.component';
-import { PedidoEdicionComponent } from './pedido/pedido-edicion/pedido-edicion.component';
+
 import { MenuPventaComponent } from './login2/menu-pventa/menu-pventa.component';
-import { CajaComponent } from './pedido/caja/caja.component';
-import { CajaEdicionComponent } from './pedido/caja/caja-edicion/caja-edicion.component';
+
+import {PedidoModule} from './pedido/pedido.module';
+import { ArfafeModule } from './facturacion/arfafe.module';
+import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
+
+
 
 @NgModule({
   declarations: [
@@ -79,15 +82,14 @@ import { CajaEdicionComponent } from './pedido/caja/caja-edicion/caja-edicion.co
     RgtacdeComponent,
     UsuarioComponent,
     Login2Component,
-    CajaComponent,
-    CajaEdicionComponent,
-    PedidoComponent,
-    PedidoEdicionComponent,
-    MenuPventaComponent
-  ],exports: [
+    MenuPventaComponent,
+    ItemsDialogoComponent
+  ],
+  exports: [
     ProgressComponent,
     Grafica1Component,
     PagesComponent,
+    SharedModule,
   ],
   imports: [
     CommonModule,
@@ -98,6 +100,8 @@ import { CajaEdicionComponent } from './pedido/caja/caja-edicion/caja-edicion.co
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
+    PedidoModule,
+    ArfafeModule,
     MaterialModule
   ]
 })

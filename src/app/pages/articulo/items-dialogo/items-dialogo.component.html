@@ -1,0 +1,77 @@
+<div class="row">
+
+   <div class="col-md-12">
+
+      <!--MENU CANTIDAD DE ITEMS-->
+      <mat-dialog-actions align="end">
+        <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+          <mat-icon [matBadge]="cantidadItems" matBadgeColor="warn">shopping_cart</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <mat-list role="list" *ngFor="let v of varinda1pss2">
+            <mat-list-item role="listitem">Cod: {{v.noArti}}</mat-list-item>
+            <mat-divider></mat-divider>
+          </mat-list>
+        </mat-menu>
+      </mat-dialog-actions>
+      <!--FIN MENU CANTIDAD DE ITEMS-->
+      <mat-dialog-content class="mat-typography">
+          <!--TABLA-->
+      <mat-form-field appearance="standard">
+        <mat-label>BUSCAR</mat-label>
+        <input matInput (keyup)="filtrarItem($event)" placeholder="Buscar Item" #input>
+      </mat-form-field>
+
+      <div class="mat-elevation-z8">
+        <table mat-table [dataSource]="dataSource" matSort>
+
+          <!-- Codigo -->
+          <ng-container matColumnDef="Codigo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Codigo </th>
+            <td mat-cell *matCellDef="let row"> {{row.noArti}} </td>
+          </ng-container>
+
+          <!-- UM -->
+          <ng-container matColumnDef="UM">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> U.M </th>
+            <td mat-cell *matCellDef="let row"> {{row.medida}} </td>
+          </ng-container>
+
+          <!-- Nombre -->
+          <ng-container matColumnDef="Nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+            <td mat-cell *matCellDef="let row"> {{row.descripcion}} </td>
+          </ng-container>
+
+          <!-- Precio -->
+          <ng-container matColumnDef="Precio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Precio Venta </th>
+            <td mat-cell *matCellDef="let row"> {{1.18*row.precio | number : '1.2-2'}} </td>
+          </ng-container>
+
+          <!-- Stock -->
+          <ng-container matColumnDef="Stock">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Stock </th>
+            <td mat-cell *matCellDef="let row" [style.color]="(row.stock == 0) ? 'red' : 'blue'"> {{row.stock}} </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="example-element-row" (click)="AgregarItems(row)"></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No hay datos que coincidan con el filtro : "{{input.value}}"</td>
+          </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+      </div>
+      <!--FIN TABLA-->
+      </mat-dialog-content>
+      <mat-dialog-actions align="end">
+        <button mat-button (click)="onNoClick()">Cerrar</button>
+        <button mat-raised-button color="primary" [mat-dialog-close]="detpedidos" cdkFocusInitial>Ok</button>
+      </mat-dialog-actions>
+
+   </div>
+</div>

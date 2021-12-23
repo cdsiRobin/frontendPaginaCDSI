@@ -97,7 +97,7 @@ export class LartiComponent implements OnInit {
     this.tipo= 'F8';
     this.listarCatalogos();
     this.listarAlmacenes();
-    this.listarPrecios();
+    //this.listarPrecios();
     this.listarLineas();
     this.listarMarcas();
     this.filtrarCatalogo();
@@ -109,9 +109,11 @@ export class LartiComponent implements OnInit {
   listarAlmacenes() {
     this.almacenes$ = this.serviAlma.getAlmacenes(this.usu);
   }
+  /*
   listarPrecios() {
-    this.tipos$ = this.serviPre.getPrecios(this.usu);
+    this.tipos$ = this.serviPre.getAllListaPrecio(this.usu.cia,'S');
   }
+  */
   listarMarcas() {
     this.marcas$ = this.servMar.getMarcas(this.usu);
   }

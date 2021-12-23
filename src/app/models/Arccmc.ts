@@ -1,4 +1,5 @@
 import { IdArccmc } from './IdArccmc';
+import { ArcctdaEntity } from './arcctda-entity';
 export class Arccmc {
   objIdArc: IdArccmc;
   nombre: string;
@@ -13,4 +14,5 @@ export class Arccmc {
   pais: string;
   documento: string;
   email: string;
+  arcctdaEntity: ArcctdaEntity[];
 }

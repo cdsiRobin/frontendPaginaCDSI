@@ -25,6 +25,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { NuestroProductosComponent } from './nuestro-productos/nuestro-productos.component';
+import {PedidoRoutingModule} from './pedido/pedido-routing.module';
+import { ArfafeRoutingModule } from './facturacion/arfafe-routing.module';
 
 const routes: Routes = [
 
@@ -32,6 +34,7 @@ const routes: Routes = [
     path: 'dashboard', component: PagesComponent,
     children: [
       { path: '', component: DashboardComponent },
+      { path: 'log_arti', component: Login2Component },
       { path: 'consulta-especial', component: ConsultaEspecialComponent },
       { path: 'cdsi', component: NuestraEmpresaComponent },
       {
@@ -62,24 +65,18 @@ const routes: Routes = [
       { path: 'tra_rea', component: TrabajosRealizadosComponent },
       { path: 'reg_asis', component: LoginComponent },
       { path: 'home', component: HomeComponent } // REGISTRO DE ASISTENCIA
-
     ]
   },
-  { path: 'log_arti', component: Login2Component },
   { path: 'articulo', component: LartiComponent },
-  {
-    path: 'pedido', component: PedidoComponent, children: [
-      { path: 'nuevo', component: PedidoEdicionComponent },
-      { path: 'edicion/:orden', component: PedidoEdicionComponent },
-      { path: 'caja', component: CajaComponent }
-    ]
-  }
-
 
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [
+    RouterModule.forChild(routes),
+    PedidoRoutingModule,
+    ArfafeRoutingModule
+  ],
   exports: [RouterModule]
 })
 export class PagesRoutingModule { }
