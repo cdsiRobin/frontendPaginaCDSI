@@ -173,3 +173,7 @@ tr.example-element-row:not(.example-expanded-row):active {
 .derechoTexto {
   text-align: right;
 }
+
+th.mat-header-cell {
+  text-align: center;
+}

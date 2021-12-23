@@ -44,8 +44,7 @@ import { Detpedido } from '../../../models/detpedido';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
-import { LEADING_TRIVIA_CHARS } from '@angular/compiler/src/render3/view/template';
-
+import { ArpfoeService } from '../../../services/arpfoe.service';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -119,7 +118,7 @@ export class PedidoEdicionComponent implements OnInit {
   public arcctdas: ArcctdaEntity[];
   public arcctda: ArcctdaEntity;
 
-  public ubigeo = '';
+  public ubigeo: string;
 
   public fechaP = new FormControl(new Date());
 
@@ -128,7 +127,7 @@ export class PedidoEdicionComponent implements OnInit {
   public detPedidos :Detpedido[] =[];
   //NUEVO CAMBIOS
   //displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
-  displayedColumns: string[] = ['tipo','codigo','medida','descripcion','resta','cantidad','suma','precio', 'igv', 'total','eliminar'];
+  displayedColumns: string[] = ['tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total','eliminar'];
   //FIN
   dataSource: MatTableDataSource<Detpedido>;
   @ViewChild(MatSort) sort: MatSort;
@@ -150,6 +149,7 @@ export class PedidoEdicionComponent implements OnInit {
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
               public arfaccService: ArfaccService,
+              public arpfoeService: ArpfoeService,
               public transaccionService: TransaccionService,
               public arcgtcService: ArcgtcService,
               public arfatpService: ArfatpService,
@@ -513,7 +513,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.arfacc.arfaccPK = this.arfaccPK;
     this.arfacc.activo = 'S';
     this.arfaccService.getSerieAndCorrelativoPedido(this.arfacc).subscribe(json => {
-      //this.arfaccs = json.resultado;
+
       this.arfaccs = json;
       if (this.arfaccs.length === 1) {
          this.arfacc = this.arfaccs[0];
@@ -785,10 +785,10 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
   //CALCULAR SUMA
-  public calcularSuma(dp: Detpedido): void{
-      //console.log(dp);
+  public calcularSuma(event: any,dp: Detpedido): void{
+      let cant: number = event.target.value;
       let codigo = dp.codigo;
-      let cantidad = dp.cantidad + 1;
+      let cantidad = cant;
 
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
            if(codigo === item.codigo){
@@ -889,7 +889,17 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-          this.crear_pedido();
+          if(this.totalGeneral <= 700){
+            this.crear_pedido('S','N');
+          }else{
+            this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+            {
+              duration: 5000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center'
+            });
+          }
+
       }
 
     });
@@ -906,7 +916,7 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.crear_pedido();
+        this.crear_pedido('N','S');
       }
 
     });
@@ -914,7 +924,7 @@ export class PedidoEdicionComponent implements OnInit {
   //FIN
 
   //CREAR PEDIDO
-  public crear_pedido(): void{
+  public crear_pedido(indBoleta: string, indFactura: string): void{
     let correlativo = '0000000';
     let cortar = this.arfacc.consDesde.toString().length  * -1;
     this.orden = this.arfacc.arfaccPK.serie+correlativo.slice(0,cortar)+this.arfacc.consDesde;
@@ -926,15 +936,25 @@ export class PedidoEdicionComponent implements OnInit {
     let pedido = new Arpfoe();
     pedido.arpfoePK = arpfoePK;
     pedido.grupo = '00';
+
+    pedido.indPvent = 'S';
+    pedido.indGuiado = 'N';
+    pedido.codiDepa = this.ubigeo.substring(0,2);//150137
+    pedido.codiProv = this.ubigeo.substring(2,2);
+    pedido.codiDist = this.ubigeo.substring(4,2);
+    pedido.motivoTraslado = '1';
+    pedido.indBoleta1 = indBoleta;
+    pedido.indFactura1 = indFactura;
+
     pedido.noCliente = this.groupEmpresa.get("ruc").value;
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
     pedido.codFPago =this.tapfopa.tapfopaPK.codFpago;
 
-    pedido.fechaRegistro = new Date( moment(this.fechaSeleccionada).format('YYYY-MM-DD') );
-    pedido.fAprobacion = new Date( moment(this.fechaSeleccionada).format('YYYY-MM-DD') );
-    pedido.fRecepcion = new Date( moment(this.fechaSeleccionada).format('YYYY-MM-DD') );
+    pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
+    pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
+    pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
 
     pedido.tipoPrecio = this.arfatp.idArfa.tipo;
     pedido.moneda = this.arcgmo.moneda;
@@ -949,7 +969,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.igv = 18;
     pedido.direccionComercial = this.direccion;
     pedido.motivoTraslado = '1';
-    pedido.nombreCliente = this.nomCli;
+    pedido.nombreCliente = this.groupEmpresa.get("racSoc").value;
     pedido.codClasPed ='V';
     pedido.tipoPago = '20';
     pedido.tValorVenta = this.getTotalPU();
@@ -975,8 +995,9 @@ export class PedidoEdicionComponent implements OnInit {
     let contador = 0;
     let dps: Arpfol[] = [];
     for(let x of this.detPedidos){
+        contador = contador + 1;
         let dPedidoPK = new IdArpfol();
-        dPedidoPK.noArti = sessionStorage.getItem('cia');
+        dPedidoPK.noCia = sessionStorage.getItem('cia');
         dPedidoPK.noOrden = this.orden;
         dPedidoPK.noArti = x.codigo;
 
@@ -994,7 +1015,7 @@ export class PedidoEdicionComponent implements OnInit {
         dPedido.precio = x.precio;
         dPedido.totLinea = x.cantidad * x.precio;
         dPedido.igv = 18;
-        dPedido.noLinea = contador++;
+        dPedido.noLinea = contador;
         dPedido.impIgv = x.igv;
         dPedido.totalLin = x.total;
         dPedido.descripcion = x.descripcion;
@@ -1010,7 +1031,26 @@ export class PedidoEdicionComponent implements OnInit {
     }
     pedido.arpfolList = dps;
 
+    //VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
+    this.arfaccService.saveArfacc(this.arfacc).subscribe( dato => {
+      this.snackBar.open('Se actualizo el correlativo del pedido ','Salir',
+          {
+            duration: 1000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+    });
+
+    //VAMOS A GUARDAR EL PEDIDO
     console.log(pedido);
+    this.arpfoeService.savePedido(pedido).subscribe(dato => {
+      this.snackBar.open('Se Guardo el pedido','Salir',
+      {
+        duration: 3000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center'
+      });
+    });
 
   }
 

@@ -9,9 +9,9 @@ export class Arpfoe {
   noVendedor: string;
   codTPed: string;
   codFPago: string;
-  fRecepcion: Date;
-  fechaRegistro: Date;
-  fAprobacion: Date;
+  fRecepcion: string;
+  fechaRegistro: string;
+  fAprobacion: string;
   tipoPrecio: string;
   moneda: string;
   tipoCambio: number;

@@ -339,26 +339,12 @@
                     <td mat-cell *matCellDef="let d"> {{d.descripcion}} </td>
                   </ng-container>
 
-                  <!-- resta Column -->
-                  <ng-container matColumnDef="resta">
-                    <th mat-header-cell *matHeaderCellDef> </th>
-                    <button mat-icon-button *matCellDef="let d" (click)="calcularResta(d)">
-                      <mat-icon>remove_circle_outline</mat-icon>
-                    </button>
-                  </ng-container>
-
                   <!-- cantidad Column -->
                   <ng-container matColumnDef="cantidad">
                     <th mat-header-cell *matHeaderCellDef> Cantidad </th>
-                    <td class="centrarTexto" mat-cell *matCellDef="let d"> {{d.cantidad}} </td>
-                  </ng-container>
-
-                  <!-- suma Column -->
-                  <ng-container matColumnDef="suma">
-                    <th mat-header-cell *matHeaderCellDef> </th>
-                    <button mat-icon-button *matCellDef="let d" (click)="calcularSuma(d)">
-                      <mat-icon>add_circle_outline</mat-icon>
-                    </button>
+                    <td mat-cell *matCellDef="let d">
+                      <input type="number" (keyup)="calcularSuma($event,d)" minlength="1" min="1" placeholder="Ingrese cantidad" value={{d.cantidad}} />
+                    </td>
                   </ng-container>
 
                   <!-- precio Column -->
