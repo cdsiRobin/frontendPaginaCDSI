@@ -384,7 +384,7 @@ export class PedidoEdicionComponent implements OnInit {
   operar() {
 
     let idPedido = new IdArpfoe;
-    idPedido.cia = sessionStorage.getItem('cia');
+    idPedido.noCia = sessionStorage.getItem('cia');
     idPedido.noOrden = this.orden;
     let pedido = new Arpfoe;
     pedido.idArpfoe = idPedido;
@@ -392,7 +392,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.noCliente = this.codCliente;
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = '1315';
-    pedido.codFPago ='01';
+    pedido.codFpago ='01';
     pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
@@ -440,7 +440,7 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.pedidoService.registraPedido(ped).pipe(switchMap(()=>{
       let correl = new CorrelDTO();
-      correl.cia = ped.pedido.idArpfoe.cia;
+      correl.cia = ped.pedido.idArpfoe.noCia;
       correl.orden = ped.pedido.idArpfoe.noOrden;
       correl.centro = ped.pedido.centro;
       return null;

@@ -1,6 +1,6 @@
 export class IdArpfoe {
 
-  cia: string;
+  noCia: string;
   noOrden: string;
 
 }

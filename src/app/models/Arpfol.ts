@@ -1,6 +1,7 @@
 import { IdArpfol } from './IdArpfol';
 export class Arpfol {
   idArpfol: IdArpfol;
+  arpfolPK: IdArpfol;
   grupo: string;
   noCliente: string;
   tipoArti: string;
@@ -31,4 +32,5 @@ export class Arpfol {
   operGravadas: number;
   operInafectas: number;
   operExoneradas: number;
+  medida: string;
 }

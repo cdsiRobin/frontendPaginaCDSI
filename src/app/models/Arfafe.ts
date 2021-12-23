@@ -1,5 +1,5 @@
-import { Arfafl } from '../pages/facturacion/new-arfafe/arfafe-new.component';
 import { ArfafePK } from './ArfafePK';
+import { Arfafl } from './arfafl';
 
 export class Arfafe {
 
@@ -10,25 +10,25 @@ export class Arfafe {
     GRUPO: string;
     no_CLIENTE: string;
     centro: string;
-    BODEGA: string;
+    bodega: string;
     fecha: Date;
-    TIPO_CLIENTE: string;
+    tipo_CLIENTE: string;
     nbr_CLIENTE: string;
     direccion: string;
     PLAZO: number;
-    NO_VENDEDOR: string;
+    no_VENDEDOR: string;
     tipo_PRECIO: string;
-    MONEDA: string;
+    moneda: string;
     TIPO_CAMBIO: number;
     PORC_DESC: number;
     NO_ORDEN: string;
     NO_ORDEN_DESC: string;
     TOT_LIN: number;
-    DESCUENTO: number;
+    descuento: number;
     SUB_TOTAL: number;
     IMPUESTO: number;
     IMP_ISC: number;
-    TOTAL: number;
+    total: number;
     IMPUESTO_DEV: number;
     TOTAL_DEV: number;
     OBSERV: string;
@@ -38,7 +38,7 @@ export class Arfafe {
     DOC_DEVOL: string;
     NO_DEVOL: string;
     FECHA_SYS: string;
-    IGV: number;
+    igv: number;
     TIPO_DOC_ALMA: string;
     NO_REFE_ALMA: string;
     TIPO_REFE_FACTU: string;
@@ -81,7 +81,7 @@ export class Arfafe {
     IND_DOC: string;
     CODI_PROFE: string;
     NO_CLIENTE_TERCE: string;
-    ALM_DESTINO: string;
+    alm_DESTINO: string;
     MOTIVO_NC: string;
     COD_T_PED: string;
     CONCEPTO: string;
@@ -90,12 +90,12 @@ export class Arfafe {
     NRO_LECTURA: string;
     TIPO_ACTIVO: string;
     NO_LIQ_SUC: string;
-    COD_CLAS_PED: string;
-    TIPO_FPAGO: string;
+    cod_CLAS_PED: string;
+    tipo_FPAGO: string;
     P_DSCTO_GLOBAL: number;
     ANO_DOC: string;
     VALOR_VENTA: number;
-    M_DSCTO_GLOBAL: number;
+    m_DSCTO_GLOBAL: number;
     FECHA_VENCE: string;
     codi_DEPA: string;
     codi_PROV: string;
@@ -122,8 +122,8 @@ export class Arfafe {
     TIPO_NCRED: string;
     IND_IGV: string;
     ALIAS: string;
-    IND_PVENT: string;
-    COD_CAJA: string;
+    ind_PVENT: string;
+    cod_CAJA: string;
     CAJERA: string;
     TIPO_DOC_EMP: string;
     NUM_DOC_EMP: string;
@@ -132,7 +132,7 @@ export class Arfafe {
     TIPO_DOC_LIQ: string;
     IND_NOTA_CRED: string;
     IND_EXPORTACION: string;
-    CENTRO_COSTO: string;
+    centro_COSTO: string;
     IND_FERIAS: string;
     IND_PROVINCIA: string;
     FEC_CREA: string;
