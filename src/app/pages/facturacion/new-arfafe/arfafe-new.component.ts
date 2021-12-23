@@ -1,11 +1,21 @@
 // new factura .ts component
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import { MatTableDataSource } from '@angular/material/table';
-import { merge, Observable, of } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map } from 'rxjs/operators';
+import { Infor } from 'src/app/interfaces/infor';
+import { Informacion } from 'src/app/interfaces/informacion';
 import { Arccmc } from 'src/app/models/Arccmc';
+import { Arfacc } from 'src/app/models/arfacc';
+import { ArfaccPK } from 'src/app/models/arfaccPK';
+import { Arfafe } from 'src/app/models/Arfafe';
+import { ArfafePK } from 'src/app/models/ArfafePK';
+import { Arfafl } from 'src/app/models/arfafl';
+import { arfaflPK } from 'src/app/models/arfaflPK';
+import { Arpfoe } from 'src/app/models/Arpfoe';
+import { IdArpfoe } from 'src/app/models/IdArpfoe';
 import { ArccmcService } from 'src/app/services/arccmc.service';
+import { ArfaccService } from 'src/app/services/arfacc.service';
+import { ArfafeService } from 'src/app/services/arfafe.service';
 import { ArticuloService } from 'src/app/services/articulo.service';
 import { PedidoService } from 'src/app/services/pedido.service';
 
@@ -15,167 +25,151 @@ import { PedidoService } from 'src/app/services/pedido.service';
   styleUrls: []
 })
 export class NewArfafeComponent implements OnInit {
-  groupEmpresa:FormGroup;
-  groupArticulo:FormGroup;
 
-  detalle: Arfafl[];
-  options: Arccmc[] = [];
+    detalle:Arfafe = new Arfafe();
+    cia: string;
+    doc: string;
+    fact: string;
+    tipoArfafe: string;
 
-  factuOptions: Arccmc[];
-  codProd = '';
-  desProd = '';
-  cantProd = 1;
   totalFactu:number = 0;
 
-  displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad',
-'pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
-  dataSource = new MatTableDataSource<FacturaElement>(ELEMENT_DATA);
+  noCia: string;
+  noOrden: string;
+  tipoDoc: string;
+
 
   constructor(public pedidoService: PedidoService,
+    private route: ActivatedRoute,
     public clienteServices: ArccmcService,
-    public arindaService: ArticuloService) { }
+    public arindaService: ArticuloService,
+    private arfafeService: ArfafeService,
+    private arfaccService: ArfaccService,
+    private router: Router) { }
 
 
   ngOnInit(): void {
-    this.groupEmpresa = new FormGroup({
-      ruc: new FormControl(),
-      racSoc: new FormControl()
-    });
-    this.groupArticulo = new FormGroup({
-      codProd: new FormControl(),
-      desProd: new FormControl(),
-      cantProd: new FormControl()
-    });
-
-    /*this.factuOptions = this.groupEmpresa.controls['ruc'].valueChanges
-    .pipe(
-      debounceTime(300),
-      map(value => this._filter(value))
-    );*/
-
-    // this.groupEmpresa.get("ruc").valueChanges.subscribe( value => {
-
-    // });
-
-    // this.groupEmpresa.get("ruc").valueChanges.pipe(
-    //   debounceTime(300),
-    //   map(value => this._filter(value))
-    // );
-
-    this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
-      if(valueChange.length > 3)
-      this.clienteServices.listaClientesRucLike('01',valueChange).subscribe(
-        rs => {
-          this.factuOptions = rs.resultado;
-        }
-      );
-      else
-      this.factuOptions = null;
-    })
-
+    this.traerData();
   }
 
-  private _filter(value: string){
+  traerData(){
+    /*this.arfafeService.arfafeDetalle(new ArfafeDTO('01','F','00010004866'))
+      .subscribe(a => {
+          this.detalle = a.resultado;
+          console.log(a.resultado);
+        }
+      );*/
+      let idArpfoe: IdArpfoe = new IdArpfoe();
+      this.route.queryParams.subscribe(p => {
+        //this.noCia = p['cia'];
+        this.noOrden = p['noOrden'];
+        this.tipoArfafe = p['tipoA'];
+        idArpfoe.noCia = '01';
+        idArpfoe.noOrden = this.noOrden;
+        console.log(idArpfoe);
+        this.pedidoService.pedidoParaFactura(idArpfoe).pipe(
+          map((response: Infor<Arpfoe>) => response.resultado)).
+          subscribe(d => {console.log(d);this.setArfafe(d)});
+        
+        /*.subscribe(
+          d => this.setArfafe(d.resultado[0])
+          
+        )*/
+      });
+      //{"noCia":"01","noOrden":"9410003419"}
+  }
+  addArfafe(){
+    this.detalle.arfafePK.noFactu = 'F0010002213';
+    this.detalle.fecha = new Date();
+    //this.detalle.ind_PVENT = 'S'
+    this.detalle.arfaflList.forEach(
+      value => {value.arfaflPK.noFactu = 'F0010002213';value.arfaflPK.tipoDoc = 'F'}
+    );
+    console.log("creo factura - "+this.detalle.arfafePK.noFactu);
+    console.log(this.detalle);
+    this.arfafeService.addArfafe(this.detalle)
+    .subscribe(data => console.log(data), error => console.log(error));
+    //console.log();
+    //this.arfafeService.
+    this.router.navigate(['pedido/arfafe/list']);
+    }
 
-    if(value.length > 3) {
-      this.clienteServices.listaClientesRucLike('01',value).subscribe(
-        datos => {
-          this.options = datos.resultado;
+    generarCorrelativo(){
+
+    }
+
+    setArfafe(arfoe: Arpfoe){
+      //trae correlativo
+      if (arfoe.indBoleta1 == 'S') this.tipoDoc = 'B';
+      else this.tipoDoc = 'F';
+      
+      let corre: Arfacc = new Arfacc();
+      corre.arfaccPK = new ArfaccPK();
+      corre.arfaccPK.noCia = sessionStorage.getItem('cia');
+      corre.arfaccPK.centro = sessionStorage.getItem('centro');
+      corre.arfaccPK.tipoDoc = this.tipoDoc;
+      //corre.arfaccPK.serie
+      corre.activo = 'S';
+
+      this.arfaccService.getSerieAndCorrelativoPedido(corre).subscribe(d => console.log(d));
+
+      //creacion llave primaria
+      this.detalle.arfafePK = new ArfafePK();
+
+      this.detalle.arfafePK.noCia = '01';
+      this.detalle.arfafePK.noFactu = 'F0010002212';
+      this.detalle.arfafePK.tipoDoc = this.tipoArfafe;
+
+      //insercion data adicional
+      this.detalle.ind_PVENT = arfoe.indPvent;
+      this.detalle.no_CLIENTE = arfoe.noCliente;
+      this.detalle.no_VENDEDOR = arfoe.noVendedor;
+      this.detalle.moneda = arfoe.moneda;
+      this.detalle.tipo_FPAGO = arfoe.tipoFpago;
+      this.detalle.cod_FPAGO = arfoe.codFpago;
+      this.detalle.igv = arfoe.igv;
+      this.detalle.tipo_PRECIO = arfoe.tipoPrecio;
+      this.detalle.cod_CLAS_PED = arfoe.codClasPed;
+      this.detalle.m_DSCTO_GLOBAL = arfoe.tDsctoGlobal;
+      this.detalle.tipo_DOC_CLI = arfoe.tipoDocCli;
+      this.detalle.num_DOC_CLI = arfoe.numDocCli;
+      this.detalle.alm_DESTINO = arfoe.almaDestino;
+      this.detalle.bodega = arfoe.bodega;
+      this.detalle.centro = arfoe.centro;
+      this.detalle.centro_COSTO = arfoe.centroCosto;
+      this.detalle.cod_CAJA = arfoe.codCaja;
+      this.detalle.cuser = arfoe.cuser;
+
+
+      //detalle productos
+      this.detalle.arfaflList = [];
+      arfoe.arpfolList.forEach(
+        list => {
+          let arfafl: Arfafl = new Arfafl();
+          arfafl.arfaflPK = new arfaflPK();
+          arfafl.arfaflPK.noCia = '01';
+          arfafl.arfaflPK.noFactu = list.arpfolPK.noOrden;
+          arfafl.arfaflPK.consecutivo = list.noLinea;
+          arfafl.no_ARTI = "L"+list.noLinea;
+          arfafl.bodega = list.bodega;
+          arfafl.cantidad_FACT = list.cantEntreg;
+          arfafl.cantidad_ENTR = list.cantEntreg;
+          arfafl.descripcion = list.descripcion;
+          arfafl.imp_IGV = list.impIgv;
+          arfafl.igv = list.igv;
+          //arfafl.unidMed = list.medida;
+          arfafl.total = list.totalLin;
+          arfafl.precio_UNIT = list.precio;
+          arfafl.tipo_AFECTACION = list.tipoAfectacion;
+          arfafl.tipo_ARTI = list.tipoArti;
+
+          this.totalFactu += list.totalLin;
+          this.detalle.arfaflList.push(arfafl);
         }
       );
-      return this.options;
-    } else {
-      return [];
+      this.detalle.total = this.totalFactu;
+      console.log(this.detalle);
     }
 
   }
 
-addElement() {
-  ELEMENT_DATA.push({item: this.getItemNumber(), codigo: this.groupArticulo.controls['codProd'].value, medida:0,
-  descripcion: this.groupArticulo.controls['desProd'].value, tipoAfec: 0,cantidad: this.groupArticulo.controls['cantProd'].value, pu: 0, descu: 0, icbCop: 0, IGV: 0, total: 0})
-   this.dataSource = new MatTableDataSource(ELEMENT_DATA);
-}
-
-getItemNumber():number {
-  if (ELEMENT_DATA.length == 0) { return 1;}
-  else {
-    return ELEMENT_DATA.length + 1;
-  }
-}
-
-onKeypressRucEvent($event: any){
-  /*if ($event.target.value.length > 7) {
-    console.log($event.target.value);
-    const filterValue = $event.target.value;
-    this.factuOptions = this.clienteServices.listaClientesRucLike('01',filterValue);
-
-  } else if ($event.target.value.length > 3) {
-    this.factuOptions = this.groupEmpresa.get("ruc").valueChanges
-    .pipe(
-      debounceTime(300),
-      map(value => this._filter(value))
-    );
-  } else {
-    this.factuOptions = this.groupEmpresa.controls['ruc'].valueChanges
-    .pipe(
-      debounceTime(300),
-      map(value => this._filter(value))
-    );
-  }*/
-}
-
-setFormData($event: MatAutocompleteSelectedEvent) {
-  let factuOptions = $event.option.value;
-  if(factuOptions){
-    this.groupEmpresa.controls['ruc'].setValue(factuOptions.ruc, {emitEvent: false});
-    this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
-  }
-}
-
-deleteDetail(index: number) {
-  ELEMENT_DATA.splice(index-1, 1);
-
-  this.reOrderItems();
-  this.dataSource = new MatTableDataSource(ELEMENT_DATA);
-}
-
-reOrderItems(){
-  for(let i=0; i< ELEMENT_DATA.length; i++){
-    ELEMENT_DATA[i].item = i+1;
-  }
-}
-
-getTotal(){
-  for (let i = 0; i < this.detalle.length; i++) {
-    this.totalFactu += this.detalle[i].total;
-  }
-}
-
-}
-
-export interface EmpresaElement{
-  ruc: string;
-  razon: string;
-}
-
-export interface FacturaElement {
-  item: number;
-  codigo: string;
-  medida: number;
-  descripcion: string;
-  tipoAfec: number;
-  cantidad: number;
-  pu: number;
-  descu: number;
-  icbCop: number;
-  IGV: number;
-  total: number;
-}
-
-export interface Arfafl{
-  total: number;
-}
-
-const ELEMENT_DATA: FacturaElement[] = [
-  //{item: 1, codigo: "", medida:0, descripcion: "", ta: 0,cantidad: 0, pu: 0, descu: 0, icbCop: 0, IGV: 0, total: 0}
-];

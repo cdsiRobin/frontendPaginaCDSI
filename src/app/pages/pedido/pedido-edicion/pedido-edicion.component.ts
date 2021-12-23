@@ -397,7 +397,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.noCliente = this.codCliente;
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = '1315';
-    pedido.codFPago ='01';
+    //pedido.codFPago ='01';
     /*
     pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
@@ -940,7 +940,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
     pedido.codiDepa = this.ubigeo.substring(0,2);//150137
-    pedido.codiProv = this.ubigeo.substring(2,2);
+    pedido.codiProv = this.ubigeo.substring(2,3);
     pedido.codiDist = this.ubigeo.substring(4,2);
     pedido.motivoTraslado = '1';
     pedido.indBoleta1 = indBoleta;
@@ -950,7 +950,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
-    pedido.codFPago =this.tapfopa.tapfopaPK.codFpago;
+    pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
 
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
     pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');

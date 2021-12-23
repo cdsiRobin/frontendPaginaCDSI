@@ -89,7 +89,7 @@ export class ListArfafeComponent implements OnInit {
   }
 
   getArfafeDetalle(cia: string, doc: string, factu: string){
-    this.router.navigate(['/arfafe/detail'],{ queryParams: {nocia: cia,docu: doc,factura: factu}});
+    this.router.navigate(['pedido/arfafe/detail'],{ queryParams: {nocia: cia,docu: doc,factura: factu}});
   }
 
 }

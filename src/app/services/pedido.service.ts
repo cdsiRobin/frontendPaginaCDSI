@@ -7,33 +7,42 @@ import { OtherService } from './other.service';
 import { Arpfoe } from './../models/Arpfoe';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
+import { IdArpfoe } from '../models/IdArpfoe';
+import { GenericoService } from './generico/generico.service';
+import { Infor } from '../interfaces/infor';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PedidoService {
+export class PedidoService extends GenericoService {
 
   pedidoCreado = new Subject<Arpfoe[]>();
   mensajeCambio = new Subject<string>();
-  constructor(private http: HttpClient, private url: OtherService) { }
+  constructor(public http: HttpClient) { super(); }
+
+  pedidoParaFactura(datos: IdArpfoe){
+    const body = JSON.stringify(datos);
+    console.log(body);
+    return this.http.post<Infor<Arpfoe>>(this.url+`/arpfoe/id`,body, this.options);
+  }
 
   registraPedido(pedido: PedidoDTO){
-    return this.http.post(this.url.getUrl()+`/pedidos`,pedido);
+    return this.http.post(this.url+`/pedidos`,pedido);
   }
   traeCabecera(cia:string,orden:string){
-    return this.http.get<Arpfoe>(this.url.getUrl()+`/pedidos/cabecera/${cia}/${orden}`);
+    return this.http.get<Arpfoe>(this.url+`/pedidos/cabecera/${cia}/${orden}`);
   }
   listaPedidos(cia:string){
-    return this.http.get<Arpfoe[]>(this.url.getUrl()+`/pedidos/${cia}`);
+    return this.http.get<Arpfoe[]>(this.url+`/pedidos/${cia}`);
   }
   traeDetalle(cia:string,orden:string){
-    return this.http.get<Arpfol[]>(this.url.getUrl()+`/pedidos/detalle/${cia}/${orden}`);
+    return this.http.get<Arpfol[]>(this.url+`/pedidos/detalle/${cia}/${orden}`);
   }
   traePedido(cia:string,orden:string){
-    return this.http.get<PedidoDTO[]>(this.url.getUrl()+`/pedidos/pedido/${cia}/${orden}`);
+    return this.http.get<PedidoDTO[]>(this.url+`/pedidos/pedido/${cia}/${orden}`);
   }
   noOrdern(cia:string,centro:string){
-    return this.http.get<string>(this.url.getUrl()+`/pedidos/orden/${cia}/${centro}`);
+    return this.http.get<string>(this.url+`/pedidos/orden/${cia}/${centro}`);
   }
 
 }

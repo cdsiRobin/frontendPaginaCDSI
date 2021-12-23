@@ -1,7 +1,7 @@
 import { IdArpfol } from './IdArpfol';
 export class Arpfol {
-  arpfolPK: IdArpfol;
 
+  arpfolPK: IdArpfol;
   noCliente: string;
   tipoArti: string;
   artiNuevo: string;
@@ -29,5 +29,4 @@ export class Arpfol {
   icbper: number;
   precioUni: number;
   totLinea: number;
-
 }

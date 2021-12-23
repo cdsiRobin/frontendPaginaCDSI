@@ -1,5 +1,6 @@
-import { IdArpfoe } from './IdArpfoe';
 import { Arpfol } from './Arpfol';
+import { IdArpfoe } from './IdArpfoe';
+
 export class Arpfoe {
 
   arpfoePK: IdArpfoe;
@@ -8,11 +9,12 @@ export class Arpfoe {
   division: string;
   noVendedor: string;
   codTPed: string;
-  codFPago: string;
+  codFpago: string;
   fRecepcion: string;
   fechaRegistro: string;
   fAprobacion: string;
   tipoPrecio: string;
+  tipoFpago: string;
   moneda: string;
   tipoCambio: number;
   subTotal: number;

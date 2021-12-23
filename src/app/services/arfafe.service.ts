@@ -14,6 +14,11 @@ export class ArfafeService extends GenericoService {
 
     constructor(private http: HttpClient){ super(); }
 
+    addArfafe(data: Arfafe){
+        const body = JSON.stringify(data);
+        return this.http.post(this.url+`/arfafe/save`,body,this.options);
+    }
+
     public arfafeDetalle(datos: ArfafeDTO) {
         const body = JSON.stringify(datos);
         return this.http.post<arfafeInterface>(this.url + `/arfafe/id`, body, this.options);
