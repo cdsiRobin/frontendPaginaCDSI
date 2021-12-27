@@ -45,6 +45,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { ArpfoeService } from '../../../services/arpfoe.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -156,7 +157,8 @@ export class PedidoEdicionComponent implements OnInit {
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
               private snackBar: MatSnackBar,
-              private dialogItems: MatDialog
+              private dialogItems: MatDialog,
+              private router: Router
               ) { }
 
   ngOnInit(): void {
@@ -1040,9 +1042,7 @@ export class PedidoEdicionComponent implements OnInit {
             horizontalPosition: 'center'
           });
     });
-
     //VAMOS A GUARDAR EL PEDIDO
-    console.log(pedido);
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
       this.snackBar.open('Se Guardo el pedido','Salir',
       {
@@ -1051,6 +1051,12 @@ export class PedidoEdicionComponent implements OnInit {
         horizontalPosition: 'center'
       });
     });
+    //VAMOS A BOLETEAR O FACTURAR
+    // this.router.navigateByUrl(`/pedido/arfafe/new?noCia=${this.cia}&noOrden=${this.orden}`);
+    setTimeout(() => {
+      this.router.navigate(['pedido/arfafe/new'],{queryParams: {noCia:this.cia,noOrden:this.orden}})},2000
+    );
+
 
   }
 
