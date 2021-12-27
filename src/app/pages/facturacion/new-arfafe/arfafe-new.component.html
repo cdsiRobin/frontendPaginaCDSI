@@ -62,13 +62,13 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>L.Precios</mat-label>
-                            <input matInput name="Nom_precio" [(ngModel)]="detalle.tipo_PRECIO">
+                            <input matInput name="Nom_precio" [(ngModel)]="arfatp.descripcion">
                         </mat-form-field>
                     </div>
                     <div class="col-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>T.C.</mat-label>
-                            <input disabled="true" matInput placeholder="Cambio" value="0.00">
+                            <input disabled="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="tipoCambio">
                         </mat-form-field>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>F.Pago</mat-label>
-                            <input matInput name="Descrip_Pago" [(ngModel)]="detalle.cod_FPAGO">
+                            <input matInput name="Forma_pago" [(ngModel)]="tapfopa.descripcion">
                         </mat-form-field>
                     </div>
                 </div>
