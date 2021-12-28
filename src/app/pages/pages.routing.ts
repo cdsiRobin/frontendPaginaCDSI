@@ -1,6 +1,4 @@
-import { PedidoEdicionComponent } from './pedido/pedido-edicion/pedido-edicion.component';
-import { PedidoComponent } from './pedido/pedido.component';
-import { CajaComponent } from './pedido/caja/caja.component';
+
 import { Login2Component } from './login2/login2.component';
 import { LartiComponent } from './larti/larti.component';
 import { HomeComponent } from './home/home.component';
@@ -27,6 +25,7 @@ import { NgModule } from '@angular/core';
 import { NuestroProductosComponent } from './nuestro-productos/nuestro-productos.component';
 import {PedidoRoutingModule} from './pedido/pedido-routing.module';
 import { ArfafeRoutingModule } from './facturacion/arfafe-routing.module';
+import { ArcgtcRoutingModule } from './arcgtc/arcgtc-routing.module';
 
 const routes: Routes = [
 
@@ -75,7 +74,8 @@ const routes: Routes = [
   imports: [
     RouterModule.forChild(routes),
     PedidoRoutingModule,
-    ArfafeRoutingModule
+    ArfafeRoutingModule,
+    ArcgtcRoutingModule
   ],
   exports: [RouterModule]
 })

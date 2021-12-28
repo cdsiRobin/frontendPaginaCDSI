@@ -195,7 +195,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.groupArticulo = new FormGroup({
       codProd: new FormControl(),
       desProd: new FormControl(),
-      umProd: new FormControl({ value: 'NIU', disabled: false }, Validators.required),
+      umProd: new FormControl({ value: 'UND', disabled: false }, Validators.required),
       precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
       cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
     });
