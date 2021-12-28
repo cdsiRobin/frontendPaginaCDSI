@@ -21,7 +21,7 @@ export class Arfafe {
     moneda: string;
     TIPO_CAMBIO: number;
     PORC_DESC: number;
-    NO_ORDEN: string;
+    no_ORDEN: string;
     NO_ORDEN_DESC: string;
     TOT_LIN: number;
     descuento: number;
