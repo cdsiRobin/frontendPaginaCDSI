@@ -5,18 +5,22 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ArcgtcRoutingModule } from './arcgtc-routing.module';
 import { MaterialModule } from '../../material/material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NewArcgtcComponent } from './new-arcgtc/new-arcgtc.component';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @NgModule({
+  declarations: [
+    ArcgtcComponent,
+    NewArcgtcComponent
+  ],
   imports: [
       BrowserModule,
       CommonModule,
       FormsModule,
+      MatNativeDateModule,
       ArcgtcRoutingModule,
       MaterialModule,
       ReactiveFormsModule
-  ],
-  declarations: [
-      ArcgtcComponent
   ],
   exports: [],
   providers: [DatePipe]
