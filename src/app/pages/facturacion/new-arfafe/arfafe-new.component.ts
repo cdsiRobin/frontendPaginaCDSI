@@ -94,8 +94,6 @@ export class NewArfafeComponent implements OnInit {
     this.arfafeService.addArfafe(this.detalle)
     .subscribe(data => console.log(data), error => console.log(error));
 
-    this.arfacc.arfaccPK = new ArfaccPK();
-
     this.arfaccService.saveArfacc(this.arfacc)
     .subscribe(data => console.log(data), error => console.log(error));
 
