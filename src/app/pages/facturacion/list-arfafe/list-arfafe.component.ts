@@ -1,6 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Arfafe } from "src/app/models/Arfafe";
@@ -22,7 +23,7 @@ export class ListArfafeComponent implements OnInit {
   centroEmi: string = 'Centro';
   public ConEstado = 'All';
   public ConCosto = 'Central';
-  tipoDoc = 'F';
+  tipoDoc = 'B';
   factu= '';
   pven= true;
   spin= false;
@@ -39,7 +40,7 @@ export class ListArfafeComponent implements OnInit {
   dataSource = new MatTableDataSource<Arfafe>(ELEMENT_DATA);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
   arf: Arfafe;
 
   constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute,
@@ -47,6 +48,7 @@ export class ListArfafeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarData();
+    
   }
 
   cargarData(){
@@ -62,6 +64,7 @@ export class ListArfafeComponent implements OnInit {
         this.dataSource.data.push(list[i]);
         }
       this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
     console.log(this.dataSource.data);
     console.log(this.fec1 + '  --  '+this.fec2);

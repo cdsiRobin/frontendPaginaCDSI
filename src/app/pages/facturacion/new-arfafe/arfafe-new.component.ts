@@ -88,11 +88,11 @@ export class NewArfafeComponent implements OnInit {
     .subscribe(data => console.log(data), error => console.log(error));
 
     this.arfacc.arfaccPK = new ArfaccPK();
-    console.log(this.arfacc);
     this.arfaccService.saveArfacc(this.arfacc)
     .subscribe(data => console.log(data), error => console.log(error));
-
-    this.router.navigate(['pedido/arfafe/list']);
+    setTimeout(() => {
+      this.router.navigate(['pedido/arfafe/list'])},1000
+    );
     }
 
     setArfafe(arfoe: Arpfoe){
@@ -153,6 +153,7 @@ export class NewArfafeComponent implements OnInit {
             let arfafl: Arfafl = new Arfafl();
             arfafl.arfaflPK = new arfaflPK();
             arfafl.arfaflPK.noCia = this.detalle.arfafePK.noCia;
+            arfafl.arfaflPK.tipoDoc = this.detalle.arfafePK.tipoDoc;
             arfafl.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
             arfafl.arfaflPK.consecutivo = list.noLinea;
             arfafl.no_ARTI = list.arpfolPK.noArti;
