@@ -1,0 +1,51 @@
+<div class="container-fluid">
+  <!--TITULO-->
+  <div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+      <h3 class="text-themecolor font-weight-bold">Tipo de Cambio</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/pedido">Home</a></li>
+        <li class="breadcrumb-item active">Nuevo Tipo de cambio</li>
+      </ol>
+    </div>
+    <div>
+      <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
+    </div>
+  </div>
+  <!--FIN DE TITUTLO-->
+  <!--CONTENEDODR-->
+  <div class="container mt-5 mb-5 border rounded p-5">
+    <div class="row">
+         <!--TIPO DE CAMBIO DE SUNAT-->
+         <div class="col-sm-6 p-3" style="border-right: 1px solid lightgray;">
+             <div class="row">
+                  <!--FECHA-->
+                  <div class="col-sm-12">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Fecha</mat-label>
+                        <input matInput [matDatepicker]="picker1">
+                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                        <mat-datepicker #picker1></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+                  <!--FIN-->
+                  <div class="col-sm-12">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                      <mat-label>Descripción</mat-label>
+                      <input matInput placeholder="Placeholder" name="descripItem">
+                    </mat-form-field>
+                  </div>
+             </div>
+         </div>
+         <!--FIN-->
+         <!--ARCGTC-->
+         <div class="col-sm-6 p-3">
+         </div>
+         <!--FIN-->
+    </div>
+  </div>
+  <!--CONTENEDOR-->
+</div>
+<!--FIN-->

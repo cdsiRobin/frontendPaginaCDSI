@@ -18,7 +18,7 @@ export class ArcgtcService extends GenericoService{
   constructor(public http: HttpClient) { super(); }
 
   //VAMOS A TRER LOS TIPOS DE CAMBIOS DE SUNAT
-  public listaTipoCambioSunat(fecha: string):Observable<Sunattc>{
+  public getTipoCambioSunatXFecha(fecha: string):Observable<Sunattc>{
      return this.http.get<Sunattc>(`https://api.apis.net.pe/v1/tipo-cambio-sunat?fecha=${fecha}`);
   }
 
