@@ -47,6 +47,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { ArpfoeService } from '../../../services/arpfoe.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -885,15 +886,15 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.codTPed = this.transaccion.codTPed;
     //console.log('Forma de Pago : '+this.tapfopa.tapfopaPK.codFpago);
     pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
-
-    pedido.fechaRegistro = this.datepipe.transform(this.fechaSeleccionada,'yyyy-MM-dd');
-    pedido.fAprobacion = this.datepipe.transform(this.fechaSeleccionada,'yyyy-MM-dd');
-    pedido.fRecepcion = this.datepipe.transform(this.fechaSeleccionada,'yyyy-MM-dd');
     /*
-    pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
-    pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
-    pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
+    pedido.fechaRegistro = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
+    pedido.fAprobacion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
+    pedido.fRecepcion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
     */
+    pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+
     pedido.tipoPrecio = this.arfatp.idArfa.tipo;
     pedido.moneda = this.arcgmo.moneda;
     pedido.tipoCambio = this.tipocambio;
