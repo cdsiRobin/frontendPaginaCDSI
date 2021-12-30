@@ -22,7 +22,6 @@ export class PedidoService extends GenericoService {
 
   pedidoParaFactura(datos: IdArpfoe){
     const body = JSON.stringify(datos);
-    console.log(body);
     return this.http.post<Infor<Arpfoe>>(this.url+`/arpfoe/id`,body, this.options);
   }
 

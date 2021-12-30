@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { DatosClienteDTO } from 'src/app/DTO/DatosClienteDTO';
 import { Infor } from 'src/app/interfaces/infor';
-import { Arccmc } from 'src/app/models/Arccmc';
 import { Arfacc } from 'src/app/models/arfacc';
 import { ArfaccPK } from 'src/app/models/arfaccPK';
 import { Arfafe } from 'src/app/models/Arfafe';
@@ -62,7 +61,18 @@ export class NewArfafeComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.traerData();
+    this.route.queryParams.subscribe(p => {
+      let idArpfoe: IdArpfoe = new IdArpfoe();
+      this.noCia = p['noCia'];
+      this.noOrden = p['noOrden'];
+      // this.tipoArfafe = p['tipoA'];
+      idArpfoe.noCia = this.noCia;
+      idArpfoe.noOrden = this.noOrden;
+      console.log(idArpfoe);
+      this.pedidoService.pedidoParaFactura(idArpfoe).pipe(
+        map((response: Infor<Arpfoe>) => response.resultado)).
+        subscribe(d => {console.log(d);this.setArfafe(d)});
+    });
   }
 
   traerData(){
@@ -72,34 +82,32 @@ export class NewArfafeComponent implements OnInit {
         this.noOrden = p['noOrden'];
         idArpfoe.noCia = this.noCia;
         idArpfoe.noOrden = this.noOrden;
-        console.log(idArpfoe);
         this.pedidoService.pedidoParaFactura(idArpfoe).pipe(
           map((response: Infor<Arpfoe>) => response.resultado)).
           subscribe(d => {console.log(d);this.setArfafe(d)});
-        
-        
       });
   }
   addArfafe(){
+
     this.detalle.fecha = new Date();
-    console.log("creo comprobante - "+this.detalle.arfafePK.noFactu);
-    console.log(this.detalle);
+
     this.arfafeService.addArfafe(this.detalle)
     .subscribe(data => console.log(data), error => console.log(error));
 
     this.arfacc.arfaccPK = new ArfaccPK();
+
     this.arfaccService.saveArfacc(this.arfacc)
     .subscribe(data => console.log(data), error => console.log(error));
-    setTimeout(() => {
-      this.router.navigate(['pedido/arfafe/list'])},1000
-    );
+
+    this.router.navigate(['pedido/arfafe/list']);
     }
 
     setArfafe(arfoe: Arpfoe){
       //trae correlativo
+
       if (arfoe.indBoleta1 == 'S') this.tipoDoc = 'B';
       else this.tipoDoc = 'F';
-      
+
       let corre: Arfacc = new Arfacc();
       corre.arfaccPK = new ArfaccPK();
       corre.arfaccPK.noCia = sessionStorage.getItem('cia');
@@ -108,12 +116,12 @@ export class NewArfafeComponent implements OnInit {
       corre.activo = 'S';
 
       this.arfaccService.getSerieAndCorrelativoPedido(corre).subscribe(d => {
-        
+
         this.arfacc = d[0];
 
         //creacion llave primaria
         this.detalle.arfafePK = new ArfafePK();
-  
+
         this.detalle.arfafePK.noCia = sessionStorage.getItem('cia');
         //creacion correlativo
         let correlativo = '0000000';
@@ -121,7 +129,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+correlativo.slice(0,cortar)+d[0].consDesde;
         // this.detalle.arfafePK.noFactu = 'F0010002212';
         this.detalle.arfafePK.tipoDoc = this.tipoDoc;
-  
+
         //insercion data adicional
         this.detalle.ind_PVENT = arfoe.indPvent;
         this.detalle.no_ORDEN = arfoe.arpfoePK.noOrden;
@@ -142,7 +150,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.centro = arfoe.centro;
         this.detalle.centro_COSTO = arfoe.centroCosto;
         this.detalle.cod_CAJA = arfoe.codCaja;
-  
+
         this.listaPrecio(arfoe.tipoPrecio);
         this.TCambio();
         this.formaPago(arfoe.codFpago);
@@ -153,7 +161,6 @@ export class NewArfafeComponent implements OnInit {
             let arfafl: Arfafl = new Arfafl();
             arfafl.arfaflPK = new arfaflPK();
             arfafl.arfaflPK.noCia = this.detalle.arfafePK.noCia;
-            arfafl.arfaflPK.tipoDoc = this.detalle.arfafePK.tipoDoc;
             arfafl.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
             arfafl.arfaflPK.consecutivo = list.noLinea;
             arfafl.no_ARTI = list.arpfolPK.noArti;
@@ -168,18 +175,18 @@ export class NewArfafeComponent implements OnInit {
             arfafl.precio_UNIT = list.precio;
             arfafl.tipo_AFECTACION = list.tipoAfectacion;
             arfafl.tipo_ARTI = list.tipoArti;
-  
+
             this.totalFactu += list.totalLin;
             this.detalle.arfaflList.push(arfafl);
           }
         );
         this.detalle.total = this.totalFactu;
-        console.log(this.detalle); 
+
 
       });
- 
+
     }
-    
+
     traeCliente() {
       let cli = new DatosClienteDTO(sessionStorage.getItem('cia'));
       // cli.documento = this.detalle.no_CLIENTE;

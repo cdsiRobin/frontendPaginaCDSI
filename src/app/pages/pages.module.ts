@@ -45,8 +45,8 @@ import { MenuPventaComponent } from './login2/menu-pventa/menu-pventa.component'
 import {PedidoModule} from './pedido/pedido.module';
 import { ArfafeModule } from './facturacion/arfafe.module';
 import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
-
-
+import { ArcgtcComponent } from './arcgtc/arcgtc.component';
+import { ArcgtcModule } from './arcgtc/arcgtc.module';
 
 @NgModule({
   declarations: [
@@ -102,6 +102,7 @@ import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.co
     BrowserAnimationsModule,
     PedidoModule,
     ArfafeModule,
+    ArcgtcModule,
     MaterialModule
   ]
 })

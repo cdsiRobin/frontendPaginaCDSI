@@ -15,7 +15,7 @@ import { PedidoService } from './../../../services/pedido.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IdArpfoe } from 'src/app/models/IdArpfoe';
-import * as moment from 'moment';
+
 import {ArfaccService} from '../../../services/arfacc.service';
 import {IArfacc} from '../../../interfaces/IArfacc';
 import {Arfacc} from '../../../models/arfacc';
@@ -45,6 +45,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { ArpfoeService } from '../../../services/arpfoe.service';
+import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -156,7 +159,9 @@ export class PedidoEdicionComponent implements OnInit {
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
               private snackBar: MatSnackBar,
-              private dialogItems: MatDialog
+              private dialogItems: MatDialog,
+              private router: Router,
+              public datepipe: DatePipe
               ) { }
 
   ngOnInit(): void {
@@ -193,7 +198,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.groupArticulo = new FormGroup({
       codProd: new FormControl(),
       desProd: new FormControl(),
-      umProd: new FormControl({ value: 'NIU', disabled: false }, Validators.required),
+      umProd: new FormControl({ value: 'UND', disabled: false }, Validators.required),
       precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
       cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
     });
@@ -224,6 +229,8 @@ export class PedidoEdicionComponent implements OnInit {
    //NUEVO CAMBIOS
    public getDirecciones($event) {
       this.arcctda = $event.value;
+     // console.log('DIRECCION');
+     // console.log(this.arcctda);
       this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
   }
 
@@ -381,90 +388,13 @@ export class PedidoEdicionComponent implements OnInit {
     this.detallePedido.splice(index, 1);
     this.getTotal();
   }
-  getTotal() {
+  public getTotal() {
     this.totalGeneral =  this.detallePedido.map(t => t.totalLin).reduce((acc, value) => acc + value, 0);
-    this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
+    //this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
     this.totalIGV = this.detallePedido.map(t => t.impIgv).reduce((acc, value) => acc + value, 0);
+    this.subTotal = this.totalGeneral - this.totalIGV;
   }
-  operar() {
 
-    let idPedido = new IdArpfoe;
-    idPedido.noCia = sessionStorage.getItem('cia');
-    idPedido.noOrden = this.orden;
-    let pedido = new Arpfoe;
-    pedido.arpfoePK = idPedido;
-    pedido.grupo = '00';
-    pedido.noCliente = this.codCliente;
-    pedido.noVendedor = sessionStorage.getItem('cod');
-    pedido.codTPed = '1315';
-    //pedido.codFPago ='01';
-    /*
-    pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    pedido.fechaEntrega = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    pedido.fechaEntregaReal =moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    pedido.fechaVence =moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');*/
-    pedido.tipoPrecio = 'F8';
-    pedido.moneda = 'SOL';
-    //pedido.tipoCambio = '3.50';
-    pedido.subTotal =this.subTotal;
-    pedido.tImpuesto = this.totalIGV;
-    pedido.tPrecio = this.totalGeneral;
-    pedido.impuesto = this.impuesto;
-    pedido.estado= 'R';
-    pedido.bodega = '1A001';
-    pedido.igv = this.impuesto;
-    pedido.direccionComercial = this.direccion;
-    pedido.motivoTraslado = '1';
-    pedido.nombreCliente = this.nomCli;
-    pedido.codClasPed ='V';
-    pedido.tipoPago = '20';
-    pedido.tValorVenta = this.subTotal;
-    pedido.almaOrigen = '1A001';
-    pedido.almaDestino = '1XLIE';
-    //pedido.noClienteSalida = this.codCliente;
-    pedido.totalBruto= this.subTotal;
-    /*pedido.codTPed1='1352';
-    pedido.codTPedb='1353';
-    pedido.codTPedn='1214';*/
-    pedido.centro=sessionStorage.getItem('centro');
-    pedido.codCaja ='C12';
-    pedido.cajera = '000002';
-    pedido.centroCosto='3201';
-
-    pedido.operExoneradas = 0;
-    pedido.operGratuitas = 0;
-    pedido.operGravadas=this.subTotal;
-    pedido.operInafectas = 0;
-    pedido.tipoOperacion = '0101';
-    pedido.emailPedido = this.email;
-
-    let ped = new PedidoDTO();
-    ped.pedido = pedido;
-    ped.detallePedido = this.detallePedido;
-
-    this.pedidoService.registraPedido(ped).pipe(switchMap(()=>{
-      let correl = new CorrelDTO();
-      /*correl.cia = ped.pedido.idArpfoe.no;
-      correl.orden = ped.pedido.idArpfoe.noOrden;*/
-      correl.centro = ped.pedido.centro;
-      return null;
-      //return this.pedidoService.actualizaCorrel(correl);
-    })).subscribe(()=>{
-      Swal.close();
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'info',
-        title: `Pedido N° ${this.orden}`
-      });
-      setTimeout(() => {
-        this.limpiarControles();
-      }, 2000)
-    });
-
-
-  }
   limpiarControles() {
     this.detallePedido = [];
     this.articulos = [];
@@ -936,38 +866,51 @@ export class PedidoEdicionComponent implements OnInit {
     let pedido = new Arpfoe();
     pedido.arpfoePK = arpfoePK;
     pedido.grupo = '00';
+    pedido.tipoFpago = '20';
+    pedido.tipo = 'N';
 
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
     pedido.codiDepa = this.ubigeo.substring(0,2);//150137
     pedido.codiProv = this.ubigeo.substring(2,3);
-    pedido.codiDist = this.ubigeo.substring(4,2);
+    pedido.codiDist = this.ubigeo.substring(3,2);
     pedido.motivoTraslado = '1';
     pedido.indBoleta1 = indBoleta;
     pedido.indFactura1 = indFactura;
 
     pedido.noCliente = this.groupEmpresa.get("ruc").value;
+    pedido.ruc = this.groupEmpresa.get("ruc").value;
+
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
+    //console.log('Forma de Pago : '+this.tapfopa.tapfopaPK.codFpago);
     pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
-
-    pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
-    pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
-    pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DD');
+    /*
+    pedido.fechaRegistro = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
+    pedido.fAprobacion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
+    pedido.fRecepcion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
+    */
+    pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
 
     pedido.tipoPrecio = this.arfatp.idArfa.tipo;
     pedido.moneda = this.arcgmo.moneda;
     pedido.tipoCambio = this.tipocambio;
 
-    pedido.subTotal =this.getTotalPU();
+    pedido.subTotal = this.getTotalPedido() - this.getTotalIgv();
+    pedido.tValorVenta = this.getTotalPedido() - this.getTotalIgv();
+    pedido.totalBruto = this.getTotalPedido() - this.getTotalIgv();
     pedido.tImpuesto = this.getTotalIgv();
-    pedido.tPrecio = this.getTotalPU();
+    pedido.tPrecio = this.getTotalPedido();
+
+
     pedido.impuesto = 18;
     pedido.estado= 'E';
     pedido.bodega = '1A001';
     pedido.igv = 18;
-    pedido.direccionComercial = this.direccion;
+    pedido.direccionComercial = this.arcctda.direccion;
     pedido.motivoTraslado = '1';
     pedido.nombreCliente = this.groupEmpresa.get("racSoc").value;
     pedido.codClasPed ='V';
@@ -987,10 +930,12 @@ export class PedidoEdicionComponent implements OnInit {
 
     pedido.operExoneradas = 0;
     pedido.operGratuitas = 0;
-    pedido.operGravadas=this.getTotalPU();
+    pedido.operGravadas=this.getTotalPedido() - this.getTotalIgv();
     pedido.operInafectas = 0;
     pedido.tipoOperacion = '0101';
     pedido.emailPedido = this.email;
+    pedido.tipoArti = '1';
+
 
     let contador = 0;
     let dps: Arpfol[] = [];
@@ -1023,6 +968,7 @@ export class PedidoEdicionComponent implements OnInit {
         dPedido.operExoneradas = 0;
         dPedido.operGratuitas = 0;
         dPedido.operGravadas = x.cantidad * x.precio;
+        dPedido.operInafectas = 0;
         dPedido.tipoAfectacion = '10';
         dPedido.medida = x.medida;
         dPedido.icbper = 0;
@@ -1030,6 +976,7 @@ export class PedidoEdicionComponent implements OnInit {
         dps.push(dPedido);
     }
     pedido.arpfolList = dps;
+    console.log(pedido);
 
     //VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
     this.arfaccService.saveArfacc(this.arfacc).subscribe( dato => {
@@ -1040,9 +987,7 @@ export class PedidoEdicionComponent implements OnInit {
             horizontalPosition: 'center'
           });
     });
-
     //VAMOS A GUARDAR EL PEDIDO
-    console.log(pedido);
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
       this.snackBar.open('Se Guardo el pedido','Salir',
       {
@@ -1051,6 +996,11 @@ export class PedidoEdicionComponent implements OnInit {
         horizontalPosition: 'center'
       });
     });
+    //VAMOS A BOLETEAR O FACTURAR
+    // this.router.navigateByUrl(`/pedido/arfafe/new?noCia=${this.cia}&noOrden=${this.orden}`);
+    setTimeout(() => {
+      this.router.navigate(['pedido/arfafe/new'],{queryParams: {noCia:this.cia,noOrden:this.orden}})},2000
+    );
 
   }
 
