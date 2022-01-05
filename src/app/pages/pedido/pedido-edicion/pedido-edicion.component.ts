@@ -1,5 +1,4 @@
-import { CorrelDTO } from './../../../DTO/CorrelDTO';
-import { PedidoDTO } from './../../../DTO/PedidoDTO';
+
 import { Arpfoe } from './../../../models/Arpfoe';
 import { Arinda } from './../../../models/Arinda';
 import { ArticuloService } from './../../../services/articulo.service';
@@ -129,7 +128,6 @@ export class PedidoEdicionComponent implements OnInit {
 
   public detPedidos :Detpedido[] =[];
   //NUEVO CAMBIOS
-  //displayedColumns: string[] = ['item', 'codigo', 'medida', 'descripcion', 'tipoAfec', 'cantidad','pu', 'descu','icbCop', 'IGV', 'total','eliminar'];
   displayedColumns: string[] = ['tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total','eliminar'];
   //FIN
   dataSource: MatTableDataSource<Detpedido>;
