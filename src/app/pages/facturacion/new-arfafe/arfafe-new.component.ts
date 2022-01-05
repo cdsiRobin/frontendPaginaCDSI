@@ -15,6 +15,8 @@ import { Arfatp } from 'src/app/models/Arfatp';
 import { Arpfoe } from 'src/app/models/Arpfoe';
 import { IdArpfoe } from 'src/app/models/IdArpfoe';
 import { Tapfopa } from 'src/app/models/tapfopa';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ArccmcService } from 'src/app/services/arccmc.service';
 import { ArcgtcService } from 'src/app/services/arcgtc.service';
 import { ArfaccService } from 'src/app/services/arfacc.service';
@@ -23,6 +25,8 @@ import { ArfatpService } from 'src/app/services/arfatp.service';
 import { ArticuloService } from 'src/app/services/articulo.service';
 import { PedidoService } from 'src/app/services/pedido.service';
 import { TapfopaService } from 'src/app/services/tapfopa.service';
+import { Utils } from "../utils";
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-arfafe-new',
@@ -38,6 +42,7 @@ export class NewArfafeComponent implements OnInit {
     cia: string;
     doc: string;
     fact: string;
+    logoDataUrl: string;
 
   totalFactu:number = 0;
 
@@ -61,6 +66,9 @@ export class NewArfafeComponent implements OnInit {
 
 
   ngOnInit(): void {
+    Utils.getImageDataUrlFromLocalPath1('assets/Logo2.jpg').then(
+    result => this.logoDataUrl = result
+  )
     this.route.queryParams.subscribe(p => {
       let idArpfoe: IdArpfoe = new IdArpfoe();
       this.noCia = p['noCia'];
@@ -97,7 +105,9 @@ export class NewArfafeComponent implements OnInit {
     this.arfaccService.saveArfacc(this.arfacc)
     .subscribe(data => console.log(data), error => console.log(error));
 
-    this.router.navigate(['pedido/arfafe/list']);
+    setTimeout(() => {this.ProperDesing();
+      this.router.navigate(['pedido/arfafe/list'])},1000
+    );
     }
 
     setArfafe(arfoe: Arpfoe){
@@ -151,7 +161,7 @@ export class NewArfafeComponent implements OnInit {
 
         this.listaPrecio(arfoe.tipoPrecio);
         this.TCambio();
-        this.formaPago(arfoe.codFpago);
+        this.formaPago(arfoe.tipoFpago);
         //detalle productos
         this.detalle.arfaflList = [];
         arfoe.arpfolList.forEach(
@@ -159,6 +169,7 @@ export class NewArfafeComponent implements OnInit {
             let arfafl: Arfafl = new Arfafl();
             arfafl.arfaflPK = new arfaflPK();
             arfafl.arfaflPK.noCia = this.detalle.arfafePK.noCia;
+            arfafl.arfaflPK.tipoDoc = this.detalle.arfafePK.tipoDoc;
             arfafl.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
             arfafl.arfaflPK.consecutivo = list.noLinea;
             arfafl.no_ARTI = list.arpfolPK.noArti;
@@ -232,6 +243,367 @@ export class NewArfafeComponent implements OnInit {
         }
     }
     });
+  }
+
+  ProperDesing() {
+    var body = [];
+    body.push([
+        {text: 'Código', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Descripción', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        {text: 'UM', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Valor Unitario', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: '% Desc', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'ICBPER', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'IGV', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Valor Total', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
+    this.detalle.arfaflList.forEach(l => {
+        body.push(
+            [{text: l.no_ARTI, bold: false, fontSize: 8},
+            {text: l.descripcion, bold: false, fontSize: 8},
+            {text: 'UND', bold: false, fontSize: 8},
+            {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.oper_INAFECTAS, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.imp_IGV, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.total, bold: false, fontSize: 8, alignment: 'right'}
+            ]
+        );
+      });
+    const documentDefinition = {
+      content: [
+        //   {qr: 'text'},
+        {
+            columns: [
+                {
+                    width: 70,
+                    height: 100,
+                    image: this.logoDataUrl
+                },
+                [
+                    {
+                        width: 350,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Pag.Web : ',
+                                bold:true
+                            },
+                            {
+                                text: 'WWW.HS-IMPORT.COM',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9  
+                    },
+                    {
+                        width: 350,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Email: ',
+                                bold:true
+                            },
+                            {
+                                text: 'VENTAS@HS-IMPORT.COM',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9  
+                    },
+                    {
+                        width: 350,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Teléfonos : ',
+                                bold:true
+                            },
+                            {
+                                text: '01 3545576 / 983537208',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9  
+                    },
+                    {
+                        width: 250,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Domicilio Fiscal :',
+                                bold:true
+                            },
+                            {
+                                text: 'AV. SANTA ANA MZ A 33 LT:36 CULTURA PERUANA MODERNA (SANTA ANITA) - SANTA ANITA - LIMA - LIMA',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9  
+                    }
+                ],
+                {
+                    // margin: [ 5, 0, 0, 0],
+                    layout: {
+                        hLineWidth: function(i, node) {
+                         return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+                        },
+                        vLineWidth: function(i, node) {
+                         return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function(i, node) {
+                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                        }
+                    },
+                    // layout: 'noBorders',
+                    width: 110,
+                    table: {
+                      headerRows: 1,
+                      widths: [100],        
+                      body: [
+                          [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+                          [
+                            {
+                                text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,
+                                bold: true,
+                                fontSize: 10
+                            }
+                          ]
+                    ]
+                    },
+                    style: 'anotherStyle'
+                }
+            ],
+            margin: [ 0, 0, 0, 6],
+            columnGap: 15
+        },
+        {
+            stack: [
+                {
+                    canvas: [
+                        {
+                            type: 'rect',
+                            x: 0,
+                            y: 0,
+                            w: 515,
+                            h: 56,
+                            lineWidth: 0.05,
+                            lineColor: 'grey'
+                        }
+                    ]
+                },
+                {
+                    columns: [
+                        [
+                            {
+                                columns: [
+                                    {
+                                        width: 350,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Cliente            : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.nbr_CLIENTE,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9  
+                                    },
+                                    {
+                                        width: 165,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'RUC  :',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.no_CLIENTE,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    }
+                                ]
+                            },
+                            {
+                                width: 515,
+                                noWrap: false,
+                                maxHeight: 70,
+                                text: [
+                                    {
+                                        text: 'Dirección       : ',
+                                        bold:true
+                                    },
+                                    {
+                                        text: this.detalle.direccion,
+                                        fontSize: 8
+                                    }
+                                ],
+                                color: 'black',
+                                fontSize: 9 
+                            },
+                            {
+                                columns: [
+                                    {
+                                        width: 515/2,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'F. Emisión      : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    },
+                                    {
+                                        width: 515/2,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Condición Pago : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.tapfopa.descripcion,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    }
+                                ]
+                            },
+                            {
+                                columns: [
+                                    {
+                                        width: 160,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Orden Compra : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.no_SOLIC,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    },
+                                    {
+                                        width: '*',
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Guía Remisión : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.no_GUIA,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    },
+                                    {
+                                        width: '*',
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Moneda : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.moneda,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    },
+                                    {
+                                        width: '*',
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Vendedor : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.cuser,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9 
+                                    }
+                                ]
+                            }
+                        ]
+                    ],
+                    margin : [5,6,5,0]
+                    ,
+                    relativePosition: {
+                    x: 0,
+                    y: -56
+                    }
+                }
+            ]
+        },
+        // 'texto antes de tabla',
+        {
+          margin: [ 0, 5, 0, 0],
+          layout: 'noBorders',
+          table: {
+            headerRows: 1,
+            widths: ['7%', '41%', '5%', '8%','10%', '5%', '7%', '7%','10%'],
+
+            body: body
+          }
+        }
+      ],
+      styles: {
+        anotherStyle: {
+        //   italics: true,
+          alignment: 'center',
+          lineWidth: 0.05
+        }
+      }
+    };
+    pdfMake.createPdf(documentDefinition).open();
   }
 
 

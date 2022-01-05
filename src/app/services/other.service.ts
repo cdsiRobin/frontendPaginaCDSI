@@ -21,7 +21,7 @@ export class OtherService {
   // METODO QUE NOS TRAE LA URL
   public getUrl() {
     //return this.url = 'http://cdsiapi.hopto.org/spring-boot-backend-inve/api';
-    return this.url = 'http://localhost:8444/api';
+    return this.url = 'http://190.43.98.126:8444/api';
     // return this.url = 'http://190.43.7.233:8444/api';
     //return this.url = 'http://190.43.7.233:8444/api';
   }

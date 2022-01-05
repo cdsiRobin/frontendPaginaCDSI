@@ -23,6 +23,7 @@
     "@angular/router": "^11.0.9",
     "chart.js": "^2.9.4",
     "ng2-charts": "^2.4.3",
+    "pdfmake": "^0.2.4",
     "rxjs": "~6.5.5",
     "sweetalert2": "^10.16.9",
     "tslib": "^2.3.1",

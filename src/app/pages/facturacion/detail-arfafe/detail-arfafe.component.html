@@ -132,7 +132,7 @@
                         <td class="text-right">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
                         <td>und</td>
-                        <td>descrip</td>
+                        <td>{{ data.descripcion }}</td>
                         <td class="text-right">{{ data.tipo_AFECTACION }}</td>
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
                         <td class="text-right">{{ data.precio_UNIT }}</td>
@@ -147,5 +147,18 @@
 
     </form>
 
-
+    <div class="row mt-5">
+        <div class="col-sm d-flex justify-content-center">
+            <button mat-raised-button color="primary">btn1</button>
+        </div>
+        <div class="col-sm d-flex justify-content-center">
+            <button mat-raised-button color="primary">btn2</button>
+        </div>
+        <div class="col-sm d-flex justify-content-center">
+            <button mat-raised-button color="primary">btn3</button>
+        </div>
+        <div class="col-sm d-flex justify-content-center">
+            <button mat-raised-button color="primary" (click)="ProperDesing()">imprimir</button>
+        </div>
+    </div>
 </div>

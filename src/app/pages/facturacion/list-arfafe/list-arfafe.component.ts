@@ -29,7 +29,8 @@ export class ListArfafeComponent implements OnInit {
   spin= false;
   pv: string;
   fecHasta = new Date;
-  fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
+  // fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
+  fecDesde = new Date;
 
   fec1: string;
   fec2: string;
@@ -54,7 +55,7 @@ export class ListArfafeComponent implements OnInit {
   cargarData(){
     this.dataSource = new MatTableDataSource(ELEMENT_DATA);
     this.dataSource.data = [];
-    this.fec1 = this.datepipe.transform(this.fecDesde,'dd/MM/yyyy');
+    this.fec1 = this.datepipe.transform(this.fecDesde.setMonth(this.fecDesde.getMonth()-1),'dd/MM/yyyy');
     this.fec2 = this.datepipe.transform(this.fecHasta,'dd/MM/yyyy');
     if(this.pven) this.pv = 'S'; else this.pv = 'N';
     this.arfafeService.listaArfafe('01',this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)

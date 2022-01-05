@@ -43,7 +43,7 @@ export class Arfafe {
     NO_REFE_ALMA: string;
     TIPO_REFE_FACTU: string;
     NO_REFE_FACTU: string;
-    NO_GUIA: string;
+    no_GUIA: string;
     TIPO: string;
     NO_CONTA: number;
     COMISION: number;
@@ -105,7 +105,7 @@ export class Arfafe {
     DIRECCION_DIGI: string;
     COD_TIENDA: string;
     COD_DIR_ENTREGA: string;
-    NO_SOLIC: string;
+    no_SOLIC: string;
     tipo_DOC_CLI: string;
     num_DOC_CLI: string;
     MOTIVO_ANULA: string;
