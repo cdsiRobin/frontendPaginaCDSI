@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { ArcgtcService } from '../../../services/arcgtc.service';
 import { Sunattc } from '../../../models/sunattc';
 import { MatTableDataSource } from '@angular/material/table';
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-new-arcgtc',
@@ -29,6 +29,13 @@ export class NewArcgtcComponent implements OnInit {
   public findTipoCAmbio(){
     //let fecha = this.datepipe.transform(new Date,'dd/MM/yyyy');
     let fecha = this.datepipe.transform(this.fechaf,'dd/MM/yyyy');
+    Swal.fire({
+      position: 'top-end',
+      icon: 'success',
+      title: 'Buscando tipo de cambio '+fecha,
+      showConfirmButton: false,
+      timer: 1500
+    })
     this.arcgtcService.getDTOTipoCambioXFecha(fecha).subscribe( value => {
       this.sunattcs = value;
       //console.log(this.sunattcs);

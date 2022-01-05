@@ -47,6 +47,7 @@ import { ArfafeModule } from './facturacion/arfafe.module';
 import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
 import { ArcgtcComponent } from './arcgtc/arcgtc.component';
 import { ArcgtcModule } from './arcgtc/arcgtc.module';
+import { ArccmcComponent } from './arccmc/arccmc.component';
 
 @NgModule({
   declarations: [
@@ -83,7 +84,8 @@ import { ArcgtcModule } from './arcgtc/arcgtc.module';
     UsuarioComponent,
     Login2Component,
     MenuPventaComponent,
-    ItemsDialogoComponent
+    ItemsDialogoComponent,
+    ArccmcComponent
   ],
   exports: [
     ProgressComponent,

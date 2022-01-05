@@ -7,6 +7,7 @@ import { ListArfafeComponent } from '../facturacion/list-arfafe/list-arfafe.comp
 import { NewArfafeComponent } from '../facturacion/new-arfafe/arfafe-new.component';
 import { DetailArfafeComponent } from '../facturacion/detail-arfafe/detail-arfafe.component';
 import { NewArcgtcComponent } from '../arcgtc/new-arcgtc/new-arcgtc.component';
+import { ArccmcComponent } from '../arccmc/arccmc.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,12 @@ const routes: Routes = [
             children: [
               { path: '', redirectTo: 'new', pathMatch: 'full' },
               { path:'new', component: NewArcgtcComponent },
+            ]
+          },
+          { path: 'arccmc' ,
+            children: [
+              { path: '', redirectTo: 'new', pathMatch: 'full' },
+              { path:'new', component: ArccmcComponent },
             ]
           },
           { path: 'edicion/:orden', component: PedidoEdicionComponent },
