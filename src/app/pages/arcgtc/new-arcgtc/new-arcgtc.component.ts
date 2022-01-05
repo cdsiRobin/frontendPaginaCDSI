@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ArcgtcService } from '../../../services/arcgtc.service';
 import { Sunattc } from '../../../models/sunattc';
+import { MatTableDataSource } from '@angular/material/table';
 
 
 @Component({
@@ -10,7 +11,10 @@ import { Sunattc } from '../../../models/sunattc';
 })
 export class NewArcgtcComponent implements OnInit {
 
-  public sunattc: Sunattc;
+  public sunattcs: Sunattc[] = [];
+  displayedColumns: string[] = ['clase','descripcion','monto'];
+  dataSource: MatTableDataSource<Sunattc>;
+  fechaf = new Date();
 
   constructor(
     public datepipe: DatePipe,
@@ -18,18 +22,23 @@ export class NewArcgtcComponent implements OnInit {
     ) { }
 
   ngOnInit(): void {
-    this.buscarTipoCambioSunat();
+    this.findTipoCAmbio();
   }
 
-
   //METODO QUE NOS PERMITE TRAER POR FECHA EL TIPO DE CAMBIO($)
-  public buscarTipoCambioSunat(){
-    let fecha = this.datepipe.transform(new Date,'yyyy-MM-dd');
-    this.arcgtcService.getTipoCambioSunatXFecha(fecha).subscribe( value => {
-      this.sunattc = value;
-      console.log(this.sunattc);
+  public findTipoCAmbio(){
+    //let fecha = this.datepipe.transform(new Date,'dd/MM/yyyy');
+    let fecha = this.datepipe.transform(this.fechaf,'dd/MM/yyyy');
+    this.arcgtcService.getDTOTipoCambioXFecha(fecha).subscribe( value => {
+      this.sunattcs = value;
+      //console.log(this.sunattcs);
+      this.llenarTabla();
     });
+  }
 
+  //LLENAR TABLA
+  private llenarTabla(): void{
+    this.dataSource = new MatTableDataSource(this.sunattcs);
   }
 
 }

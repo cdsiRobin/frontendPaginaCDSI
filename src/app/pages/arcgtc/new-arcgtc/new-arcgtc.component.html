@@ -16,34 +16,60 @@
   </div>
   <!--FIN DE TITUTLO-->
   <!--CONTENEDODR-->
-  <div class="container mt-5 mb-5 border rounded p-5">
+  <div class="container border rounded p-5">
     <div class="row">
-         <!--TIPO DE CAMBIO DE SUNAT-->
-         <div class="col-sm-6 p-3" style="border-right: 1px solid lightgray;">
-             <div class="row">
-                  <!--FECHA-->
-                  <div class="col-sm-12">
-                    <mat-form-field appearance="outline" class="w-100">
-                        <mat-label>Fecha</mat-label>
-                        <input matInput [matDatepicker]="picker1">
-                        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
-                        <mat-datepicker #picker1></mat-datepicker>
-                    </mat-form-field>
-                  </div>
-                  <!--FIN-->
-                  <div class="col-sm-12">
-                    <mat-form-field appearance="outline" floatLabel="always">
-                      <mat-label>Descripción</mat-label>
-                      <input matInput placeholder="Placeholder" name="descripItem">
-                    </mat-form-field>
-                  </div>
-             </div>
-         </div>
-         <!--FIN-->
-         <!--ARCGTC-->
-         <div class="col-sm-6 p-3">
-         </div>
-         <!--FIN-->
+
+        <div class="col-sm-12">
+          <div class="row">
+              <!--FECHA-->
+              <div class="col-sm-8">
+                <mat-form-field appearance="outline" class="w-100">
+                  <mat-label>Fecha</mat-label>
+                  <input matInput [matDatepicker]="picker1" [(ngModel)]="fechaf">
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <!--FIN-->
+              <!--BOTON BUSCAR-->
+              <div class="col-sm-4">
+                <div class="example-button-container">
+                  <button mat-fab color="primary" (click)="findTipoCAmbio()" aria-label="Buscar Fecha">
+                    <mat-icon>search</mat-icon>
+                  </button>
+                </div>
+              </div>
+              <!--FIN-->
+          </div>
+        </div>
+        <!--TABLA-->
+        <div class="col-sm-12">
+          <div class="row">
+            <table mat-table [dataSource]="dataSource">
+              <!-- codigo Column -->
+              <ng-container matColumnDef="clase">
+               <th mat-header-cell *matHeaderCellDef> Clase </th>
+               <td mat-cell *matCellDef="let d"> {{d.clase}} </td>
+             </ng-container>
+
+             <!-- codigo Column -->
+             <ng-container matColumnDef="descripcion">
+               <th mat-header-cell *matHeaderCellDef> Descripción </th>
+               <td mat-cell *matCellDef="let d"> {{d.descripcion}} </td>
+             </ng-container>
+
+              <!-- medida Column -->
+              <ng-container matColumnDef="monto">
+               <th mat-header-cell *matHeaderCellDef> Monto </th>
+               <td mat-cell *matCellDef="let d"> {{d.monto}} </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+           </table>
+          </div>
+        </div>
+        <!--FIN-->
     </div>
   </div>
   <!--CONTENEDOR-->
