@@ -1,5 +1,6 @@
 import { IdArccmc } from './IdArccmc';
 import { ArcctdaEntity } from './arcctda-entity';
+
 export class Arccmc {
   objIdArc: IdArccmc;
   nombre: string;

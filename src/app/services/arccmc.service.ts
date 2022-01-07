@@ -5,7 +5,10 @@ import { Injectable } from '@angular/core';
 import {GenericoService} from './generico/generico.service';
 import { Observable, throwError } from 'rxjs';
 import { Informacion } from '../interfaces/informacion';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
+import { Empresa } from '../models/empresa';
+import { ConsultaExitosa } from '../interfaces/consulta-exitosa';
+import { Persona } from '../models/persona';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +16,24 @@ import { catchError } from 'rxjs/operators';
 export class ArccmcService extends GenericoService{
 
   constructor(private http: HttpClient) { super(); }
+
+  //CONSULTAR POR RUC DESDE API DE SUNAT
+  public buscarClienteRUCApiSunat(ruc: string): Observable<Empresa>{
+    return this.http.get< ConsultaExitosa<Empresa> >(this.url+`/cli/buscarapi?id=${ruc}`,this.options).pipe(
+      map( (response : ConsultaExitosa<Empresa>) =>{
+        return response.resultado;
+      } )
+    );
+  }
+
+  //CONSULTAR POR DNI DESDE API DE SUNAT
+  public buscarClienteDNIApiSunat(dni: string): Observable<Persona>{
+    return this.http.get< ConsultaExitosa<Persona> >(this.url+`/cli/buscarapi?id=${dni}`,this.options).pipe(
+      map( (response : ConsultaExitosa<Persona>) =>{
+        return response.resultado;
+      } )
+    );
+  }
 
  public listaClientes(datos: DatosClienteDTO) {
     const body = JSON.stringify(datos);
