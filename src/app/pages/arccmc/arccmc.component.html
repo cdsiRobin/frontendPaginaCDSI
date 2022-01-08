@@ -108,6 +108,27 @@
                           <small *ngIf="f.direccionD.errors?.required && f.direccionD.touched" class="invalido">Dirección es requerido</small>
                           <small *ngIf="f.direccionD.errors?.minlength" class="invalido">El campo debe ser mayor a 3 caracteres</small>
                         </mat-form-field>
+                        <!--DEPARTAMENTO-->
+                        <mat-form-field>
+                          <mat-select placeholder="Departamento" [(value)]="arccdp" (selectionChange)="seleccionarDepartamento($event)">
+                              <mat-option *ngFor="let e of arccdps" [value]="e">{{e.descDepa}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!--FIN-->
+                        <!--PROVINCIA-->
+                        <mat-form-field>
+                          <mat-select placeholder="PROVINCIA" [(value)]="arccpr" (selectionChange)="seleccionarProvincia($event)">
+                              <mat-option *ngFor="let e of arccprs" [value]="e">{{e.descProv}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!--FIN-->
+                        <!--DISTRITO-->
+                        <mat-form-field>
+                          <mat-select placeholder="DISTRITO" [(value)]="arccdi" (selectionChange)="seleccionarDistrito($event)">
+                              <mat-option *ngFor="let e of arccdis" [value]="e">{{e.descDist}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!--FIN-->
                    </div>
                   <!--FIN DIRECCION CLIENTE-->
               </div>

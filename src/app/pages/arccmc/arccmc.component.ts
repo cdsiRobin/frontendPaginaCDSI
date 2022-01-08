@@ -4,6 +4,9 @@ import { ArccmcService } from '../../services/arccmc.service';
 import { Empresa } from '../../models/empresa';
 import { Persona } from '../../models/persona';
 import Swal from 'sweetalert2';
+import { Arccdp } from '../../models/arccdp';
+import { Arccpr } from '../../models/arccpr';
+import { Arccdi } from '../../models/arccdi';
 
 @Component({
   selector: 'app-arccmc',
@@ -22,6 +25,13 @@ export class ArccmcComponent implements OnInit {
   empresa: Empresa;
   persona: Persona;
 
+  arccdp: Arccdp;
+  arccdps: Arccdp[] = [];
+  arccpr: Arccpr;
+  arccprs: Arccpr[] = [];
+  arccdi: Arccdi;
+  arccdis: Arccdi[] = [];
+
   constructor(public arccmcService: ArccmcService) { }
 
   ngOnInit(): void {
@@ -30,9 +40,39 @@ export class ArccmcComponent implements OnInit {
     this.usuario = sessionStorage.getItem('usuario');
 
     this.iniciarFormulario();
+    this.traerDepartamentosXcia();
   }
 
   get f() { return this.fArccmc.controls; }
+
+  public traerDepartamentosXcia(){
+    this.arccmcService.listarDepartXcia(this.cia).subscribe( data =>{
+       this.arccdps = data;
+    });
+  }
+
+  //SELECCIONAR DEPARTAMENTOS POR COMPAÑIA
+  public seleccionarDepartamento(e: any){
+    this.arccdp = e.value;
+    //BUSCAMOS LAS PROVINCIAS
+    this.arccmcService.listarProvincXciaAndDepart(this.cia,this.arccdp.arccdpPK.codiDepa).subscribe(data =>{
+       this.arccprs = data;
+    });
+  }
+
+  //SELECCIONAR PROVINCIA POR COMPAÑIA Y DEPARTAMENTO
+  public seleccionarProvincia(e: any){
+    this.arccpr = e.value;
+    //BUSCAMOS LAS PROVINCIAS
+    this.arccmcService.listarDistritoXciaAndDepartAndProvinc(this.cia,this.arccdp.arccdpPK.codiDepa,this.arccpr.arccprPK.codiProv).subscribe(data =>{
+       this.arccdis = data;
+    });
+  }
+
+  //SELECCIONAR DISTRITO
+  public seleccionarDistrito(e: any){
+     this.arccdi = e.value;
+  }
 
   public mensajeBuscar(id: string): void{
     Swal.fire({

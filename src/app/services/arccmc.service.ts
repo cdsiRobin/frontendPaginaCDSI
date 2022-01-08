@@ -9,6 +9,10 @@ import { catchError, map } from 'rxjs/operators';
 import { Empresa } from '../models/empresa';
 import { ConsultaExitosa } from '../interfaces/consulta-exitosa';
 import { Persona } from '../models/persona';
+import { Arccdp } from '../models/arccdp';
+import { ConsultaExitosas } from '../interfaces/consulta-exitosas';
+import { Arccpr } from '../models/arccpr';
+import { Arccdi } from '../models/arccdi';
 
 @Injectable({
   providedIn: 'root'
@@ -17,9 +21,34 @@ export class ArccmcService extends GenericoService{
 
   constructor(private http: HttpClient) { super(); }
 
+  //LISTAMOS TODOS LOS DEPARTAMENTOS POR COMPAÑIA
+  public listarDepartXcia(cia: string): Observable<Arccdp[]>{
+    return this.http.get<ConsultaExitosas<Arccdp>>(this.url+`/arccdp/listar?cia=${cia}`,this.options).pipe(
+      map( (reponse: ConsultaExitosas<Arccdp>) => {
+        return reponse.resultado;
+      } )
+    );
+  }
+
+  //LISTAMOS TODAS LAS PROVINCIAS POR DEPARTAMENTOS Y COMPAÑIA
+  public listarProvincXciaAndDepart(cia: string, dp: string): Observable<Arccpr[]>{
+    return this.http.get<ConsultaExitosas<Arccpr>>(this.url+`/arccpr/listar?cia=${cia}&dp=${dp}`,this.options).pipe(
+      map( (reponse: ConsultaExitosas<Arccpr>) => {
+        return reponse.resultado;
+      } )
+    );
+  }
+  //LISTAMOS TODAS LAS PROVINCIAS POR DEPARTAMENTOS Y COMPAÑIA
+  public listarDistritoXciaAndDepartAndProvinc(cia: string, dp: string, pr: string): Observable<Arccdi[]>{
+    return this.http.get<ConsultaExitosas<Arccdi>>(this.url+`/arccdi/listar?cia=${cia}&dp=${dp}&pr=${pr}`,this.options).pipe(
+      map( (reponse: ConsultaExitosas<Arccdi>) => {
+        return reponse.resultado;
+      } )
+    );
+  }
   //CONSULTAR POR RUC DESDE API DE SUNAT
   public buscarClienteRUCApiSunat(ruc: string): Observable<Empresa>{
-    return this.http.get< ConsultaExitosa<Empresa> >(this.url+`/cli/buscarapi?id=${ruc}`,this.options).pipe(
+    return this.http.get< ConsultaExitosa<Empresa>>(this.url+`/cli/buscarapi?id=${ruc}`,this.options).pipe(
       map( (response : ConsultaExitosa<Empresa>) =>{
         return response.resultado;
       } )
