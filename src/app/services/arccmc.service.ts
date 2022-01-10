@@ -13,6 +13,8 @@ import { Arccdp } from '../models/arccdp';
 import { ConsultaExitosas } from '../interfaces/consulta-exitosas';
 import { Arccpr } from '../models/arccpr';
 import { Arccdi } from '../models/arccdi';
+import { Arccmc } from '../models/Arccmc';
+import { Guardar } from '../interfaces/guardar';
 
 @Injectable({
   providedIn: 'root'
@@ -64,6 +66,16 @@ export class ArccmcService extends GenericoService{
     );
   }
 
+  //GUARDAR CLIENTE
+  public guardarCliente(arccmc: Arccmc): Observable<Arccmc>{
+      const body = JSON.stringify(arccmc);
+      return this.http.post<Guardar<Arccmc>>(this.url + `/cli/save`, body, this.options).pipe(
+        map( (response: Guardar<Arccmc>) =>{
+          return response.detalle;
+        } )
+      );
+  }
+
  public listaClientes(datos: DatosClienteDTO) {
     const body = JSON.stringify(datos);
     return this.http.post<Arccmc[]>(this.url + `/cli/list`, body, this.options);
@@ -90,9 +102,14 @@ export class ArccmcService extends GenericoService{
       })
     );
   }
-  /*
-  public listaClientesRucLike( cia: string, id: string){
-    return this.http.get<Arccmc[]>(this.url + `/cli/listRuc/${cia}/${id}`)
+
+  //LISTA DE CLIENTES POR RUC LIKE
+  public listaClientesDescripLike( cia: string, nombre: string): Observable<Arccmc[]> {
+    return this.http.get<ConsultaExitosas<Arccmc>>(this.url + `/cli/list/nombre?cia=${cia}&nombre=${nombre}`, this.options).pipe(
+        map( (value: ConsultaExitosas<Arccmc>) =>{
+          return value.resultado;
+        } )
+    );
   }
-  */
+
 }

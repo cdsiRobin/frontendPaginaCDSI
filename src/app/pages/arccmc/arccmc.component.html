@@ -23,16 +23,32 @@
                 <!--BUSCAR CLIENTE-->
                 <div class="col-sm-12">
                   <div class="row">
-                       <div class="col-sm-4">
+                       <div class="col-sm-10">
                             <div class="row">
-                              <div class="col-sm-6">
+                              <div class="col-sm-10">
                                    <!--RUC-->
                                   <mat-form-field appearance="outline" class="w-100">
-                                    <mat-label>RUC/DNI</mat-label>
+                                    <mat-label>RUC / DNI</mat-label>
                                     <input type="text" minlength="8" maxlength="11" required matInput placeholder="Ingrese RUC o DNI" [(ngModel)]="rucDni">
                                   </mat-form-field>
+                                  <!--RAZON SOCIAL O NOMBRE-->
+                                  <mat-form-field appearance="outline" floatLabel="always">
+                                    <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
+                                    <input matInput
+                                    [(ngModel)]="rznombre"
+                                    (keyup)="buscarClienteXnombre($event)"
+                                    [matAutocomplete]="auto"
+                                    >
+                                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
+                                        <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
+                                            <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                                                <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
+                                            </div>
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                  </mat-form-field>
                               </div>
-                              <div class="col-sm-4">
+                              <div class="col-sm-pull-2">
                                 <div class="example-button-container">
                                   <button mat-fab color="primary" aria-label="Buscar cliente">
                                     <mat-icon>person_search</mat-icon>
@@ -41,13 +57,12 @@
                               </div>
                             </div>
                        </div>
-                       <div class="col-sm-8">
+                       <div class="col-sm-2">
                           <div class="example-button-container">
                             <button mat-fab color="warn" aria-label="Buscar cliente nuevo" (click)="buscarNuevoClienteApi()">
                               <mat-icon>person_add</mat-icon>
                             </button>
                           </div>
-
                        </div>
                   </div>
                 </div>
@@ -64,14 +79,14 @@
             <form [formGroup]="fArccmc" #frmArccmc="ngForm" (ngSubmit)="guardarCliente()">
               <div class="row">
                   <!--FORMULARIO CLIENTE-->
-                   <div class="col-sm-6" style="border-right: 1px solid lightgray;">
+                   <div class="col-sm-5" style="border-right: 1px solid lightgray;">
                         <!--ID-->
                     <mat-form-field class="example-full-width">
                       <input matInput required type="number" placeholder="CODIGO" required formControlName="id">
                     </mat-form-field>
                     <!--NOMBRE-->
                     <mat-form-field class="example-full-width">
-                      <input matInput type="text" minlength="3" maxlength="200" required placeholder="NOMBRE" required formControlName="nombre">
+                      <input matInput type="text" minlength="3" maxlength="200" placeholder="NOMBRE" required formControlName="nombre">
                       <small *ngIf="f.nombre.errors?.required && f.nombre.touched" class="invalido">Nombre es requerido</small>
                       <small *ngIf="f.nombre.errors?.minlength" class="invalido">El campo debe ser mayor a 3 caracteres</small>
                     </mat-form-field>
@@ -100,8 +115,9 @@
                       <small *ngIf="f.email.errors?.minlength" class="invalido">El campo debe ser de 5 caracteres</small>
                     </mat-form-field>
                    </div>
+                   <!--FIN FORMULARIO CLIENTE-->
                   <!--DIRECCION CLIENTE-->
-                   <div class="col-sm-6">
+                   <div class="col-sm-7">
                         <!--DIRECCION-->
                         <mat-form-field class="example-full-width">
                           <input matInput type="text" minlength="3" maxlength="200" placeholder="DIRECCIÓN" required formControlName="direccionD">
