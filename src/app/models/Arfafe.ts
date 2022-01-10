@@ -19,7 +19,7 @@ export class Arfafe {
     no_VENDEDOR: string;
     tipo_PRECIO: string;
     moneda: string;
-    TIPO_CAMBIO: number;
+    tipo_CAMBIO: number;
     PORC_DESC: number;
     no_ORDEN: string;
     NO_ORDEN_DESC: string;
@@ -187,10 +187,10 @@ export class Arfafe {
     IND_NC_FICTA1: string;
     NO_GUIA_CONSIG: string;
     MOT_CONTING: string;
-    OPER_GRATUITAS: number;
+    oper_GRATUITAS: number;
     OPER_EXONERADAS: number;
     OPER_INAFECTAS: number;
-    OPER_GRAVADAS: number;
+    oper_GRAVADAS: number;
     ESTADO_SUNAT: string;
     TIPO_OPERACION: string;
     SUSTENTO: string;

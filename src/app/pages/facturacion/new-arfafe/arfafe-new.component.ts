@@ -14,7 +14,6 @@ import { arfaflPK } from 'src/app/models/arfaflPK';
 import { Arfatp } from 'src/app/models/Arfatp';
 import { Arpfoe } from 'src/app/models/Arpfoe';
 import { IdArpfoe } from 'src/app/models/IdArpfoe';
-import { Tapfopa } from 'src/app/models/tapfopa';
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { ArccmcService } from 'src/app/services/arccmc.service';
@@ -24,8 +23,11 @@ import { ArfafeService } from 'src/app/services/arfafe.service';
 import { ArfatpService } from 'src/app/services/arfatp.service';
 import { ArticuloService } from 'src/app/services/articulo.service';
 import { PedidoService } from 'src/app/services/pedido.service';
-import { TapfopaService } from 'src/app/services/tapfopa.service';
 import { Utils } from "../utils";
+import { ArfacfService } from 'src/app/services/arfacf.service';
+import { ArfafpService } from 'src/app/services/arfafp.service';
+import { Arfafp } from 'src/app/models/Arfafp';
+import { ArfafpPK } from 'src/app/models/ArfafpPK';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -37,14 +39,17 @@ export class NewArfafeComponent implements OnInit {
 
     detalle:Arfafe = new Arfafe();
     arfacc:Arfacc = new Arfacc();
-    tapfopa: Tapfopa = new Tapfopa();
+    arfafp: Arfafp = new Arfafp();
     arfatp: Arfatp = new Arfatp();
     cia: string;
     doc: string;
     fact: string;
     logoDataUrl: string;
-
+    nomCentro: string;
+    uniMed: string[] = ['Med'];
   totalFactu:number = 0;
+  totalIGV:number = 0;
+  correlativo = '0000000';
 
   noCia: string;
   noOrden: string;
@@ -58,9 +63,10 @@ export class NewArfafeComponent implements OnInit {
     public arindaService: ArticuloService,
     private arfafeService: ArfafeService,
     private arfaccService: ArfaccService,
-    private tapfopaService: TapfopaService,
     private arcgtcService: ArcgtcService,
+    private arfafpservice: ArfafpService,
     private arfatpService: ArfatpService,
+    private arfacfservice: ArfacfService,
     public datepipe: DatePipe,
     private router: Router) { }
 
@@ -69,6 +75,9 @@ export class NewArfafeComponent implements OnInit {
     Utils.getImageDataUrlFromLocalPath1('assets/Logo2.jpg').then(
     result => this.logoDataUrl = result
   )
+  this.arfacc.arfaccPK = new ArfaccPK();
+  this.detalle.arfafePK = new ArfafePK();
+    this.centroEmisor();
     this.route.queryParams.subscribe(p => {
       let idArpfoe: IdArpfoe = new IdArpfoe();
       this.noCia = p['noCia'];
@@ -112,7 +121,8 @@ export class NewArfafeComponent implements OnInit {
 
     setArfafe(arfoe: Arpfoe){
       //trae correlativo
-
+      this.totalFactu = 0;
+      this.totalIGV = 0;
       if (arfoe.indBoleta1 == 'S') this.tipoDoc = 'B';
       else this.tipoDoc = 'F';
 
@@ -132,9 +142,9 @@ export class NewArfafeComponent implements OnInit {
 
         this.detalle.arfafePK.noCia = sessionStorage.getItem('cia');
         //creacion correlativo
-        let correlativo = '0000000';
         let cortar = d[0].consDesde.toString().length  * -1;
-        this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+correlativo.slice(0,cortar)+d[0].consDesde;
+        this.correlativo = this.correlativo.slice(0,cortar)+d[0].consDesde;
+        this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+this.correlativo;
         // this.detalle.arfafePK.noFactu = 'F0010002212';
         this.detalle.arfafePK.tipoDoc = this.tipoDoc;
 
@@ -158,12 +168,15 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.centro = arfoe.centro;
         this.detalle.centro_COSTO = arfoe.centroCosto;
         this.detalle.cod_CAJA = arfoe.codCaja;
-
+        this.detalle.cuser = sessionStorage.getItem('usuario');
+        this.detalle.tipo_CAMBIO = arfoe.tipoCambio;
+        this.detalle.oper_GRAVADAS = 0;
         this.listaPrecio(arfoe.tipoPrecio);
-        this.TCambio();
-        this.formaPago(arfoe.tipoFpago);
+        // this.TCambio();
+        this.formaPago(arfoe.codFpago);
         //detalle productos
         this.detalle.arfaflList = [];
+        this.detalle.oper_GRAVADAS = 0;
         arfoe.arpfolList.forEach(
           list => {
             let arfafl: Arfafl = new Arfafl();
@@ -177,24 +190,33 @@ export class NewArfafeComponent implements OnInit {
             arfafl.cantidad_FACT = list.cantEntreg;
             arfafl.cantidad_ENTR = list.cantEntreg;
             arfafl.descripcion = list.descripcion;
-            arfafl.imp_IGV = list.impIgv;
+            arfafl.p_DSCTO3 = 0;
+            arfafl.imp_IGV = parseFloat(this.trunc(list.impIgv,2));
             arfafl.igv = list.igv;
-            //arfafl.unidMed = list.medida;
-            arfafl.total = list.totalLin;
-            arfafl.precio_UNIT = list.precio;
+            this.uniMed.push(list.medida);
+            arfafl.total = parseFloat(this.trunc(list.totalLin,2));
+            arfafl.precio_UNIT = parseFloat(this.trunc(list.precio,5));
             arfafl.tipo_AFECTACION = list.tipoAfectacion;
             arfafl.tipo_ARTI = list.tipoArti;
 
+            this.detalle.oper_GRAVADAS += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
+            console.log(this.detalle.oper_GRAVADAS);
             this.totalFactu += list.totalLin;
+            this.totalIGV += arfafl.imp_IGV;
             this.detalle.arfaflList.push(arfafl);
           }
         );
         this.detalle.total = this.totalFactu;
+        this.detalle.descuento = 0;
 
 
       });
 
     }
+    
+    trunc (x, de = 0) {
+        return Number(Math.round(parseFloat(x + 'e' + de)) + 'e-' + de).toFixed(de);
+      }
 
     traeCliente() {
       let cli = new DatosClienteDTO(sessionStorage.getItem('cia'));
@@ -211,18 +233,19 @@ export class NewArfafeComponent implements OnInit {
       })
     }
 
-  public formaPago(cod: string){
-    let list: Tapfopa[] = [];
-     this.tapfopaService.listarFormaPagoCiaAndEstado(sessionStorage.getItem('cia'),'A').subscribe(data => {
-        list = data.resultado;
-        for (const l of list) {
-          if (l.tapfopaPK.codFpago === cod) {
-            this.tapfopa = l;
-            break;
-          }
-        }
-     })
-  }
+    public formaPago(cod: string){
+        let list: Arfafp[] = [];
+        this.arfafpservice.listarFPFactu(sessionStorage.getItem('cia'),'A').subscribe(data => {
+            list = data.resultado;
+            console.log(data);
+            for (const l of list) {
+              if (l.arfafpPK.codFpago === cod) {
+                this.arfafp = l;
+                break;
+              }
+            }
+        })
+      }
 
    public TCambio(){
     let fecha = this.datepipe.transform(new Date,'dd/MM/yyyy');
@@ -243,6 +266,13 @@ export class NewArfafeComponent implements OnInit {
         }
     }
     });
+  }
+  
+  public centroEmisor(){
+    this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
+    .subscribe(data => {
+        this.nomCentro = data.resultado.descripcion;
+    })
   }
 
   ProperDesing() {
@@ -265,13 +295,192 @@ export class NewArfafeComponent implements OnInit {
             {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.oper_INAFECTAS, bold: false, fontSize: 8, alignment: 'right'},
+            {text: 0.00, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.imp_IGV, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.total, bold: false, fontSize: 8, alignment: 'right'}
             ]
         );
       });
+    var bodyDet = [];
+    bodyDet.push([
+        {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.descuento, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+        // {text: [
+        //     {text: 'S/ ', alignment: 'left'},
+        //     {text: this.detalle.descuento, alignment: 'right'}],
+        //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+    ]);
+    bodyDet.push([
+        {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: '0', alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.totalIGV, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.total, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: '0', alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.descuento, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+
     const documentDefinition = {
+    //   pageSize: 'A5',
+    //   pageOrientation: 'landscape',
+    pageMargins: [40, 20, 40, 220],
+      footer: {
+        columns: [
+            [
+            {
+                columns: [
+                    [
+                         {qr: 'pagina de FE qr. k', fit: '60' },
+                         {text: 'Representación Impresa de la Factura electrónica',
+                        fontSize: 8}
+                    ],
+                    [
+                        {
+                            margin: [ 0, 5, 0, 0],
+                            layout: 'noBorders',
+                            table: {
+                              headerRows: 0,
+                              widths: ['70%', '30%'],
+                  
+                              body: bodyDet
+                            }
+                          }
+                    ]
+                ],
+                margin: [10,20,10,15]
+            },
+            {
+                layout: {
+                    hLineWidth: function(i, node) {
+                     return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+                    },
+                    vLineWidth: function(i, node) {
+                     return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+                    },
+                    hLineColor: function (i, node) {
+                        return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                    },
+                    vLineColor: function(i, node) {
+                        return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                    }
+                },
+                width: 515,
+                table: {
+                  headerRows: 1,
+                  widths: ['100%'],        
+                  body: [
+                      [{text: 'Sus pagos depositar al banco Credito',
+                      fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
+                      [
+                        {
+                            columns: [
+                                [{
+                                    text: [
+                                        {
+                                            text: 'Cuenta en Soles   : ',
+                                            // bold: true,
+                                            fontSize: 10
+                                        },
+                                        {   text: '191-2039372-0-16',
+                                        // bold: true,
+                                        fontSize: 10
+                                        }
+                                    ]
+                                },
+                                {
+                                    text: [
+                                        {
+                                            text: 'Cuenta en Dolares  : ',
+                                            // bold: true,
+                                            fontSize: 10
+                                        },
+                                        {   text: '191-1985270-1-41',
+                                        // bold: true,
+                                        fontSize: 10
+                                        }
+                                    ]
+                                }]
+                            ]
+                        }
+                      ]
+                ]
+                }
+            }
+            ]
+        ],
+        margin: [40,0]
+    },
+
       content: [
         //   {qr: 'text'},
         {
@@ -491,7 +700,7 @@ export class NewArfafeComponent implements OnInit {
                                                 bold:true
                                             },
                                             {
-                                                text: this.tapfopa.descripcion,
+                                                text: this.arfafp.descripcion,
                                                 fontSize: 8
                                             }
                                         ],

@@ -8,13 +8,15 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Arfacc } from "src/app/models/arfacc";
 import { Arfafe } from "src/app/models/Arfafe";
 import { Arfatp } from "src/app/models/Arfatp";
-import { Tapfopa } from "src/app/models/tapfopa";
 import { ArccmcService } from "src/app/services/arccmc.service";
 import { ArcgtcService } from "src/app/services/arcgtc.service";
 import { ArfafeService } from "src/app/services/arfafe.service";
 import { ArfatpService } from "src/app/services/arfatp.service";
 import { TapfopaService } from "src/app/services/tapfopa.service";
 import { Utils } from "../utils";
+import { ArfafpService } from "src/app/services/arfafp.service";
+import { Arfafp } from "src/app/models/Arfafp";
+import { ArfacfService } from "src/app/services/arfacf.service";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -28,21 +30,23 @@ export class DetailArfafeComponent implements OnInit {
     tipoComprobante: string = 'Factura';
     detalle:Arfafe = new Arfafe();
     arfacc:Arfacc = new Arfacc();
-    tapfopa: Tapfopa = new Tapfopa();
+    arfafp: Arfafp = new Arfafp();
     arfatp: Arfatp = new Arfatp();
     cia: string;
     doc: string;
     fact: string;
     tipoCambio: number;
     logoDataUrl: string;
+    nomCentro: string;
+    centro: string = sessionStorage.getItem('centro');
 
-  constructor(private route: ActivatedRoute, 
-    private router: Router, 
+  constructor(private route: ActivatedRoute,
     private arfafeService: ArfafeService,
     public clienteServices: ArccmcService,
-    private tapfopaService: TapfopaService,
     private arcgtcService: ArcgtcService,
     private arfatpService: ArfatpService,
+    private arfafpservice: ArfafpService,
+    private arfacfservice: ArfacfService,
     public datepipe: DatePipe) { }
 
   ngOnInit(): void {
@@ -62,7 +66,7 @@ export class DetailArfafeComponent implements OnInit {
       .subscribe(a => {
           this.detalle = a.resultado;
           this.traeCliente();
-          this.formaPago(a.resultado.tipo_FPAGO);
+          this.formaPago(a.resultado.cod_FPAGO);
           this.listaPrecio(a.resultado.tipo_PRECIO);
           this.TCambio();
           console.log(a.resultado);
@@ -70,6 +74,7 @@ export class DetailArfafeComponent implements OnInit {
         }
       )
     });
+    this.centroEmisor();
   }
   traeCliente() {
     let cli = new DatosClienteDTO(sessionStorage.getItem('cia'));
@@ -87,16 +92,23 @@ export class DetailArfafeComponent implements OnInit {
   }
 
   public formaPago(cod: string){
-    let list: Tapfopa[] = [];
-    this.tapfopaService.listarFormaPagoCiaAndEstado(sessionStorage.getItem('cia'),'A').subscribe(data => {
+    let list: Arfafp[] = [];
+    this.arfafpservice.listarFPFactu(sessionStorage.getItem('cia'),'A').subscribe(data => {
         list = data.resultado;
-        console.log(data);
+        // console.log(data);
         for (const l of list) {
-          if (l.tipoFpago === cod) {
-            this.tapfopa = l;
+          if (l.arfafpPK.codFpago === cod) {
+            this.arfafp = l;
             break;
           }
         }
+    })
+  }
+
+  public centroEmisor(){
+    this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
+    .subscribe(data => {
+        this.nomCentro = data.resultado.descripcion;
     })
   }
 
@@ -366,7 +378,7 @@ export class DetailArfafeComponent implements OnInit {
                                                 bold:true
                                             },
                                             {
-                                                text: this.tapfopa.descripcion,
+                                                text: this.arfafp.descripcion,
                                                 fontSize: 8
                                             }
                                         ],
