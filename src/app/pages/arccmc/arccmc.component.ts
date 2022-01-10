@@ -63,6 +63,15 @@ export class ArccmcComponent implements OnInit {
 
   }
 
+  // BUSCANDO CLIENTE POR RUC O DNI
+  public buscarClienteXRucOrDni(): void{
+     this.mensajeBuscar("RUC o DNI");
+     this.arccmcService.getClientXCodigo(this.cia,this.rucDni.trim()).subscribe( data => {
+       this.arccmc = data;
+       this.iniciarFormularioArccmc(this.arccmc);
+     });
+  }
+
   //BUSCAMOS CLIENTES POR SU NOMBRE O RAZON SOCIAL
   public buscarClienteXnombre(e: any){
     let nombre: string = e.target.value;
