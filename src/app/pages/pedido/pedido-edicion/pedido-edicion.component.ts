@@ -204,7 +204,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
 
     this.getCliente('99999999998');
-
+    //BUSCAR POR RUC
     this.groupEmpresa.get('ruc').valueChanges.subscribe(valueChange => {
       if (valueChange.length > 3) {
          // this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
@@ -216,7 +216,16 @@ export class PedidoEdicionComponent implements OnInit {
         this.factuOptions = null;
       }
     });
-
+    // BUSCAR POR RAZON SOCIAL O NOMBRE
+    this.groupEmpresa.get('racSoc').valueChanges.subscribe(valueChange => {
+      if (valueChange.length > 3) {
+         let nombre: string = valueChange;
+         this.factuOptions = this.arccmcService.listaClientesDescripLike(this.cia,nombre.toUpperCase().trim());
+      }
+      else {
+        this.factuOptions = null;
+      }
+    });
   }
   // LIMPIANDO ITEMS LIBRES
   public limpiarItemsLibre(): void{
@@ -256,8 +265,6 @@ export class PedidoEdicionComponent implements OnInit {
    // NUEVO CAMBIOS
    public getDirecciones($event) {
       this.arcctda = $event.value;
-     // console.log('DIRECCION');
-     // console.log(this.arcctda);
       this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
   }
 

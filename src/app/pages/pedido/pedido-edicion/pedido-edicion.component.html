@@ -71,14 +71,13 @@
                         </mat-autocomplete>
                     </mat-form-field>
                     <!--RAZON SOCIAL DE CLIENTE-->
-                    <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
                       <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
                       <input matInput
                              formControlName="racSoc"
-                             (keyup)="buscarClienteXnombre($event)"
                              [matAutocompleteConnectedTo]="origin"
                              [matAutocomplete]="auto">
-                      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
+                      <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
                         <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
                           <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
                             <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>

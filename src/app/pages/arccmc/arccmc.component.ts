@@ -378,7 +378,7 @@ export class ArccmcComponent implements OnInit {
 
      arccmc.objIdArc = idArccmc;
      arccmc.nombre = rznombre.substring(0,199).toUpperCase();
-     arccmc.ruc = this.fArccmc.get('id').value;
+     arccmc.ruc = this.fArccmc.get('ruc').value;
      arccmc.direccion = this.fArccmc.get('direccion').value;
      arccmc.telefono = this.fArccmc.get('telefono').value;
      arccmc.celular = this.fArccmc.get('celular').value;
