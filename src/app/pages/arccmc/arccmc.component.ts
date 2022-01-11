@@ -78,14 +78,14 @@ export class ArccmcComponent implements OnInit {
     this.arccmcObservable = this.arccmcService.listaClientesDescripLike(this.cia,nombre.toUpperCase().trim());
   }
 
-  //SELECCIONAMOS UN CLIENTE POR SU NOMBRE O RAZON SOCIA
+  // SELECCIONAMOS UN CLIENTE POR SU NOMBRE O RAZON SOCIA
   public seleccionarClienteXdescrip($event: MatAutocompleteSelectedEvent){
      this.arccmc = $event.option.value;
      this.rucDni = this.arccmc.objIdArc.id;
      this.rznombre = this.arccmc.nombre;
 
      this.iniciarFormularioArccmc(this.arccmc);
-     //this.arcctdas = this.arccmc.arcctdaEntity;
+     // this.arcctdas = this.arccmc.arcctdaEntity;
   }
 
   get f() { return this.fArccmc.controls; }

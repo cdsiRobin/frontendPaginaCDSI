@@ -1,4 +1,3 @@
-
 import { Arpfoe } from './../../../models/Arpfoe';
 import { Arinda } from './../../../models/Arinda';
 import { ArticuloService } from './../../../services/articulo.service';
@@ -55,40 +54,40 @@ import * as moment from 'moment';
 export class PedidoEdicionComponent implements OnInit {
 
   form: FormGroup;
-  //NUEVO CAMBIOS
-  groupEmpresa:FormGroup;
-  groupArticulo:FormGroup;
+  // NUEVO CAMBIOS
+  groupEmpresa: FormGroup;
+  groupArticulo: FormGroup;
 
   factuOptions: Observable<Arccmc[]>;
   arccmcs: Arccmc[];
-  //FIN
+  // FIN
 
   fechaSeleccionada: Date = new Date();
   detallePedido: Arpfol[] = [];
   articulos: Arinda[] = [];
-  //PEDIDO CABECERA MUESTRA
+  // PEDIDO CABECERA MUESTRA
   /*=====================================================*/
-  orden:string;
-  codCliente: string = '';
+  orden: string;
+  codCliente = '';
   nomCli: string;
   direccion: string;
   email: string;
-  //DETALLE PEDIDO MUESTRA
+  // DETALLE PEDIDO MUESTRA
   /*=====================================================*/
   tipoBS: string;
   articuloSeleccionado: Arinda;
   tipoAfectacion: string;
-  cantAsignada: number = 0;
-  precioCant: number = 0;
-  precio: number = 0;
-  pDSCTO3: number = 0;
-  impIgv: number = 0;
-  totalLin: number = 0;
+  cantAsignada = 0;
+  precioCant = 0;
+  precio = 0;
+  pDSCTO3 = 0;
+  impIgv = 0;
+  totalLin = 0;
 
-  totalGeneral:number=0;
-  subTotal:number=0;
-  totalIGV:number=0;
-  impuesto:number=18;
+  totalGeneral = 0;
+  subTotal = 0;
+  totalIGV = 0;
+  impuesto = 18;
 
   myControlArticulo: FormControl = new FormControl({value: '', disabled: true });
 
@@ -126,13 +125,16 @@ export class PedidoEdicionComponent implements OnInit {
 
   public tipoItem: string;
 
-  public detPedidos :Detpedido[] =[];
-  //NUEVO CAMBIOS
-  displayedColumns: string[] = ['tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total','eliminar'];
-  //FIN
+  public detPedidos: Detpedido[] = [];
+  // NUEVO CAMBIOS
+  displayedColumns: string[] = ['tipo', 'codigo', 'medida', 'descripcion', 'cantidad', 'precio', 'igv', 'total', 'eliminar'];
+  // FIN
   dataSource: MatTableDataSource<Detpedido>;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+
+  arccmcObservable: Observable<Arccmc[]>;
+  arccmc: Arccmc;
 
   Toast = Swal.mixin({
     toast: true,
@@ -156,6 +158,7 @@ export class PedidoEdicionComponent implements OnInit {
               public arfatpService: ArfatpService,
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
+              public arccmcService: ArccmcService,
               private snackBar: MatSnackBar,
               private dialogItems: MatDialog,
               private router: Router,
@@ -202,28 +205,55 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.getCliente('99999999998');
 
-    this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
-      if(valueChange.length > 3)
-         //this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
-         this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange).pipe(
+    this.groupEmpresa.get('ruc').valueChanges.subscribe(valueChange => {
+      if (valueChange.length > 3) {
+         // this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
+         this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia, valueChange).pipe(
            map( value => value.resultado)
-         )
-      else
+         );
+      }
+      else {
         this.factuOptions = null;
+      }
     });
 
   }
-  //NUEVO CAMBIOS
+  // LIMPIANDO ITEMS LIBRES
+  public limpiarItemsLibre(): void{
+    this.groupArticulo = new FormGroup({
+      codProd: new FormControl(''),
+      desProd: new FormControl(''),
+      umProd: new FormControl({ value: 'UND', disabled: false }, Validators.required),
+      precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
+      cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
+    });
+  }
+
+  // BUSCAMOS CLIENTES POR SU NOMBRE O RAZON SOCIAL
+  public buscarClienteXnombre(e: any){
+    const nombre: string = e.target.value;
+    this.arccmcObservable = this.arccmcService.listaClientesDescripLike(this.cia, nombre.toUpperCase().trim());
+  }
+
+  // SELECCIONAMOS UN CLIENTE POR SU NOMBRE O RAZON SOCIA
+  public seleccionarClienteXdescrip($event: MatAutocompleteSelectedEvent){
+    this.arccmc = $event.option.value;
+    this.groupEmpresa.controls.ruc.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
+    this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
+    this.arcctdas = this.arccmc.arcctdaEntity;
+  }
+
+  // NUEVO CAMBIOS
   setFormData($event: MatAutocompleteSelectedEvent) {
-    let factuOptions = $event.option.value;
-    if(factuOptions){
-      this.groupEmpresa.controls['ruc'].setValue(factuOptions.ruc, {emitEvent: false});
-      this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
+    const factuOptions = $event.option.value;
+    if (factuOptions){
+      this.groupEmpresa.controls.ruc.setValue(factuOptions.ruc, {emitEvent: false});
+      this.groupEmpresa.controls.racSoc.setValue(factuOptions.nombre, {emitEvent: false});
       this.arcctdas = factuOptions.arcctdaEntity;
     }
   }
 
-   //NUEVO CAMBIOS
+   // NUEVO CAMBIOS
    public getDirecciones($event) {
       this.arcctda = $event.value;
      // console.log('DIRECCION');
@@ -231,10 +261,10 @@ export class PedidoEdicionComponent implements OnInit {
       this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
   }
 
-  //FIN
+  // FIN
   filtrarArticulos(val: any) {
     if (val != null) {
-      let filtro: string = String(val);
+      const filtro: string = String(val);
       this.arindaService.listaArtiDesc(sessionStorage.getItem('cia'), filtro.trim()).subscribe(data => {
         this.articulos = data;
       });
@@ -242,6 +272,7 @@ export class PedidoEdicionComponent implements OnInit {
     }
 
   }
+
   mostrarArticulo(val: Arinda) {
     return val ? `${val.idArti.noArti} ${val.descripcion}` : val;
 
@@ -262,11 +293,11 @@ export class PedidoEdicionComponent implements OnInit {
         this.precio = data.precio;
       }
 
-    })
+    });
   }
 
   calcularImporte() {
-    this.precioCant = this.precio * this.cantAsignada
+    this.precioCant = this.precio * this.cantAsignada;
     this.impIgv = (this.precio * this.cantAsignada) * 0.18;
     this.totalLin = (this.precio * this.cantAsignada) + this.impIgv;
   }
@@ -274,25 +305,26 @@ export class PedidoEdicionComponent implements OnInit {
   noOrden() {
     this.pedidoService.noOrdern(sessionStorage.getItem('cia'), sessionStorage.getItem('centro')).subscribe(data => {
       this.orden = data;
-    })
+    });
   }
+
   traeCliente() {
-    let datos = new DatosClienteDTO(sessionStorage.getItem('cia'));
+    const datos = new DatosClienteDTO(sessionStorage.getItem('cia'));
     datos.documento = this.codCliente.trim();
     this.clienteServices.traeCliente(datos).subscribe(data => {
       if (data.direccion != null) {
         this.direccion = data.direccion;
       } else {
-        this.form.controls['direccion'].enable();
+        this.form.controls.direccion.enable();
       }
       this.nomCli = data.nombre;
       if (data.email != null) {
         this.email = data.email;
       } else {
-        this.form.controls['email'].enable();
+        this.form.controls.email.enable();
       }
-      this.form.controls['articulo'].enable();
-      this.form.controls['cantAsignada'].enable();
+      this.form.controls.articulo.enable();
+      this.form.controls.cantAsignada.enable();
     }, err => {
       if (err.status == 404) {
         Swal.close();
@@ -302,92 +334,20 @@ export class PedidoEdicionComponent implements OnInit {
           title: 'Cliente no Existe o se Encuentra inactivo!!'
         });
       }
-    })
+    });
   }
   estadoBotonCliente() {
     return (this.codCliente === '');
   }
 
-  // VAMOS AGREGAR LOS ITEMS
-  /*
-  public agregar(varinda1sp: Varinda1ps): void {
-
-    if (this.articuloSeleccionado) {
-      let cont = 0;
-      for (let i = 0; i < this.detallePedido.length; i++) {
-        let detalle = this.detallePedido[i];
-        if (detalle.idArpfol.noArti === this.articuloSeleccionado.idArti.noArti) {
-             cont++;
-             break;
-        }
-      }
-      //VERIFICAR SI EL ARTICULO ESTA DUPLICADO
-      if (cont > 0) {
-        Swal.close();
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'info',
-          title: 'Articulo duplicado'
-        });
-      } else {
-        let idDetalle = new IdArpfol();
-        idDetalle.cia = sessionStorage.getItem('cia');
-        idDetalle.noOrden = this.orden;
-
-        idDetalle.noArti = this.articuloSeleccionado.idArti.noArti;
-        let detalle = new Arpfol();
-        detalle.idArpfol = idDetalle;
-        detalle.descripcion = this.articuloSeleccionado.descripcion;
-        if (this.cantAsignada > 0) {
-          detalle.tipoArti='B';
-          detalle.cantAsignada = this.cantAsignada;
-          detalle.precio = this.precio;
-          detalle.impIgv = this.impIgv;
-          detalle.totalLin = this.totalLin;
-          detalle.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-          detalle.operExoneradas = 0;
-          detalle.operGratuitas = 0;
-          detalle.operGravadas = this.precioCant;
-          detalle.operInafectas = 0;
-          detalle.tipoAfectacion = '10';
-          this.detallePedido.push(detalle);
-          this.getTotal();
-          this.myControlArticulo.reset();
-          this.tipoBS = '';
-          this.tipoAfectacion = '';
-          this.cantAsignada = 0;
-          this.precio = 0;
-          this.pDSCTO3 = 0;
-          this.impIgv = 0;
-          this.totalLin = 0;
-        }
-        else {
-          Swal.close();
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'info',
-            title: 'Agregar cantidad'
-          });
-        }
-      }
-    } else {
-      Swal.close();
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'info',
-        title: 'Debe agregar Articulo'
-      });
-    }
-
-  }
-  */
   removerDetalle(index: number) {
     this.detallePedido.splice(index, 1);
     this.getTotal();
   }
+
   public getTotal() {
     this.totalGeneral =  this.detallePedido.map(t => t.totalLin).reduce((acc, value) => acc + value, 0);
-    //this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
+    // this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
     this.totalIGV = this.detallePedido.map(t => t.impIgv).reduce((acc, value) => acc + value, 0);
     this.subTotal = this.totalGeneral - this.totalIGV;
   }
@@ -396,31 +356,31 @@ export class PedidoEdicionComponent implements OnInit {
     this.detallePedido = [];
     this.articulos = [];
 
-    this.orden='';
-    this.codCliente='';
-    this.nomCli='';
-    this.direccion='';
-    this.email='';
-  //DETALLE PEDIDO MUESTRA
+    this.orden = '';
+    this.codCliente = '';
+    this.nomCli = '';
+    this.direccion = '';
+    this.email = '';
+  // DETALLE PEDIDO MUESTRA
   /*=====================================================*/
-    this.tipoBS='';
-    this.tipoAfectacion='';
-    this.cantAsignada= 0;
+    this.tipoBS = '';
+    this.tipoAfectacion = '';
+    this.cantAsignada = 0;
     this.precioCant = 0;
     this.precio = 0;
     this.pDSCTO3 = 0;
     this.impIgv = 0;
-    this.totalLin= 0;
+    this.totalLin = 0;
 
-    this.totalGeneral=0;
-    this.subTotal=0;
-    this.totalIGV=0;
-    this.impuesto=18;
+    this.totalGeneral = 0;
+    this.subTotal = 0;
+    this.totalIGV = 0;
+    this.impuesto = 18;
 
 
     this.articuloSeleccionado = null;
-    //this.pacientesFiltrados = EMPTY;
-    //this.medicosFiltrados = EMPTY;
+    // this.pacientesFiltrados = EMPTY;
+    // this.medicosFiltrados = EMPTY;
     this.fechaSeleccionada = new Date();
     this.fechaSeleccionada.setHours(0);
     this.fechaSeleccionada.setMinutes(0);
@@ -445,7 +405,7 @@ export class PedidoEdicionComponent implements OnInit {
       if (this.arfaccs.length === 1) {
          this.arfacc = this.arfaccs[0];
       }else{
-        this.snackBar.open('Debe elegir un Nro de Pedido para el centro: ' + this.centro,'Salir',
+        this.snackBar.open('Debe elegir un Nro de Pedido para el centro: ' + this.centro, 'Salir',
           {
             duration: 5000,
             verticalPosition: 'top',
@@ -480,12 +440,12 @@ export class PedidoEdicionComponent implements OnInit {
 
   // METODO QUE TRAE EL TIPO DE CAMBIO DE FECHA ACTUAL
   public buscarTipoCambioClaseAndFecha(): void{
-    let date = new Date();
-    let day = `${(date.getDate())}`.padStart(2,'0');
-    let month = `${(date.getMonth()+1)}`.padStart(2,'0');
-    let year = date.getFullYear();
+    const date = new Date();
+    const day = `${(date.getDate())}`.padStart(2, '0');
+    const month = `${(date.getMonth() + 1)}`.padStart(2, '0');
+    const year = date.getFullYear();
 
-    this.arcgtcService.getTipoCambioClaseAndFecha('02',`${day}/${month}/${year}`).subscribe(json => {
+    this.arcgtcService.getTipoCambioClaseAndFecha('02', `${day}/${month}/${year}`).subscribe(json => {
          this.arcgtc = json.resultado;
          this.tipocambio = this.arcgtc.tipoCambio;
     },
@@ -500,9 +460,9 @@ export class PedidoEdicionComponent implements OnInit {
 
   }
 
-  //METODO QUE NOS PERMITE TRAER LA LISTA DE PRECIO DE PUNTO DE VENTA
+  // METODO QUE NOS PERMITE TRAER LA LISTA DE PRECIO DE PUNTO DE VENTA
   public listaPrecio(): void{
-    this.arfatpService.getAllListaPrecio(this.cia,'S').subscribe(json => {
+    this.arfatpService.getAllListaPrecio(this.cia, 'S').subscribe(json => {
       this.arfatps = json.resultado;
       this.buscarListaPrecio('A3');
     },
@@ -526,13 +486,13 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
-  //CAMBIAR MONEDA POR LISTA DE PRECIO
-  public cambiarMoneda(arfatp :Arfatp): void{
+  // CAMBIAR MONEDA POR LISTA DE PRECIO
+  public cambiarMoneda(arfatp: Arfatp): void{
      this.buscarMoneda(arfatp.moneda);
   }
-  //FIN
+  // FIN
 
-  //BUSCAR FORMA DE PAGO
+  // BUSCAR FORMA DE PAGO
   public buscarFormaPago(cod: string): void{
     for (const t of this.tapfopas) {
       if (t.tapfopaPK.codFpago === cod) {
@@ -542,15 +502,15 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
-  //VAMOS A LISTAR LAS FORMAS DE PAGO
+  // VAMOS A LISTAR LAS FORMAS DE PAGO
   public listarFormaPago(): void{
-     this.tapfopaService.listarFormaPagoCiaAndEstado(this.cia,'A').subscribe(json => {
+     this.tapfopaService.listarFormaPagoCiaAndEstado(this.cia, 'A').subscribe(json => {
         this.tapfopas = json.resultado;
         this.buscarFormaPago('01');
-     })
+     });
   }
 
- //BUSCAR MONEDA
+ // BUSCAR MONEDA
  public buscarMoneda(cod: string): void{
     for (const m of this.arcgmos) {
       if (m.moneda === cod) {
@@ -564,137 +524,134 @@ export class PedidoEdicionComponent implements OnInit {
   public listaMonedas(): void{
     this.arcgmoService.listarArcgmo().subscribe(json => {
       this.arcgmos = json.resultado;
-      //console.log(this.arcgmos);
-   })
+      // console.log(this.arcgmos);
+   });
   }
 
-  //CLIENTE DE INICIO
+  // CLIENTE DE INICIO
   public getCliente(ruc: string): void{
-    this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,ruc).pipe(
+    this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia, ruc).pipe(
       map( value => value.resultado)
     );
   }
 
-  //EVENTO CUANDO HACE UN CAMBIO EL RADIO BUTTON DE TIPO ITEMS
+  // EVENTO CUANDO HACE UN CAMBIO EL RADIO BUTTON DE TIPO ITEMS
   public getTipoItem(event: MatRadioChange){
-    //console.log(event.source.name, event.value);
+    // console.log(event.source.name, event.value);
     if (event.value === 'B') {
-       console.log("Entro en el radio button : BIEN");
+       console.log('Entro en el radio button : BIEN');
     }else{
-      console.log("Entro en el radio button : LIBRE")
+      console.log('Entro en el radio button : LIBRE');
     }
 
   }
-  //FIN RADIO BUTTON DE TIPO ITEMS
+  // FIN RADIO BUTTON DE TIPO ITEMS
 
-  //ABRIR DIALOGO DE ITEMs
+  // ABRIR DIALOGO DE ITEMs
   public openDialogoItem(): void{
-      //console.log(this.groupArticulo.get('desProd').value);
-      let buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
-      const dialogRef = this.dialogItems.open(ItemsDialogoComponent,{
+      // console.log(this.groupArticulo.get('desProd').value);
+      const buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
+      const dialogRef = this.dialogItems.open(ItemsDialogoComponent, {
                         width: '100%',
-                        data:buscarItem
+                        data: buscarItem
                       });
       dialogRef.afterClosed().subscribe( result => {
-        //VAMOR A RECORRER EL ARREGLO DE ITEMS
+        // VAMOR A RECORRER EL ARREGLO DE ITEMS
         result.forEach(element => {
            this.verificarItems(element);
         });
         this.llenarTablaArticulos();
-        //total de general
+        // total de general
         this.totalGeneral = this.getTotalPedido();
       });
   }
-  //LLENAR TABLA DE ARTICULOS
+  // LLENAR TABLA DE ARTICULOS
   private llenarTablaArticulos(): void{
     this.dataSource = new MatTableDataSource(this.detPedidos);
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
   }
 
-  //VERIFICAR DUPLICADO DE ITEMS
+  // VERIFICAR DUPLICADO DE ITEMS
   public verificarItems(dp: Detpedido): void {
     if (this.detPedidos.length == 0){
-          //this.detPedidos.push(dp);
+          // this.detPedidos.push(dp);
           this.actualizarCorrelativo(dp);
     } else {
-       let cod = dp.codigo;
+       const cod = dp.codigo;
        let valor = 'N';
-       //VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
-       for (var i in this.detPedidos){
-            if(cod == this.detPedidos[i].codigo){
+       // VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
+       for (const i in this.detPedidos){
+            if (cod == this.detPedidos[i].codigo){
               valor = 'S';
               break;
             }
         }
 
-       if(valor == 'N'){
+       if (valor == 'N'){
          this.actualizarCorrelativo(dp);
        }
     }
   }
 
-   //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
-  //LLENAR DETALLE DE PEDIDO
+   // ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
+  // LLENAR DETALLE DE PEDIDO
   private actualizarCorrelativo(va: Detpedido): void{
-      if(this.arfatp.moneda === this.arcgmo.moneda){
-        let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
-          va.cantidad,va.precio,va.igv,va.total);
+      if (this.arfatp.moneda === this.arcgmo.moneda){
+        const d = new Detpedido(this.detPedidos.length + 1, va.tipo, va.codigo, va.medida, va.descripcion,
+          va.cantidad, va.precio, va.igv, va.total);
         this.detPedidos.push(d);
       }else{
-        if(this.arfatp.moneda === 'SOL' && this.arcgmo.moneda === 'DOL' ){
-            let prec = va.precio / this.tipocambio;
-            let igv = prec * 0.18;
-            let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
-              va.cantidad,prec,igv,(prec+igv));
+        if (this.arfatp.moneda === 'SOL' && this.arcgmo.moneda === 'DOL' ){
+            const prec = va.precio / this.tipocambio;
+            const igv = prec * 0.18;
+            const d = new Detpedido(this.detPedidos.length + 1, va.tipo, va.codigo, va.medida, va.descripcion,
+              va.cantidad, prec, igv, (prec + igv));
             this.detPedidos.push(d);
         }
-        if(this.arfatp.moneda === 'DOL' && this.arcgmo.moneda === 'SOL' ){
-            let prec = va.precio * this.tipocambio;
-            let igv = prec * 0.18;
-            let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
-              va.cantidad,prec,igv ,(prec+igv));
+        if (this.arfatp.moneda === 'DOL' && this.arcgmo.moneda === 'SOL' ){
+            const prec = va.precio * this.tipocambio;
+            const igv = prec * 0.18;
+            const d = new Detpedido(this.detPedidos.length + 1, va.tipo, va.codigo, va.medida, va.descripcion,
+              va.cantidad, prec, igv , (prec + igv));
             this.detPedidos.push(d);
         }
       }
 
   }
-  //FIN
 
-  //FIN
-
-  //TOTAL DE TOTAL
+  // TOTAL DE TOTAL
    private getTotalPedido(): number{
     return this.detPedidos.map(t => t.total).reduce((acc, value) => acc + value, 0);
   }
-  //FIN
+  // FIN
 
-  //TOTAL DE IGV
+  // TOTAL DE IGV
   private getTotalIgv(): number{
     return this.detPedidos.map(t => t.igv).reduce((acc, value) => acc + value, 0);
   }
-  //FIN
+  // FIN
 
-  //TOTAL DE P.U
+  // TOTAL DE P.U
   private getTotalPU(): number{
     return this.detPedidos.map(t => t.precio).reduce((acc, value) => acc + value, 0);
   }
-  //FIN
+  // FIN
 
-  //CALCULAR RESTA
+  // CALCULAR RESTA
   public calcularResta(dp: Detpedido): void{
-    let cantidad = dp.cantidad - 1;
+    const cantidad = dp.cantidad - 1;
     if (cantidad > 0) {
-      let codigo = dp.codigo;
+      const codigo = dp.codigo;
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
-           if(codigo === item.codigo){
+           if (codigo === item.codigo){
               item.cantidad = cantidad;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
            }
            return item;
       } );
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
 
       this.Toast.fire({
@@ -702,7 +659,7 @@ export class PedidoEdicionComponent implements OnInit {
         title: `Se resto la cantidad del cod: ${dp.codigo}`
       });
     }else{
-      this.snackBar.open(`La cantidad  del articulo ${dp.descripcion} no debe ser CERO`,'Salir',
+      this.snackBar.open(`La cantidad  del articulo ${dp.descripcion} no debe ser CERO`, 'Salir',
         {
           duration: 1000,
           verticalPosition: 'top',
@@ -711,22 +668,22 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
-  //CALCULAR SUMA
-  public calcularSuma(event: any,dp: Detpedido): void{
-      let cant: number = event.target.value;
-      let codigo = dp.codigo;
-      let cantidad = cant;
+  // CALCULAR SUMA
+  public calcularSuma(event: any, dp: Detpedido): void{
+      const cant: number = event.target.value;
+      const codigo = dp.codigo;
+      const cantidad = cant;
 
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
-           if(codigo === item.codigo){
+           if (codigo === item.codigo){
               item.cantidad = cantidad;
-              item.igv = (dp.precio * 0.18 )* cantidad;
-              item.total = (dp.precio * 1.18 )* cantidad;
+              item.igv = (dp.precio * 0.18 ) * cantidad;
+              item.total = (dp.precio * 1.18 ) * cantidad;
            }
            return item;
       } );
 
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
       /*this.Toast.fire({
         icon: 'success',
@@ -734,7 +691,7 @@ export class PedidoEdicionComponent implements OnInit {
       });*/
   }
 
-  //ELIMINAR ARTICULO
+  // ELIMINAR ARTICULO
   public eliminarArticulo(dp: Detpedido): void{
     Swal.fire({
       title: 'Estas seguro de eliminar?',
@@ -745,10 +702,10 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-          let cod = dp.codigo;
+          const cod = dp.codigo;
           this.detPedidos = this.detPedidos.filter( (item: Detpedido) => cod !== item.codigo );
           this.llenarTablaArticulos();
-          //total de general
+          // total de general
           this.totalGeneral = this.getTotalPedido();
       }
 
@@ -756,40 +713,40 @@ export class PedidoEdicionComponent implements OnInit {
 
   }
 
-  //CAMBIAMOS EL TIPO DE MONEDA DEL DETALLE DEL PEDIDO
+  // CAMBIAMOS EL TIPO DE MONEDA DEL DETALLE DEL PEDIDO
   public cambiarMonedaDetPedido(a: Arcgmo): void{
-    if(this.arfatp.moneda === 'SOL' && a.moneda === 'SOL'){
+    if (this.arfatp.moneda === 'SOL' && a.moneda === 'SOL'){
 
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
               item.precio = item.precio * this.tipocambio;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
-            return item;
+              return item;
       } );
       this.llenarTablaArticulos();
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
 
-    } else if(this.arfatp.moneda === 'SOL' && a.moneda === 'DOL'){
+    } else if (this.arfatp.moneda === 'SOL' && a.moneda === 'DOL'){
         this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
                   item.precio = item.precio / this.tipocambio;
                   item.igv = item.calcularIgv();
                   item.total = item.calcularTotal();
-                return item;
+                  return item;
         } );
         this.llenarTablaArticulos();
-        //total de general
+        // total de general
         this.totalGeneral = this.getTotalPedido();
 
-    }else if(this.arfatp.moneda === 'DOL' && a.moneda === 'SOL'){
+    }else if (this.arfatp.moneda === 'DOL' && a.moneda === 'SOL'){
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
               item.precio = item.precio * this.tipocambio;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
-            return item;
+              return item;
       } );
       this.llenarTablaArticulos();
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
 
     }else{
@@ -797,15 +754,15 @@ export class PedidoEdicionComponent implements OnInit {
               item.precio = item.precio / this.tipocambio;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
-            return item;
+              return item;
       } );
       this.llenarTablaArticulos();
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
     }
   }
-  //FIN
-  //CREACION DE UNA BOLETA
+  // FIN
+  // CREACION DE UNA BOLETA
   public crearBoleta(){
     Swal.fire({
       title: '¿Está seguro de crear una BOLETA?',
@@ -816,19 +773,19 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-          if(this.totalGeneral <= 700){
-            this.crear_pedido('S','N');
+          if (this.totalGeneral <= 700){
+            this.crear_pedido('S', 'N');
           }else{
-              let ruc: string = this.groupEmpresa.get("ruc").value;
-              if( ruc === '99999999998' || ruc === '99999999999' ){
-                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+              const ruc: string = this.groupEmpresa.get('ruc').value;
+              if ( ruc === '99999999998' || ruc === '99999999999' ){
+                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
                 {
                   duration: 5000,
                   verticalPosition: 'top',
                   horizontalPosition: 'center'
                 });
               }else{
-                this.crear_pedido('S','N');
+                this.crear_pedido('S', 'N');
               }
 
           }
@@ -837,8 +794,8 @@ export class PedidoEdicionComponent implements OnInit {
 
     });
   }
-  //FIN
-  //CREACION DE UNA FACTURA
+  // FIN
+  // CREACION DE UNA FACTURA
   public crearFactura(){
     Swal.fire({
       title: '¿Está seguro de crear una FACTURA?',
@@ -849,35 +806,35 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        let ruc: string = this.groupEmpresa.get("ruc").value;
-        if( ruc === '99999999998' || ruc === '99999999999' ){
-          this.snackBar.open(`Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+        const ruc: string = this.groupEmpresa.get('ruc').value;
+        if ( ruc === '99999999998' || ruc === '99999999999' ){
+          this.snackBar.open(`Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
           {
             duration: 5000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
         }else{
-          this.crear_pedido('N','S');
+          this.crear_pedido('N', 'S');
         }
 
       }
 
     });
   }
-  //FIN
+  // FIN
 
-  //CREAR PEDIDO
+  // CREAR PEDIDO
   public crear_pedido(indBoleta: string, indFactura: string): void{
-    let correlativo = '0000000';
-    let cortar = this.arfacc.consDesde.toString().length  * -1;
-    this.orden = this.arfacc.arfaccPK.serie+correlativo.slice(0,cortar)+this.arfacc.consDesde;
-    //PEDIDO PK
-    let arpfoePK = new IdArpfoe();
+    const correlativo = '0000000';
+    const cortar = this.arfacc.consDesde.toString().length  * -1;
+    this.orden = this.arfacc.arfaccPK.serie + correlativo.slice(0, cortar) + this.arfacc.consDesde;
+    // PEDIDO PK
+    const arpfoePK = new IdArpfoe();
     arpfoePK.noCia = sessionStorage.getItem('cia');
     arpfoePK.noOrden = this.orden;
-    //PEDIDO
-    let pedido = new Arpfoe();
+    // PEDIDO
+    const pedido = new Arpfoe();
     pedido.arpfoePK = arpfoePK;
     pedido.grupo = '00';
     pedido.tipoFpago = '20';
@@ -885,20 +842,20 @@ export class PedidoEdicionComponent implements OnInit {
 
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
-    pedido.codiDepa = this.ubigeo.substring(0,2);//150137
-    pedido.codiProv = this.ubigeo.substring(2,3);
-    pedido.codiDist = this.ubigeo.substring(3,2);
+    pedido.codiDepa = this.ubigeo.substring(0, 2); // 150137
+    pedido.codiProv = this.ubigeo.substring(2, 3);
+    pedido.codiDist = this.ubigeo.substring(3, 2);
     pedido.motivoTraslado = '1';
     pedido.indBoleta1 = indBoleta;
     pedido.indFactura1 = indFactura;
 
-    pedido.noCliente = this.groupEmpresa.get("ruc").value;
-    pedido.ruc = this.groupEmpresa.get("ruc").value;
+    pedido.noCliente = this.groupEmpresa.get('ruc').value;
+    pedido.ruc = this.groupEmpresa.get('ruc').value;
 
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
-    //console.log('Forma de Pago : '+this.tapfopa.tapfopaPK.codFpago);
+    // console.log('Forma de Pago : '+this.tapfopa.tapfopaPK.codFpago);
     pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
     /*
     pedido.fechaRegistro = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
@@ -921,30 +878,30 @@ export class PedidoEdicionComponent implements OnInit {
 
 
     pedido.impuesto = 18;
-    pedido.estado= 'E';
+    pedido.estado = 'E';
     pedido.bodega = '1A001';
     pedido.igv = 18;
     pedido.direccionComercial = this.arcctda.direccion;
     pedido.motivoTraslado = '1';
-    pedido.nombreCliente = this.groupEmpresa.get("racSoc").value;
-    pedido.codClasPed ='V';
+    pedido.nombreCliente = this.groupEmpresa.get('racSoc').value;
+    pedido.codClasPed = 'V';
     pedido.tipoPago = '20';
     pedido.tValorVenta = this.getTotalPU();
     pedido.almaOrigen = '1A001';
     pedido.almaDestino = '1XLIE';
-    //pedido.noClienteSalida = this.codCliente;
-    pedido.totalBruto= this.getTotalPU();
+    // pedido.noClienteSalida = this.codCliente;
+    pedido.totalBruto = this.getTotalPU();
     /*pedido.codTPed1='1352';
     pedido.codTPedb='1353';
     pedido.codTPedn='1214';*/
-    pedido.centro=sessionStorage.getItem('centro');
-    pedido.codCaja ='C11';
+    pedido.centro = sessionStorage.getItem('centro');
+    pedido.codCaja = 'C11';
     pedido.cajera = '000002';
-    pedido.centroCosto='3201';
+    pedido.centroCosto = '3201';
 
     pedido.operExoneradas = 0;
     pedido.operGratuitas = 0;
-    pedido.operGravadas=this.getTotalPedido() - this.getTotalIgv();
+    pedido.operGravadas = this.getTotalPedido() - this.getTotalIgv();
     pedido.operInafectas = 0;
     pedido.tipoOperacion = '0101';
     pedido.emailPedido = this.email;
@@ -952,17 +909,17 @@ export class PedidoEdicionComponent implements OnInit {
 
 
     let contador = 0;
-    let dps: Arpfol[] = [];
-    for(let x of this.detPedidos){
+    const dps: Arpfol[] = [];
+    for (const x of this.detPedidos){
         contador = contador + 1;
-        let dPedidoPK = new IdArpfol();
+        const dPedidoPK = new IdArpfol();
         dPedidoPK.noCia = sessionStorage.getItem('cia');
         dPedidoPK.noOrden = this.orden;
         dPedidoPK.noArti = x.codigo;
 
-        let dPedido = new Arpfol();
+        const dPedido = new Arpfol();
         dPedido.arpfolPK = dPedidoPK;
-        dPedido.noCliente = this.groupEmpresa.get("ruc").value;
+        dPedido.noCliente = this.groupEmpresa.get('ruc').value;
         dPedido.tipoArti = 'C';
         dPedido.artiNuevo = 'N';
         dPedido.bodega = '1A001';
@@ -992,72 +949,70 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.arpfolList = dps;
     console.log(pedido);
 
-    //VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
+    // VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
     this.arfaccService.saveArfacc(this.arfacc).subscribe( dato => {
-      this.snackBar.open('Se actualizo el correlativo del pedido ','Salir',
+      this.snackBar.open('Se actualizo el correlativo del pedido ', 'Salir',
           {
             duration: 1000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
     });
-    //VAMOS A GUARDAR EL PEDIDO
+    // VAMOS A GUARDAR EL PEDIDO
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
-      this.snackBar.open('Se Guardo el pedido','Salir',
+      this.snackBar.open('Se Guardo el pedido', 'Salir',
       {
         duration: 3000,
         verticalPosition: 'top',
         horizontalPosition: 'center'
       });
     });
-    //VAMOS A BOLETEAR O FACTURAR
+    // VAMOS A BOLETEAR O FACTURAR
     // this.router.navigateByUrl(`/pedido/arfafe/new?noCia=${this.cia}&noOrden=${this.orden}`);
     setTimeout(() => {
-      this.router.navigate(['pedido/arfafe/new'],{queryParams: {noCia:this.cia,noOrden:this.orden}})},2000
+      this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden}}); }, 2000
     );
 
   }
 
-  //AÑADIR ITEMS LIBRES
+  // AÑADIR ITEMS LIBRES
   public addItem(){
-    //console.log(this.groupArticulo.value);
-    let cod: string = this.groupArticulo.get('codProd').value;
-    let um: string = this.groupArticulo.get('umProd').value;
-    let descrip: string = this.groupArticulo.get('desProd').value;
-    let cantidad: number = this.groupArticulo.get('cantProd').value;
+    // console.log(this.groupArticulo.value);
+    const cod: string = this.groupArticulo.get('codProd').value;
+    const um: string = this.groupArticulo.get('umProd').value;
+    const descrip: string = this.groupArticulo.get('desProd').value;
+    const cantidad: number = this.groupArticulo.get('cantProd').value;
 
-    let precio: number = this.groupArticulo.get('precProd').value / 1.18;
-    let igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
-
-    let total = (precio * cantidad) + igv;
-
-    let d = new Detpedido(this.detPedidos.length +1,'L',cod.toUpperCase(),um.toUpperCase(),descrip.toUpperCase(),cantidad,precio,igv,total);
-    //console.log(d);
+    const precio: number = this.groupArticulo.get('precProd').value / 1.18;
+    const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+    const total = (precio * cantidad) + igv;
+    const d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(), cantidad, precio, igv, total);
     if (precio <= 0){
-      this.snackBar.open(`El precio no debe ser CERO.`,'Salir',
+      this.snackBar.open(`El precio no debe ser CERO.`, 'Salir',
       {
         duration: 1000,
         verticalPosition: 'top',
         horizontalPosition: 'center'
       });
     }else{
-        //BUSCAMOS SI EXISTE ITEM
-        let dp = this.detPedidos.find(x => x.codigo === d.codigo);
-        //console.log(dp);
+        // BUSCAMOS SI EXISTE ITEM
+        const dp = this.detPedidos.find(x => x.codigo === d.codigo);
+        // console.log(dp);
         if (dp === undefined) {
           this.detPedidos.push(d);
-          this.snackBar.open(`Se agrego el articulo`,'Salir',
+          this.snackBar.open(`Se agrego el articulo`, 'Salir',
           {
             duration: 1000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
           this.llenarTablaArticulos();
-          //total de general
+          // total de general
           this.totalGeneral = this.getTotalPedido();
+          this.limpiarItemsLibre();
         }else{
-          //EL CODIGO YA EXISTE
-          this.snackBar.open(`El codigo ya existe del articulo ${dp.descripcion}`,'Salir',
+          // EL CODIGO YA EXISTE
+          this.snackBar.open(`El codigo ya existe del articulo ${dp.descripcion}`, 'Salir',
           {
             duration: 1000,
             verticalPosition: 'top',
@@ -1068,5 +1023,5 @@ export class PedidoEdicionComponent implements OnInit {
 
 
   }
- //FIN
+  // FIN
 }
