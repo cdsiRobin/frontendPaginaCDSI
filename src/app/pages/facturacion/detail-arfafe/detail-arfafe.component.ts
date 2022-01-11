@@ -39,6 +39,7 @@ export class DetailArfafeComponent implements OnInit {
     logoDataUrl: string;
     nomCentro: string;
     centro: string = sessionStorage.getItem('centro');
+    totalIGV:number = 0;
 
   constructor(private route: ActivatedRoute,
     private arfafeService: ArfafeService,
@@ -69,6 +70,7 @@ export class DetailArfafeComponent implements OnInit {
           this.formaPago(a.resultado.cod_FPAGO);
           this.listaPrecio(a.resultado.tipo_PRECIO);
           this.TCambio();
+          this.cargarExtras();
           console.log(a.resultado);
           console.log(a.resultado.arfaflList);
         }
@@ -103,6 +105,13 @@ export class DetailArfafeComponent implements OnInit {
           }
         }
     })
+  }
+
+  public cargarExtras(){
+    this.totalIGV = 0;
+    this.detalle.arfaflList.forEach(
+        a => this.totalIGV += a.imp_IGV
+    );
   }
 
   public centroEmisor(){
@@ -153,13 +162,192 @@ export class DetailArfafeComponent implements OnInit {
             {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.oper_INAFECTAS, bold: false, fontSize: 8, alignment: 'right'},
+            {text: 0.00, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.imp_IGV, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.total, bold: false, fontSize: 8, alignment: 'right'}
             ]
         );
       });
+    var bodyDet = [];
+    bodyDet.push([
+        {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.descuento, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+        // {text: [
+        //     {text: 'S/ ', alignment: 'left'},
+        //     {text: this.detalle.descuento, alignment: 'right'}],
+        //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+    ]);
+    bodyDet.push([
+        {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: '0', alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.totalIGV, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.total, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: '0', alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.descuento, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+
     const documentDefinition = {
+    //   pageSize: 'A5',
+    //   pageOrientation: 'landscape',
+    pageMargins: [40, 20, 40, 220],
+      footer: {
+        columns: [
+            [
+            {
+                columns: [
+                    [
+                         {qr: 'pagina de FE qr. k', fit: '60' },
+                         {text: 'Representación Impresa de la Factura electrónica',
+                        fontSize: 8}
+                    ],
+                    [
+                        {
+                            margin: [ 0, 5, 0, 0],
+                            layout: 'noBorders',
+                            table: {
+                              headerRows: 0,
+                              widths: ['70%', '30%'],
+                  
+                              body: bodyDet
+                            }
+                          }
+                    ]
+                ],
+                margin: [10,20,10,15]
+            },
+            {
+                layout: {
+                    hLineWidth: function(i, node) {
+                     return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+                    },
+                    vLineWidth: function(i, node) {
+                     return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+                    },
+                    hLineColor: function (i, node) {
+                        return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                    },
+                    vLineColor: function(i, node) {
+                        return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                    }
+                },
+                width: 515,
+                table: {
+                  headerRows: 1,
+                  widths: ['100%'],        
+                  body: [
+                      [{text: 'Sus pagos depositar al banco Credito',
+                      fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
+                      [
+                        {
+                            columns: [
+                                [{
+                                    text: [
+                                        {
+                                            text: 'Cuenta en Soles   : ',
+                                            // bold: true,
+                                            fontSize: 10
+                                        },
+                                        {   text: '191-2039372-0-16',
+                                        // bold: true,
+                                        fontSize: 10
+                                        }
+                                    ]
+                                },
+                                {
+                                    text: [
+                                        {
+                                            text: 'Cuenta en Dolares  : ',
+                                            // bold: true,
+                                            fontSize: 10
+                                        },
+                                        {   text: '191-1985270-1-41',
+                                        // bold: true,
+                                        fontSize: 10
+                                        }
+                                    ]
+                                }]
+                            ]
+                        }
+                      ]
+                ]
+                }
+            }
+            ]
+        ],
+        margin: [40,0]
+    },
+
       content: [
         //   {qr: 'text'},
         {
@@ -255,12 +443,13 @@ export class DetailArfafeComponent implements OnInit {
                             return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
                         }
                     },
+                    // layout: 'noBorders',
                     width: 110,
                     table: {
                       headerRows: 1,
                       widths: [100],        
                       body: [
-                          [{text: this.tipoComprobante.toUpperCase()+' ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+                          [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
                           [
                             {
                                 text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,

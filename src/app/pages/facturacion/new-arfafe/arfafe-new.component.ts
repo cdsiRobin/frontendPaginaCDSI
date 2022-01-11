@@ -136,7 +136,8 @@ export class NewArfafeComponent implements OnInit {
       this.arfaccService.getSerieAndCorrelativoPedido(corre).subscribe(d => {
 
         this.arfacc = d[0];
-
+        this.arfacc.consDesde-=1;
+        console.log(this.arfacc);
         //creacion llave primaria
         this.detalle.arfafePK = new ArfafePK();
 
@@ -149,8 +150,10 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.arfafePK.tipoDoc = this.tipoDoc;
 
         //insercion data adicional
+        this.detalle.estado = 'D';
         this.detalle.ind_PVENT = arfoe.indPvent;
         this.detalle.no_ORDEN = arfoe.arpfoePK.noOrden;
+        this.detalle.tipo_CLIENTE = arfoe.tipoDocCli;
         this.detalle.no_CLIENTE = arfoe.noCliente;
         this.traeCliente();
         this.detalle.no_VENDEDOR = arfoe.noVendedor;
@@ -162,7 +165,9 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.cod_CLAS_PED = arfoe.codClasPed;
         this.detalle.m_DSCTO_GLOBAL = arfoe.tDsctoGlobal;
         this.detalle.tipo_DOC_CLI = arfoe.tipoDocCli;
-        this.detalle.num_DOC_CLI = arfoe.numDocCli;
+        this.detalle.num_DOC_CLI = arfoe.noCliente;
+        this.detalle.ruc = arfoe.noCliente;
+        this.detalle.cod_T_PED = '1315';
         this.detalle.alm_DESTINO = arfoe.almaDestino;
         this.detalle.bodega = arfoe.bodega;
         this.detalle.centro = arfoe.centro;
@@ -170,7 +175,37 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.cod_CAJA = arfoe.codCaja;
         this.detalle.cuser = sessionStorage.getItem('usuario');
         this.detalle.tipo_CAMBIO = arfoe.tipoCambio;
+        this.detalle.ind_DOC = 'N';
+        this.detalle.imprime = 'S';
+        this.detalle.ind_VTA_ANTICIPADA = 'N';
+        this.detalle.total_BRUTO = 0;
         this.detalle.oper_GRAVADAS = 0;
+        this.detalle.sub_TOTAL = 0;
+        this.detalle.impuesto = 0;
+        this.detalle.ind_NOTA_CRED = 'N';
+        this.detalle.ind_EXPORTACION = 'N';
+        this.detalle.ind_FERIAS = 'N';
+        this.detalle.ind_PROVINCIA = 'N';
+        this.detalle.usu_CREA = sessionStorage.getItem('usuario');
+        this.detalle.consumo = 'N';
+        this.detalle.redondeo = 0;
+        this.detalle.convenio = 'N';
+        this.detalle.ind_FACT_TEXTO = 'N';
+        this.detalle.excl_AUX = 'N';
+        this.detalle.impuesto_FLETE = 0;
+        this.detalle.on_LINE = 'N';
+        this.detalle.cont_NETO = 'N';
+        this.detalle.ind_FMULTIPLE = 'N';
+        this.detalle.ind_NC_FICTA = 'N';
+        this.detalle.ind_PROMARG = 'N';
+        this.detalle.oper_EXONERADAS = 0;
+        this.detalle.oper_GRATUITAS = 0;
+        this.detalle.oper_INAFECTAS = 0;
+        this.detalle.mot_CONTING = '0';
+        this.detalle.tipo_OPERACION = '0101';
+        this.detalle.est_RES_CON = 'N';
+        this.detalle.imp_FACT_DESC = 'N';
+        this.detalle.ind_GUIA_TEXTO = 'N';
         this.listaPrecio(arfoe.tipoPrecio);
         // this.TCambio();
         this.formaPago(arfoe.codFpago);
@@ -200,16 +235,22 @@ export class NewArfafeComponent implements OnInit {
             arfafl.tipo_ARTI = list.tipoArti;
 
             this.detalle.oper_GRAVADAS += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
+            this.detalle.sub_TOTAL += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
             console.log(this.detalle.oper_GRAVADAS);
             this.totalFactu += list.totalLin;
             this.totalIGV += arfafl.imp_IGV;
+            this.detalle.impuesto += arfafl.imp_IGV;
             this.detalle.arfaflList.push(arfafl);
           }
         );
         this.detalle.total = this.totalFactu;
+        this.detalle.total_BRUTO = this.totalFactu;
+        this.detalle.cajera = sessionStorage.getItem('codEmp');
+        this.detalle.valor_VENTA = this.detalle.sub_TOTAL;
+        this.detalle.m_DSCTO_GLOBAL = 0;
         this.detalle.descuento = 0;
-
-
+        // this.detalle.total_b
+        console.log(this.detalle);
       });
 
     }
