@@ -1,9 +1,7 @@
-import { IArfacc } from '../interfaces/IArfacc';
-import { CorrelDTO } from './../DTO/CorrelDTO';
+
 import { Arpfol } from './../models/Arpfol';
 import { PedidoDTO } from './../DTO/PedidoDTO';
 import { HttpClient } from '@angular/common/http';
-import { OtherService } from './other.service';
 import { Arpfoe } from './../models/Arpfoe';
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';

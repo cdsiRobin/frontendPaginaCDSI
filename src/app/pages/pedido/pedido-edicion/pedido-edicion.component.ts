@@ -179,8 +179,7 @@ export class PedidoEdicionComponent implements OnInit {
       impIgv: new FormControl({ value: 0, disabled: true }, Validators.required),
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
-   // this.noOrden();
-   // this.articulosFiltrados = this.myControlArticulo.valueChanges.pipe(map(val => this.filtrarArticulos(val)));
+
     this.listaMonedas();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
@@ -820,12 +819,18 @@ export class PedidoEdicionComponent implements OnInit {
           if(this.totalGeneral <= 700){
             this.crear_pedido('S','N');
           }else{
-            this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
-            {
-              duration: 5000,
-              verticalPosition: 'top',
-              horizontalPosition: 'center'
-            });
+              let ruc: string = this.groupEmpresa.get("ruc").value;
+              if( ruc === '99999999998' || ruc === '99999999999' ){
+                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+                {
+                  duration: 5000,
+                  verticalPosition: 'top',
+                  horizontalPosition: 'center'
+                });
+              }else{
+                this.crear_pedido('S','N');
+              }
+
           }
 
       }
@@ -844,7 +849,18 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.crear_pedido('N','S');
+        let ruc: string = this.groupEmpresa.get("ruc").value;
+        if( ruc === '99999999998' || ruc === '99999999999' ){
+          this.snackBar.open(`Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+          {
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+        }else{
+          this.crear_pedido('N','S');
+        }
+
       }
 
     });

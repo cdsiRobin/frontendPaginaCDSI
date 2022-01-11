@@ -1,0 +1,161 @@
+<div class="container-fluid">
+  <!--TITULO-->
+  <div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+      <h3 class="text-themecolor font-weight-bold">Cliente</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/pedido">Home</a></li>
+        <li class="breadcrumb-item active">Cliente</li>
+      </ol>
+    </div>
+    <div>
+      <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
+    </div>
+  </div>
+  <!--FIN DE TITUTLO-->
+  <!--BUSCAR-->
+  <div class="container border rounded p-5">
+      <div class="row">
+        <div class="col-sm-12">
+            <div class="row">
+                <!--BUSCAR CLIENTE-->
+                <div class="col-sm-12">
+                  <div class="row">
+                       <div class="col-sm-10">
+                            <div class="row">
+                              <div class="col-sm-10">
+                                   <!--RUC-->
+                                  <mat-form-field appearance="outline" class="w-100">
+                                    <mat-label>RUC / DNI</mat-label>
+                                    <input type="text" minlength="8" maxlength="11" required matInput placeholder="Ingrese RUC o DNI" [(ngModel)]="rucDni">
+                                  </mat-form-field>
+                                  <!--RAZON SOCIAL O NOMBRE-->
+                                  <mat-form-field appearance="outline" floatLabel="always">
+                                    <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
+                                    <input matInput
+                                    [(ngModel)]="rznombre"
+                                    (keyup)="buscarClienteXnombre($event)"
+                                    [matAutocomplete]="auto"
+                                    >
+                                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
+                                        <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
+                                            <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                                                <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
+                                            </div>
+                                        </mat-option>
+                                    </mat-autocomplete>
+                                  </mat-form-field>
+                              </div>
+                              <div class="col-sm-pull-2">
+                                <div class="example-button-container">
+                                  <button mat-fab color="primary" aria-label="Buscar cliente" (click)="buscarClienteXRucOrDni()">
+                                    <mat-icon>person_search</mat-icon>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                       </div>
+                       <div class="col-sm-2">
+                          <div class="example-button-container">
+                            <button mat-fab color="warn" aria-label="Buscar cliente nuevo" (click)="buscarNuevoClienteApi()">
+                              <mat-icon>person_add</mat-icon>
+                            </button>
+                          </div>
+                       </div>
+                  </div>
+                </div>
+                <!--FIN-->
+            </div>
+        </div>
+      </div>
+  </div>
+  <!--FIN-->
+  <!--FORMULARIO DE CLIENTE Y DIRECCION-->
+  <div class="container border rounded p-5">
+    <div class="row">
+        <div class="col-sm-12">
+            <form [formGroup]="fArccmc" #frmArccmc="ngForm" (ngSubmit)="guardarCliente()">
+              <div class="row">
+                  <!--FORMULARIO CLIENTE-->
+                   <div class="col-sm-5" style="border-right: 1px solid lightgray;">
+                        <!--ID-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput required type="number" placeholder="CODIGO" required formControlName="id">
+                    </mat-form-field>
+                    <!--NOMBRE-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="text" minlength="3" maxlength="200" placeholder="NOMBRE" required formControlName="nombre">
+                      <small *ngIf="f.nombre.errors?.required && f.nombre.touched" class="invalido">Nombre es requerido</small>
+                      <small *ngIf="f.nombre.errors?.minlength" class="invalido">El campo debe ser mayor a 3 caracteres</small>
+                    </mat-form-field>
+                    <!--RUC-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="number" minlength="11" maxlength="11" placeholder="RUC" formControlName="ruc">
+                      <small *ngIf="f.ruc.errors?.required && f.ruc.touched" class="invalido">RUC es requerido</small>
+                      <small *ngIf="f.ruc.errors?.minlength" class="invalido">El campo debe ser de 11 caracteres</small>
+                    </mat-form-field>
+                    <!--TELEFONO-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="tel" placeholder="TELEFONO" formControlName="telefono">
+                    </mat-form-field>
+                    <!--CELULAR-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="tel" placeholder="CELULAR" formControlName="celular">
+                    </mat-form-field>
+                    <!--WEB-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="text" placeholder="WEB" formControlName="web">
+                    </mat-form-field>
+                    <!--EMAIL-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="email" minlength="5" placeholder="EMAIL" formControlName="email">
+                      <small *ngIf="f.email.errors?.required && f.email.touched" class="invalido">Email es requerido</small>
+                      <small *ngIf="f.email.errors?.minlength" class="invalido">El campo debe ser de 5 caracteres</small>
+                    </mat-form-field>
+                   </div>
+                   <!--FIN FORMULARIO CLIENTE-->
+                  <!--DIRECCION CLIENTE-->
+                   <div class="col-sm-7">
+                        <!--DIRECCION-->
+                        <mat-form-field class="example-full-width">
+                          <input matInput type="text" minlength="3" maxlength="200" placeholder="DIRECCIÓN" required formControlName="direccionD">
+                          <small *ngIf="f.direccionD.errors?.required && f.direccionD.touched" class="invalido">Dirección es requerido</small>
+                          <small *ngIf="f.direccionD.errors?.minlength" class="invalido">El campo debe ser mayor a 3 caracteres</small>
+                        </mat-form-field>
+                        <!--DEPARTAMENTO-->
+                        <mat-form-field>
+                          <mat-select placeholder="Departamento" [(value)]="arccdp" (selectionChange)="seleccionarDepartamento($event)">
+                              <mat-option *ngFor="let e of arccdps" [value]="e">{{e.descDepa}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!--FIN-->
+                        <!--PROVINCIA-->
+                        <mat-form-field>
+                          <mat-select placeholder="PROVINCIA" [(value)]="arccpr" (selectionChange)="seleccionarProvincia($event)">
+                              <mat-option *ngFor="let e of arccprs" [value]="e">{{e.descProv}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!--FIN-->
+                        <!--DISTRITO-->
+                        <mat-form-field>
+                          <mat-select placeholder="DISTRITO" [(value)]="arccdi" (selectionChange)="seleccionarDistrito($event)">
+                              <mat-option *ngFor="let e of arccdis" [value]="e">{{e.descDist}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <!--FIN-->
+                   </div>
+                  <!--FIN DIRECCION CLIENTE-->
+              </div>
+              <button mat-raised-button color="primary" type="submit" [disabled]="frmArccmc.invalid">
+                <mat-icon>done</mat-icon>
+                <span>Aceptar</span>
+              </button>
+
+            </form>
+        </div>
+    </div>
+  </div>
+  <!--FIN-->
+</div>
