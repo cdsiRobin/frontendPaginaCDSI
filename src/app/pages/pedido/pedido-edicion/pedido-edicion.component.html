@@ -196,7 +196,6 @@
         <!--TIPO DE ITEM-->
         <div class="row">
             <div class="col-sm-12">
-
               <mat-tab-group animationDuration="0ms">
                 <mat-tab label="Bien">
                   <!--AÑADIR ITEMS-->
@@ -207,7 +206,7 @@
                         <div class="col-sm-6">
                             <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
                               <mat-label>Descripción</mat-label>
-                              <input matInput placeholder="Placeholder" name="descripItem">
+                              <input matInput type="text" [(ngModel)]="descBien"  placeholder="Ingrese nombre articulo" name="bien" >
                             </mat-form-field>
                         </div>
                         <div class="example-button-container">

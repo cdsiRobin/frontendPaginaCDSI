@@ -135,7 +135,7 @@ export class PedidoEdicionComponent implements OnInit {
 
   arccmcObservable: Observable<Arccmc[]>;
   arccmc: Arccmc;
-
+  descBien: string = '';
   Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -557,7 +557,7 @@ export class PedidoEdicionComponent implements OnInit {
   // ABRIR DIALOGO DE ITEMs
   public openDialogoItem(): void{
       // console.log(this.groupArticulo.get('desProd').value);
-      const buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
+      const buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.descBien.toUpperCase().trim());
       const dialogRef = this.dialogItems.open(ItemsDialogoComponent, {
                         width: '100%',
                         data: buscarItem
