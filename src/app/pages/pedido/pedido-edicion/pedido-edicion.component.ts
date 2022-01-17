@@ -1,3 +1,4 @@
+import { ArintdService } from './../../../services/arintd.service';
 import { Arpfoe } from './../../../models/Arpfoe';
 import { Arinda } from './../../../models/Arinda';
 import { ArticuloService } from './../../../services/articulo.service';
@@ -46,12 +47,20 @@ import { ArpfoeService } from '../../../services/arpfoe.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import * as moment from 'moment';
+import { Arintd } from '../../../models/arintd';
+import { Arfacf } from '../../../models/arfacf';
+import { ArfacfService } from '../../../services/arfacf.service';
+import { Arfacfpk } from '../../../models/arfacfpk';
+import { Arinse } from '../../../models/arinse';
+import { ArinseService } from '../../../services/arinse.service';
 
 @Component({
   selector: 'app-pedido-edicion',
   templateUrl: './pedido-edicion.component.html'
 })
 export class PedidoEdicionComponent implements OnInit {
+  anularBF: string = 'N';
+  arinse: Arinse;
 
   form: FormGroup;
   // NUEVO CAMBIOS
@@ -135,6 +144,7 @@ export class PedidoEdicionComponent implements OnInit {
 
   arccmcObservable: Observable<Arccmc[]>;
   arccmc: Arccmc;
+
   descBien: string = '';
   Toast = Swal.mixin({
     toast: true,
@@ -148,6 +158,9 @@ export class PedidoEdicionComponent implements OnInit {
     }
   });
 
+  public arintd: Arintd;
+  public arfacf: Arfacf;
+
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
@@ -159,6 +172,9 @@ export class PedidoEdicionComponent implements OnInit {
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
               public arccmcService: ArccmcService,
+              public arintdService: ArintdService,
+              public arinseService: ArinseService,
+              public arfacfService: ArfacfService,
               private snackBar: MatSnackBar,
               private dialogItems: MatDialog,
               private router: Router,
@@ -183,6 +199,8 @@ export class PedidoEdicionComponent implements OnInit {
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
 
+    //VAMOS A OPTENER LOS DATOS DEL CENTRO EMISOR
+    this.getCentroEmisor(this.cia,this.centro);
     this.listaMonedas();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
@@ -226,6 +244,7 @@ export class PedidoEdicionComponent implements OnInit {
         this.factuOptions = null;
       }
     });
+
   }
   // LIMPIANDO ITEMS LIBRES
   public limpiarItemsLibre(): void{
@@ -359,44 +378,6 @@ export class PedidoEdicionComponent implements OnInit {
     this.subTotal = this.totalGeneral - this.totalIGV;
   }
 
-  limpiarControles() {
-    this.detallePedido = [];
-    this.articulos = [];
-
-    this.orden = '';
-    this.codCliente = '';
-    this.nomCli = '';
-    this.direccion = '';
-    this.email = '';
-  // DETALLE PEDIDO MUESTRA
-  /*=====================================================*/
-    this.tipoBS = '';
-    this.tipoAfectacion = '';
-    this.cantAsignada = 0;
-    this.precioCant = 0;
-    this.precio = 0;
-    this.pDSCTO3 = 0;
-    this.impIgv = 0;
-    this.totalLin = 0;
-
-    this.totalGeneral = 0;
-    this.subTotal = 0;
-    this.totalIGV = 0;
-    this.impuesto = 18;
-
-
-    this.articuloSeleccionado = null;
-    // this.pacientesFiltrados = EMPTY;
-    // this.medicosFiltrados = EMPTY;
-    this.fechaSeleccionada = new Date();
-    this.fechaSeleccionada.setHours(0);
-    this.fechaSeleccionada.setMinutes(0);
-    this.fechaSeleccionada.setSeconds(0);
-    this.fechaSeleccionada.setMilliseconds(0);
-    this.myControlArticulo.reset();
-
-  }
-
   // METODO QUE NOS PERMITE TRAER LA SERIE Y CORRELATIVO DEL PEDIDO
   public serieCorrelativoPedido(): void{
     this.arfacc = new Arfacc();
@@ -430,6 +411,7 @@ export class PedidoEdicionComponent implements OnInit {
       this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json => {
         this.transacciones = json.resultado;
         this.buscarTransaccion('1315');
+        this.getTrasaccion(this.cia,'1315');
       },
         error => {
           console.error(error);
@@ -862,13 +844,9 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
-    // console.log('Forma de Pago : '+this.tapfopa.tapfopaPK.codFpago);
+
     pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
-    /*
-    pedido.fechaRegistro = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
-    pedido.fAprobacion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
-    pedido.fRecepcion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
-    */
+
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
@@ -883,10 +861,9 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.tImpuesto = this.getTotalIgv();
     pedido.tPrecio = this.getTotalPedido();
 
-
     pedido.impuesto = 18;
     pedido.estado = 'E';
-    pedido.bodega = '1A001';
+    pedido.bodega = this.arintd.almaOri;
     pedido.igv = 18;
     pedido.direccionComercial = this.arcctda.direccion;
     pedido.motivoTraslado = '1';
@@ -894,13 +871,11 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.codClasPed = 'V';
     pedido.tipoPago = '20';
     pedido.tValorVenta = this.getTotalPU();
-    pedido.almaOrigen = '1A001';
-    pedido.almaDestino = '1XLIE';
-    // pedido.noClienteSalida = this.codCliente;
+    pedido.almaOrigen = this.arintd.almaOri;
+    pedido.almaDestino = this.arintd.almaDes;
+
     pedido.totalBruto = this.getTotalPU();
-    /*pedido.codTPed1='1352';
-    pedido.codTPedb='1353';
-    pedido.codTPedn='1214';*/
+
     pedido.centro = sessionStorage.getItem('centro');
     pedido.codCaja = 'C11';
     pedido.cajera = '000002';
@@ -983,7 +958,7 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
   // AÑADIR ITEMS LIBRES
-  public addItem(){
+  public addItem(): void{
     // console.log(this.groupArticulo.value);
     const cod: string = this.groupArticulo.get('codProd').value;
     const um: string = this.groupArticulo.get('umProd').value;
@@ -1027,8 +1002,53 @@ export class PedidoEdicionComponent implements OnInit {
           });
         }
     }
-
-
   }
   // FIN
+
+  //SELECCIONAR UNA TRANSACCION
+  private getTrasaccion(cia: string, trans: string): void{
+      this.arintdService.findArintd(cia,trans).subscribe(data => {
+        this.arintd = data;
+        //VERIFICAMOS SI EL DOCUMENTO NO TIENE G
+        if(this.arintd.docuGene == 'G'){
+          //BUSCAR EL NO-DOCU
+          this.getNoDocu(this.cia,this.arintd.almaOri,trans);
+        }else{
+          this.anularBF = 'S';
+          this.snackBar.open(`Tipo de Documento Incorrecto, Verifiqué`, 'Salir',
+          {
+            duration: 2000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+        }
+      });
+  }
+
+  //BUSCAMOS EL NO_DOCU DE LA COMPAÑIA, BODEGA y TRANSACCION
+  private getNoDocu(cia: string, bodega: string, trans: string): void{
+      this.arinseService.getArinse(cia,bodega,trans).subscribe(value =>{
+         this.arinse = value;
+         console.log(this.arinse);
+      });
+  }
+
+  // SELECCIONAR CENTRO EMISOR
+  private getCentroEmisor(cia: string, centro: string): void{
+     let arfacfpk = new Arfacfpk();
+     arfacfpk.noCia = cia;
+     arfacfpk.centro = centro;
+     this.arfacfService.getArfacf(arfacfpk).subscribe( data => {
+         this.arfacf = data;
+     });
+  }
+  //FIN
+  //EVENTO SELECCIONAR DE TRANSACCION
+  public findTransaccion($event: MatAutocompleteSelectedEvent){
+    this.transaccion = $event.option.value;
+    console.log('TRANSACCION :::::::');
+    console.log(this.transaccion);
+    this.getTrasaccion(this.cia,this.transaccion.codTPed);
+  }
+
 }
