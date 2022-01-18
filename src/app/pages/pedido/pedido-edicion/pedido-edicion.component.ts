@@ -1,5 +1,5 @@
+import { Arpffe } from './../../../models/arpffe';
 import { ArintdService } from './../../../services/arintd.service';
-import { Arpfoe } from './../../../models/Arpfoe';
 import { Arinda } from './../../../models/Arinda';
 import { ArticuloService } from './../../../services/articulo.service';
 import { IdArpfol } from './../../../models/IdArpfol';
@@ -53,6 +53,10 @@ import { ArfacfService } from '../../../services/arfacf.service';
 import { Arfacfpk } from '../../../models/arfacfpk';
 import { Arinse } from '../../../models/arinse';
 import { ArinseService } from '../../../services/arinse.service';
+import { ArpffeService } from '../../../services/arpffe.service';
+import { Arpfoe } from '../../../models/Arpfoe';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Arpffepk } from '../../../models/arpffepk';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -77,6 +81,7 @@ export class PedidoEdicionComponent implements OnInit {
   // PEDIDO CABECERA MUESTRA
   /*=====================================================*/
   orden: string;
+  guia: string;
   codCliente = '';
   nomCli: string;
   direccion: string;
@@ -107,6 +112,7 @@ export class PedidoEdicionComponent implements OnInit {
   public arfaccPK: IarfaccPK;
   public cia: string;
   public centro: string;
+  public codEmp: string;
   public usuario: string;
   public nroPedido: string;
   public fecha: Date;
@@ -161,6 +167,8 @@ export class PedidoEdicionComponent implements OnInit {
   public arintd: Arintd;
   public arfacf: Arfacf;
 
+  public arpffe: Arpffe;
+
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
@@ -175,6 +183,7 @@ export class PedidoEdicionComponent implements OnInit {
               public arintdService: ArintdService,
               public arinseService: ArinseService,
               public arfacfService: ArfacfService,
+              public arpffeService: ArpffeService,
               private snackBar: MatSnackBar,
               private dialogItems: MatDialog,
               private router: Router,
@@ -185,6 +194,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.cia = sessionStorage.getItem('cia');
     this.centro = sessionStorage.getItem('centro');
     this.usuario = sessionStorage.getItem('usuario');
+    this.codEmp = sessionStorage.getItem('codEmp');
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -763,7 +773,7 @@ export class PedidoEdicionComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
           if (this.totalGeneral <= 700){
-            this.crear_pedido('S', 'N');
+              this.crear_pedido('S', 'N');
           }else{
               const ruc: string = this.groupEmpresa.get('ruc').value;
               if ( ruc === '99999999998' || ruc === '99999999999' ){
@@ -778,9 +788,7 @@ export class PedidoEdicionComponent implements OnInit {
               }
 
           }
-
       }
-
     });
   }
   // FIN
@@ -815,12 +823,13 @@ export class PedidoEdicionComponent implements OnInit {
 
   // CREAR PEDIDO
   public crear_pedido(indBoleta: string, indFactura: string): void{
+
     const correlativo = '0000000';
     const cortar = this.arfacc.consDesde.toString().length  * -1;
     this.orden = this.arfacc.arfaccPK.serie + correlativo.slice(0, cortar) + this.arfacc.consDesde;
     // PEDIDO PK
     const arpfoePK = new IdArpfoe();
-    arpfoePK.noCia = sessionStorage.getItem('cia');
+    arpfoePK.noCia = this.cia;
     arpfoePK.noOrden = this.orden;
     // PEDIDO
     const pedido = new Arpfoe();
@@ -942,6 +951,8 @@ export class PedidoEdicionComponent implements OnInit {
     });
     // VAMOS A GUARDAR EL PEDIDO
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
+      //GUARDAR GUIA REMISION
+      this.guardarGuiaRemision(dato);
       this.snackBar.open('Se Guardo el pedido', 'Salir',
       {
         duration: 3000,
@@ -950,12 +961,33 @@ export class PedidoEdicionComponent implements OnInit {
       });
     });
     // VAMOS A BOLETEAR O FACTURAR
-    // this.router.navigateByUrl(`/pedido/arfafe/new?noCia=${this.cia}&noOrden=${this.orden}`);
+    /*  VAMOS A COMENTAR POR EL MOMENTO DE PRUEBA DE GUIA REMISIÓN
     setTimeout(() => {
       this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden}}); }, 2000
     );
+    */
 
   }
+
+  //METODO QUE NOS PERMITE GUARDAR LA GUIA DE REMISION
+  private guardarGuiaRemision(arpfoe: Arpfoe): void{
+    let arpffepk = new Arpffepk();
+    arpffepk.noCia = arpfoe.arpfoePK.noCia;
+    arpffepk.bodega = arpfoe.almaOrigen;
+    const correlativo = '0000000';
+    const cortar = this.arfacf.correlFict.toString().length  * -1;
+    this.guia = this.arfacf.serieGr + correlativo.slice(0, cortar) + this.arfacf.correlFict;
+    arpffepk.noGuia = this.guia;
+
+    let arpffe = new Arpffe();
+    arpffe.arpffePK = arpffepk;
+    arpffe.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    arpffe.grupo = '00';
+    arpffe.noCliente = arpfoe.noCliente;
+    arpfoe.noVendedor = this.
+
+  }
+  //FIN
 
   // AÑADIR ITEMS LIBRES
   public addItem(): void{
