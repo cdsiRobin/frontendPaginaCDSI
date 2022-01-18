@@ -33,7 +33,7 @@
                     <div class="col-sm">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Transacción</mat-label>
-                        <mat-select [(ngModel)]="transaccion" name="transacion" (optionSelected)="findTransaccion($event)">
+                        <mat-select  name="transacion"  (selectionChange)="findTransaccion($event)">
                           <mat-option *ngFor="let ta of transacciones" [value]="ta">
                             {{ta.codTPed}}-{{ta.descri}}
                           </mat-option>
@@ -54,7 +54,7 @@
                 </div>
                 <!--FIN-->
                 <!--CLIENTE-->
-                  <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
                     <!--RUC DE CLIENTE-->
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                         <mat-label>RUC</mat-label>
@@ -92,19 +92,12 @@
                     <div class="col-sm">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Direcciónes</mat-label>
-                        <mat-select name="direccion" (selectionChange)=" getDirecciones($event)">
+                        <mat-select name="direccion" (selectionChange)="getDirecciones($event)">
                           <mat-option *ngFor="let d of arcctdas" [value]="d">
                             {{d.nombre}}-{{d.direccion}}
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
-
-                      <!--
-                      <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Dirección</mat-label>
-                            <input disabled="true" matInput placeholder="Placeholder" value="Direccion">
-                        </mat-form-field>
-                      -->
                     </div>
                     <!--UBIGEO-->
                     <div class="col-sm-4">
@@ -197,7 +190,7 @@
         <div class="row">
             <div class="col-sm-12">
               <mat-tab-group animationDuration="0ms">
-                <mat-tab label="Bien">
+                <mat-tab label="Bien" (click)="saberItem('B')">
                   <!--AÑADIR ITEMS-->
                   <div class="row">
                     <div class="col-sm-12">
@@ -219,7 +212,7 @@
                   </div>
                   <!--FIN AÑADIR ITEMS-->
                 </mat-tab>
-                <mat-tab label="Libre">
+                <mat-tab label="Libre" (click)="saberItem('L')">
                   <!--AÑADIR ITEMS LIBRE-->
                     <div class="row">
                       <div class="col-sm-12">
@@ -268,7 +261,6 @@
                             </div>
                           </div>
                         </form>
-
                     </div>
                     </div>
                   <!--FIN AÑADIR ITEMS-->
@@ -346,7 +338,6 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
-
                 <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
               </div>
               <!--FIN TABLA-->

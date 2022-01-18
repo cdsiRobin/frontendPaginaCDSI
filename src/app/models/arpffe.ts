@@ -17,7 +17,7 @@ export class Arpffe {
   noDocu: string;
   tipoTransc: string;
   usuario: string;
-  fechaInicio: Date;
+  fechaInicio: string;
   codFpago: string;
   almaOrigen: string;
   almaDestino: string;

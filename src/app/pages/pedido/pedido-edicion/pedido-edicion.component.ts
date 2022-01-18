@@ -57,15 +57,17 @@ import { ArpffeService } from '../../../services/arpffe.service';
 import { Arpfoe } from '../../../models/Arpfoe';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Arpffepk } from '../../../models/arpffepk';
+import {Arpffl} from '../../../models/arpffl';
+import {Arpfflpk} from '../../../models/arpfflpk';
 
 @Component({
   selector: 'app-pedido-edicion',
   templateUrl: './pedido-edicion.component.html'
 })
 export class PedidoEdicionComponent implements OnInit {
-  anularBF: string = 'N';
+  anularBF = 'N';
   arinse: Arinse;
-
+  tipoItem = 'B';
   form: FormGroup;
   // NUEVO CAMBIOS
   groupEmpresa: FormGroup;
@@ -138,8 +140,6 @@ export class PedidoEdicionComponent implements OnInit {
 
   public fechaP = new FormControl(new Date());
 
-  public tipoItem: string;
-
   public detPedidos: Detpedido[] = [];
   // NUEVO CAMBIOS
   displayedColumns: string[] = ['tipo', 'codigo', 'medida', 'descripcion', 'cantidad', 'precio', 'igv', 'total', 'eliminar'];
@@ -151,7 +151,7 @@ export class PedidoEdicionComponent implements OnInit {
   arccmcObservable: Observable<Arccmc[]>;
   arccmc: Arccmc;
 
-  descBien: string = '';
+  descBien = '';
   Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -209,8 +209,8 @@ export class PedidoEdicionComponent implements OnInit {
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
 
-    //VAMOS A OPTENER LOS DATOS DEL CENTRO EMISOR
-    this.getCentroEmisor(this.cia,this.centro);
+    // VAMOS A OPTENER LOS DATOS DEL CENTRO EMISOR
+    this.getCentroEmisor(this.cia, this.centro);
     this.listaMonedas();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
@@ -232,7 +232,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
 
     this.getCliente('99999999998');
-    //BUSCAR POR RUC
+    // BUSCAR POR RUC
     this.groupEmpresa.get('ruc').valueChanges.subscribe(valueChange => {
       if (valueChange.length > 3) {
          // this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
@@ -247,8 +247,8 @@ export class PedidoEdicionComponent implements OnInit {
     // BUSCAR POR RAZON SOCIAL O NOMBRE
     this.groupEmpresa.get('racSoc').valueChanges.subscribe(valueChange => {
       if (valueChange.length > 3) {
-         let nombre: string = valueChange;
-         this.factuOptions = this.arccmcService.listaClientesDescripLike(this.cia,nombre.toUpperCase().trim());
+         const nombre: string = valueChange;
+         this.factuOptions = this.arccmcService.listaClientesDescripLike(this.cia, nombre.toUpperCase().trim());
       }
       else {
         this.factuOptions = null;
@@ -268,13 +268,13 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
   // BUSCAMOS CLIENTES POR SU NOMBRE O RAZON SOCIAL
-  public buscarClienteXnombre(e: any){
+  public buscarClienteXnombre(e: any): void{
     const nombre: string = e.target.value;
     this.arccmcObservable = this.arccmcService.listaClientesDescripLike(this.cia, nombre.toUpperCase().trim());
   }
 
   // SELECCIONAMOS UN CLIENTE POR SU NOMBRE O RAZON SOCIA
-  public seleccionarClienteXdescrip($event: MatAutocompleteSelectedEvent){
+  public seleccionarClienteXdescrip($event: MatAutocompleteSelectedEvent): void{
     this.arccmc = $event.option.value;
     this.groupEmpresa.controls.ruc.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
     this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
@@ -282,7 +282,7 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
   // NUEVO CAMBIOS
-  setFormData($event: MatAutocompleteSelectedEvent) {
+  setFormData($event: MatAutocompleteSelectedEvent): void {
     const factuOptions = $event.option.value;
     if (factuOptions){
       this.groupEmpresa.controls.ruc.setValue(factuOptions.ruc, {emitEvent: false});
@@ -292,13 +292,13 @@ export class PedidoEdicionComponent implements OnInit {
   }
 
    // NUEVO CAMBIOS
-   public getDirecciones($event) {
+   public getDirecciones($event): void {
       this.arcctda = $event.value;
       this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
   }
 
   // FIN
-  filtrarArticulos(val: any) {
+  filtrarArticulos(val: any): any {
     if (val != null) {
       const filtro: string = String(val);
       this.arindaService.listaArtiDesc(sessionStorage.getItem('cia'), filtro.trim()).subscribe(data => {
@@ -306,18 +306,15 @@ export class PedidoEdicionComponent implements OnInit {
       });
       return this.articulos;
     }
-
   }
 
-  mostrarArticulo(val: Arinda) {
+  mostrarArticulo(val: Arinda): any {
     return val ? `${val.idArti.noArti} ${val.descripcion}` : val;
-
   }
 
-  seleccionarArticulo(e: any) {
+  seleccionarArticulo(e: any): void {
     this.articuloSeleccionado = e.option.value;
     this.arindaService.precStock(sessionStorage.getItem('cia'), '1A001', 'F8', this.articuloSeleccionado.idArti.noArti).subscribe(data => {
-
       if (data.stock === null) {
         Swal.close();
         Swal.fire({
@@ -328,23 +325,22 @@ export class PedidoEdicionComponent implements OnInit {
       } else {
         this.precio = data.precio;
       }
-
     });
   }
 
-  calcularImporte() {
+  calcularImporte(): void {
     this.precioCant = this.precio * this.cantAsignada;
     this.impIgv = (this.precio * this.cantAsignada) * 0.18;
     this.totalLin = (this.precio * this.cantAsignada) + this.impIgv;
   }
 
-  noOrden() {
+  noOrden(): void {
     this.pedidoService.noOrdern(sessionStorage.getItem('cia'), sessionStorage.getItem('centro')).subscribe(data => {
       this.orden = data;
     });
   }
 
-  traeCliente() {
+  traeCliente(): void {
     const datos = new DatosClienteDTO(sessionStorage.getItem('cia'));
     datos.documento = this.codCliente.trim();
     this.clienteServices.traeCliente(datos).subscribe(data => {
@@ -362,7 +358,7 @@ export class PedidoEdicionComponent implements OnInit {
       this.form.controls.articulo.enable();
       this.form.controls.cantAsignada.enable();
     }, err => {
-      if (err.status == 404) {
+      if (err.status === 404) {
         Swal.close();
         Swal.fire({
           allowOutsideClick: false,
@@ -372,16 +368,16 @@ export class PedidoEdicionComponent implements OnInit {
       }
     });
   }
-  estadoBotonCliente() {
+  estadoBotonCliente(): any {
     return (this.codCliente === '');
   }
 
-  removerDetalle(index: number) {
+  removerDetalle(index: number): void {
     this.detallePedido.splice(index, 1);
     this.getTotal();
   }
 
-  public getTotal() {
+  public getTotal(): void {
     this.totalGeneral =  this.detallePedido.map(t => t.totalLin).reduce((acc, value) => acc + value, 0);
     // this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
     this.totalIGV = this.detallePedido.map(t => t.impIgv).reduce((acc, value) => acc + value, 0);
@@ -421,7 +417,7 @@ export class PedidoEdicionComponent implements OnInit {
       this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json => {
         this.transacciones = json.resultado;
         this.buscarTransaccion('1315');
-        this.getTrasaccion(this.cia,'1315');
+        this.getTrasaccion(this.cia, this.transaccion.codTPed);
       },
         error => {
           console.error(error);
@@ -534,18 +530,6 @@ export class PedidoEdicionComponent implements OnInit {
     );
   }
 
-  // EVENTO CUANDO HACE UN CAMBIO EL RADIO BUTTON DE TIPO ITEMS
-  public getTipoItem(event: MatRadioChange){
-    // console.log(event.source.name, event.value);
-    if (event.value === 'B') {
-       console.log('Entro en el radio button : BIEN');
-    }else{
-      console.log('Entro en el radio button : LIBRE');
-    }
-
-  }
-  // FIN RADIO BUTTON DE TIPO ITEMS
-
   // ABRIR DIALOGO DE ITEMs
   public openDialogoItem(): void{
       // console.log(this.groupArticulo.get('desProd').value);
@@ -573,7 +557,7 @@ export class PedidoEdicionComponent implements OnInit {
 
   // VERIFICAR DUPLICADO DE ITEMS
   public verificarItems(dp: Detpedido): void {
-    if (this.detPedidos.length == 0){
+    if (this.detPedidos.length === 0){
           // this.detPedidos.push(dp);
           this.actualizarCorrelativo(dp);
     } else {
@@ -581,13 +565,13 @@ export class PedidoEdicionComponent implements OnInit {
        let valor = 'N';
        // VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
        for (const i in this.detPedidos){
-            if (cod == this.detPedidos[i].codigo){
+            if (cod === this.detPedidos[i].codigo){
               valor = 'S';
               break;
             }
         }
 
-       if (valor == 'N'){
+       if (valor === 'N'){
          this.actualizarCorrelativo(dp);
        }
     }
@@ -762,7 +746,7 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // FIN
   // CREACION DE UNA BOLETA
-  public crearBoleta(){
+  public crearBoleta(): void{
     Swal.fire({
       title: '¿Está seguro de crear una BOLETA?',
       icon: 'warning',
@@ -793,7 +777,7 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // FIN
   // CREACION DE UNA FACTURA
-  public crearFactura(){
+  public crearFactura(): void{
     Swal.fire({
       title: '¿Está seguro de crear una FACTURA?',
       icon: 'warning',
@@ -951,7 +935,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
     // VAMOS A GUARDAR EL PEDIDO
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
-      //GUARDAR GUIA REMISION
+      // GUARDAR GUIA REMISION
       this.guardarGuiaRemision(dato);
       this.snackBar.open('Se Guardo el pedido', 'Salir',
       {
@@ -966,12 +950,11 @@ export class PedidoEdicionComponent implements OnInit {
       this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden}}); }, 2000
     );
     */
-
   }
 
-  //METODO QUE NOS PERMITE GUARDAR LA GUIA DE REMISION
+  // METODO QUE NOS PERMITE GUARDAR LA GUIA DE REMISION
   private guardarGuiaRemision(arpfoe: Arpfoe): void{
-    let arpffepk = new Arpffepk();
+    const arpffepk = new Arpffepk();
     arpffepk.noCia = arpfoe.arpfoePK.noCia;
     arpffepk.bodega = arpfoe.almaOrigen;
     const correlativo = '0000000';
@@ -979,16 +962,71 @@ export class PedidoEdicionComponent implements OnInit {
     this.guia = this.arfacf.serieGr + correlativo.slice(0, cortar) + this.arfacf.correlFict;
     arpffepk.noGuia = this.guia;
 
-    let arpffe = new Arpffe();
+    const arpffe = new Arpffe();
     arpffe.arpffePK = arpffepk;
     arpffe.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     arpffe.grupo = '00';
     arpffe.noCliente = arpfoe.noCliente;
-    arpfoe.noVendedor = this.
+    arpffe.noVendedor = this.codEmp;
+    arpffe.descripcion = `Generado por Inventarios - Transc.:${arpfoe.codTPed}, No Doc.:${this.arinse.secuencia}`;
+    arpffe.noOrden = arpfoe.arpfoePK.noOrden;
+    arpffe.estado = 'D';
+    arpffe.tipoDoc = '';
+    arpffe.noFactu = '';
+    arpffe.centro = this.centro;
+    arpffe.tipo = 'V';
+    arpffe.clase = 'V';
+    arpffe.noDocu = this.arinse.secuencia.toString();
+    arpffe.tipoTransc = arpfoe.codTPed;
+    arpffe.usuario = 'VENTAS';
+    arpffe.fechaInicio = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    arpffe.codFpago = this.tapfopa.tapfopaPK.codFpago;
+    arpffe.almaOrigen = arpfoe.almaOrigen;
+    arpffe.almaDestino = arpfoe.almaDestino;
+    arpffe.nombreDigi = this.arccmc.nombre;
+    arpffe.indFactura = arpfoe.indFactura1;
+    arpffe.indBoleta = arpfoe.indBoleta1;
+    arpffe.codTienda = '001';
+    arpffe.tipoGuia = 'GR';
+    arpffe.imprime = 'S';
+    arpffe.indPvent = 'S';
+    arpffe.codCaja = 'C11';
+    arpffe.indFerias = 'N';
+    arpffe.indProvincia = 'N';
+    arpffe.consumo = 'N';
+    arpffe.convenio = 'N';
+    arpffe.indCodBarra = 'N';
+    arpffe.indFicta = 'N';
+    arpffe.indProforma = 'N';
+    // DETALLE DE GUIA DE REMISION
+    const arpffls: Arpffl[] = [];
+    for ( const p of arpfoe.arpfolList ){
+      const arpfflpk = new Arpfflpk();
+      arpffepk.noGuia = this.guia;
+      arpffepk.noCia = this.cia;
+      arpffepk.bodega = arpfoe.almaOrigen;
+      arpfflpk.noArti = p.arpfolPK.noArti;
+
+      const arpffl = new Arpffl();
+      arpffl.arpfflPK = arpfflpk;
+      arpffl.descripcion = p.descripcion;
+      arpffl.cantidad = p.cantEntreg.toString();
+      arpffl.indParentesco = 'N';
+      arpffl.noLinea = p.noLinea;
+      arpffl.tipoBs = this.tipoItem;
+      // AGREGAR EL DETALLE DE GUIA
+      arpffls.push(arpffl);
+    }
+    arpffe.arpfflList = arpffls;
+    // GUARDAMOS LA GUIA DE REMISION
+    this.arpffeService.guardar(arpffe).subscribe(value => {
+      this.arpffe = value;
+      console.log('SE GUARDO LA GUIA DE REMISION !!!!!!!!!!!!!!!!!!!!!!');
+      console.log(this.arpffe);
+    });
 
   }
-  //FIN
-
+  // FIN
   // AÑADIR ITEMS LIBRES
   public addItem(): void{
     // console.log(this.groupArticulo.value);
@@ -1000,7 +1038,8 @@ export class PedidoEdicionComponent implements OnInit {
     const precio: number = this.groupArticulo.get('precProd').value / 1.18;
     const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
     const total = (precio * cantidad) + igv;
-    const d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(), cantidad, precio, igv, total);
+    const d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
+      cantidad, precio, igv, total);
     if (precio <= 0){
       this.snackBar.open(`El precio no debe ser CERO.`, 'Salir',
       {
@@ -1037,14 +1076,14 @@ export class PedidoEdicionComponent implements OnInit {
   }
   // FIN
 
-  //SELECCIONAR UNA TRANSACCION
+  // SELECCIONAR UNA TRANSACCION
   private getTrasaccion(cia: string, trans: string): void{
-      this.arintdService.findArintd(cia,trans).subscribe(data => {
+      this.arintdService.findArintd(cia, trans).subscribe(data => {
         this.arintd = data;
-        //VERIFICAMOS SI EL DOCUMENTO NO TIENE G
-        if(this.arintd.docuGene == 'G'){
-          //BUSCAR EL NO-DOCU
-          this.getNoDocu(this.cia,this.arintd.almaOri,trans);
+        // VERIFICAMOS SI EL DOCUMENTO NO TIENE G
+        if ( this.arintd.docuGene === 'G'){
+          // BUSCAR EL NO-DOCU
+          this.getNoDocu(this.cia, this.arintd.almaOri, trans);
         }else{
           this.anularBF = 'S';
           this.snackBar.open(`Tipo de Documento Incorrecto, Verifiqué`, 'Salir',
@@ -1057,30 +1096,33 @@ export class PedidoEdicionComponent implements OnInit {
       });
   }
 
-  //BUSCAMOS EL NO_DOCU DE LA COMPAÑIA, BODEGA y TRANSACCION
+  // BUSCAMOS EL NO_DOCU DE LA COMPAÑIA, BODEGA y TRANSACCION
   private getNoDocu(cia: string, bodega: string, trans: string): void{
-      this.arinseService.getArinse(cia,bodega,trans).subscribe(value =>{
+      this.arinseService.getArinse(cia, bodega, trans).subscribe(value => {
          this.arinse = value;
-         console.log(this.arinse);
       });
   }
 
   // SELECCIONAR CENTRO EMISOR
   private getCentroEmisor(cia: string, centro: string): void{
-     let arfacfpk = new Arfacfpk();
+     const arfacfpk = new Arfacfpk();
      arfacfpk.noCia = cia;
      arfacfpk.centro = centro;
      this.arfacfService.getArfacf(arfacfpk).subscribe( data => {
          this.arfacf = data;
      });
   }
-  //FIN
-  //EVENTO SELECCIONAR DE TRANSACCION
-  public findTransaccion($event: MatAutocompleteSelectedEvent){
-    this.transaccion = $event.option.value;
-    console.log('TRANSACCION :::::::');
-    console.log(this.transaccion);
-    this.getTrasaccion(this.cia,this.transaccion.codTPed);
+  // FIN
+  // EVENTO SELECCIONAR DE TRANSACCION
+  public findTransaccion($event): void{
+    this.transaccion = $event.value;
+    /*console.log('TRANSACCION :::::::');
+    console.log(this.transaccion);*/
+    this.getTrasaccion(this.cia, this.transaccion.codTPed);
+  }
+  // SABER QUE TIPO DE ITEM ESTAMOS TRABAJANDO
+  public saberItem(tipo: string): void{
+    this.tipoItem = tipo;
   }
 
 }
