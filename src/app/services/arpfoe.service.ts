@@ -13,12 +13,12 @@ export class ArpfoeService extends GenericoService {
 
   constructor(private http: HttpClient) { super(); }
 
-  //METODO PARA GUARDAR EL PEDDIO
+  // METODO PARA GUARDAR EL PEDDIO
   public savePedido(arpfoe: Arpfoe): Observable<Arpfoe>{
     const body = JSON.stringify(arpfoe);
-    //console.log(body);
+    // console.log(body);
     return this.http.post<Guardar<Arpfoe>>(this.url + `/arpfoe/save`, body, this.options).pipe(
-      map( (responde : Guardar<Arpfoe>) => {
+      map( (responde: Guardar<Arpfoe>) => {
         return responde.detalle;
       })
     );

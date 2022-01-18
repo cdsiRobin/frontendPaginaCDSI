@@ -1027,6 +1027,13 @@ export class PedidoEdicionComponent implements OnInit {
 
   }
   // FIN
+  // METODO QUE NOS PERMITE ACTUALIZAR EL NO-DOCU
+  private actualizarArinse(): void{
+    this.arinseService.actualizar(this.arinse).subscribe(value => {
+       this.arinse = value;
+    });
+  }
+  // FIN
   // AÑADIR ITEMS LIBRES
   public addItem(): void{
     // console.log(this.groupArticulo.value);
