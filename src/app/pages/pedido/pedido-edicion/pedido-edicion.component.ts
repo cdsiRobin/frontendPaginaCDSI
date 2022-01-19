@@ -59,6 +59,11 @@ import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Arpffepk } from '../../../models/arpffepk';
 import {Arpffl} from '../../../models/arpffl';
 import {Arpfflpk} from '../../../models/arpfflpk';
+import {Arinme1} from '../../../models/arinme1';
+import {Arinme1pk} from '../../../models/arinme1pk';
+import {Arinml1} from '../../../models/arinml1';
+import {Arinml1pk} from '../../../models/arinml1pk';
+import {Arinme1Service} from '../../../services/arinme1.service';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -104,7 +109,7 @@ export class PedidoEdicionComponent implements OnInit {
   subTotal = 0;
   totalIGV = 0;
   impuesto = 18;
-
+  arinme1: Arinme1;
   myControlArticulo: FormControl = new FormControl({value: '', disabled: true });
 
   articulosFiltrados: Observable<Arinda[]>;
@@ -180,6 +185,7 @@ export class PedidoEdicionComponent implements OnInit {
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
               public arccmcService: ArccmcService,
+              public arinme1Service: Arinme1Service,
               public arintdService: ArintdService,
               public arinseService: ArinseService,
               public arfacfService: ArfacfService,
@@ -937,6 +943,9 @@ export class PedidoEdicionComponent implements OnInit {
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
       // GUARDAR GUIA REMISION
       this.guardarGuiaRemision(dato);
+      this.guardarArinme1(dato);
+      this.actualizarArinse();
+      this.actualizarArfacf();
       this.snackBar.open('Se Guardo el pedido', 'Salir',
       {
         duration: 3000,
@@ -952,7 +961,7 @@ export class PedidoEdicionComponent implements OnInit {
     */
   }
 
-  // METODO QUE NOS PERMITE GUARDAR LA GUIA DE REMISION
+  // METODO QUE NOS PERMITE GUARDAR LA ARPFFE (GUIA DE REMISION)
   private guardarGuiaRemision(arpfoe: Arpfoe): void{
     const arpffepk = new Arpffepk();
     arpffepk.noCia = arpfoe.arpfoePK.noCia;
@@ -961,7 +970,6 @@ export class PedidoEdicionComponent implements OnInit {
     const cortar = this.arfacf.correlFict.toString().length  * -1;
     this.guia = this.arfacf.serieGr + correlativo.slice(0, cortar) + this.arfacf.correlFict;
     arpffepk.noGuia = this.guia;
-
     const arpffe = new Arpffe();
     arpffe.arpffePK = arpffepk;
     arpffe.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
@@ -1006,7 +1014,6 @@ export class PedidoEdicionComponent implements OnInit {
       arpffepk.noCia = this.cia;
       arpffepk.bodega = arpfoe.almaOrigen;
       arpfflpk.noArti = p.arpfolPK.noArti;
-
       const arpffl = new Arpffl();
       arpffl.arpfflPK = arpfflpk;
       arpffl.descripcion = p.descripcion;
@@ -1024,7 +1031,6 @@ export class PedidoEdicionComponent implements OnInit {
       console.log('SE GUARDO LA GUIA DE REMISION !!!!!!!!!!!!!!!!!!!!!!');
       console.log(this.arpffe);
     });
-
   }
   // FIN
   // METODO QUE NOS PERMITE ACTUALIZAR EL NO-DOCU
@@ -1032,6 +1038,104 @@ export class PedidoEdicionComponent implements OnInit {
     this.arinseService.actualizar(this.arinse).subscribe(value => {
        this.arinse = value;
     });
+  }
+  // FIN
+  // METODO QUE NOS PERMITE ACTUALIZAR ARFACF, INCREMENTAR CORRE-FICTA
+  private actualizarArfacf(): void{
+    this.arfacfService.ingrementarCorreFicta(this.arfacf).subscribe(value => {
+       this.arfacf = value;
+       console.log('ARFACF :::::::::::::');
+       console.log(this.arfacf);
+    });
+  }
+  // FIN
+  // METODO QUE NOS PERMITE GUARDAR ARINME
+  private guardarArinme1(ped: Arpfoe): void{
+    const arinme1pk = new Arinme1pk();
+    arinme1pk.noCia = this.cia;
+    arinme1pk.bodega = ped.almaOrigen;
+    arinme1pk.tipoDoc = ped.codTPed;
+    arinme1pk.noDocu = this.arinse.secuencia.toString();
+    // ARINME1
+    const arinme1 = new Arinme1();
+    arinme1.arinme1PK = arinme1pk;
+    arinme1.grupo = '1A';
+    arinme1.noOrden = ped.almaDestino;
+    arinme1.noGuia = this.guia;
+    arinme1.tipoDocRec = 'G';
+    arinme1.serieDocRem = this.arfacf.serieGr;
+    arinme1.corrDocRem = this.guia.substring(3);
+    arinme1.noRefe = '';
+    arinme1.tipoDocRec = 'P';
+    arinme1.corrDocRec = '';
+    arinme1.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    arinme1.estado = 'D';
+    arinme1.formaPago = this.tapfopa.tapfopaPK.codFpago;
+    arinme1.tipoCambio = this.tipocambio;
+    arinme1.anoProce = Number(moment(this.fechaSeleccionada).format('YYYY'));
+    arinme1.mesProce = Number(moment(this.fechaSeleccionada).format('MM'));
+    arinme1.moneda = this.arcgmo.moneda;
+    arinme1.indControl = 'N';
+    arinme1.statusControl = 'N';
+    arinme1.usuario = this.usuario;
+    arinme1.almaOrigen = ped.almaOrigen;
+    arinme1.almaDestino = ped.almaDestino;
+    arinme1.motivoTraslado = '1';
+    arinme1.noPedMant = ped.arpfoePK.noOrden;
+    arinme1.noCliente = ped.noCliente;
+    arinme1.direccionComercial = ped.direccionComercial;
+    arinme1.noVendedor = this.codEmp;
+    arinme1.tipoCosto = 'P';
+    arinme1.indGuiado = 'S';
+    arinme1.codFpago = ped.codFpago;
+    arinme1.tipoArti = '1';
+    arinme1.claseTransc = 'V';
+    arinme1.nombreDigi = ped.nombreCliente;
+    arinme1.indFactura = ped.indFactura1;
+    arinme1.indBoleta = ped.indBoleta1;
+    arinme1.codTienda = '001';
+    arinme1.codDirEntrega = '001';
+    arinme1.codDirSalida = '001';
+    arinme1.imprime = 'N';
+    arinme1.centro = this.centro;
+    arinme1.indPvent = 'S';
+    arinme1.codCaja = 'C11';
+    arinme1.indProvincia = 'N';
+    arinme1.convenio = 'N';
+    arinme1.consumo = 'N';
+    arinme1.demasia = 'N';
+    arinme1.grabaCodBarra = 'N';
+    arinme1.indCodBarra = 'N';
+    // DETALLE ARINME1
+    const arinml1s: Arinml1[] = [];
+    for (const pl of ped.arpfolList){
+      const arinml1pk = new Arinml1pk();
+      arinml1pk.noCia = this.cia;
+      arinml1pk.bodega = ped.almaOrigen;
+      arinml1pk.tipoDoc = ped.codTPed;
+      arinml1pk.noDocu = this.arinse.secuencia.toString();
+      arinml1pk.noArti = pl.arpfolPK.noArti;
+      const arinml1 = new Arinml1();
+      arinml1.arinml1PK = arinml1pk;
+      arinml1.noLinea = pl.noLinea;
+      arinml1.lote = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+      arinml1.noEntrada = '-';
+      arinml1.unidades = pl.cantEntreg;
+      arinml1.contenido = pl.cantEntreg;
+      arinml1.undReferencia = pl.cantEntreg;
+      arinml1.loteLog = pl.cantEntreg;
+      arinml1.stockAlmacen = pl.cantEntreg;
+      arinml1.tipoBs = this.tipoItem;
+      arinml1s.push(arinml1);
+    }
+    arinme1.arinml1List = arinml1s;
+    // LLAMAMOS AL SERVICIO DE PARA GUARDAR EL REGISTRO DE MOVIMIENTO
+    this.arinme1Service.guardar(arinme1).subscribe(value => {
+      this.arinme1 = value;
+      console.log('ARINME1 :::::::::::::::::::::::::::::');
+      console.log(this.arinme1);
+    });
+
   }
   // FIN
   // AÑADIR ITEMS LIBRES

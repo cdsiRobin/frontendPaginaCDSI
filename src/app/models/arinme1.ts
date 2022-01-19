@@ -1,0 +1,55 @@
+import {Arinme1pk} from './arinme1pk';
+import {Arinml1} from './arinml1';
+
+export class Arinme1 {
+  arinme1PK: Arinme1pk;
+  grupo: string;
+  noOrden: string;
+  noGuia: string;
+  tipoDocRem: string;
+  serieDocRem: string;
+  corrDocRem: string;
+  noRefe: string;
+  tipoDocRec: string;
+  corrDocRec: string;
+  fecha: string;
+  estado: string;
+  formaPago: string;
+  tipoCambio: number;
+  anoProce: number;
+  mesProce: number;
+  moneda: string;
+  indControl: string;
+  statusControl: string;
+  usuario: string;
+  almaOrigen: string;
+  almaDestino: string;
+  motivoTraslado: string;
+  noPedMant: string;
+  noCliente: string;
+  direccionComercial: string;
+  noVendedor: string;
+  tipoCosto: string;
+  indGuiado: string;
+  codFpago: string;
+  tipoArti: string;
+  claseTransc: string;
+  nombreDigi: string;
+  indFactura: string;
+  indBoleta: string;
+  codTienda: string;
+  codDirEntrega: string;
+  codDirSalida: string;
+  imprime: string;
+  centro: string;
+  indPvent: string;
+  codCaja: string;
+  indProvincia: string;
+  convenio: string;
+  consumo: string;
+  demasia: string;
+  grabaCodBarra: string;
+  indCodBarra: string;
+  arinml1List: Arinml1[];
+
+}

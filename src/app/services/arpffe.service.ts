@@ -14,20 +14,18 @@ export class ArpffeService extends GenericoService {
 
   constructor(private http: HttpClient) { super(); }
 
-  //METODO QUE NOS PERMITE GUARDAR UNA GUIA DE REMISION INTERNA
+  // METODO QUE NOS PERMITE GUARDAR UNA GUIA DE REMISION INTERNA
   public guardar(arpffe: Arpffe): Observable<Arpffe>{
       const body = JSON.stringify(arpffe);
-      console.log('GUIA DE REMISION ::::::::::::::::::::');
-      console.log(body);
       return this.http.post<Guardar<Arpffe>>(this.url + `/arpffe/save`, body, this.options).pipe(
-        map( (responde : Guardar<Arpffe>) => {
+        map( (responde: Guardar<Arpffe>) => {
           return responde.detalle;
         })
       );
   }
-  //FIN
+  // FIN
 
-  //METODOD QUE NOS PERMITE CONSULTAR UN GUIA REMISION
+  // METODOD QUE NOS PERMITE CONSULTAR UN GUIA REMISION
   public consultarGuia(cia: string, bodega: string, guia: string): Observable<Arpffe>{
      return this.http.get<ConsultaExitosa<Arpffe>>(this.url + `/arpffe/id?cia=${cia}&bodega=${bodega}&guia=${guia}`, this.options).pipe(
        map( (value: ConsultaExitosa<Arpffe>) => {
@@ -35,6 +33,6 @@ export class ArpffeService extends GenericoService {
        } )
      );
   }
-  //FIN
+  // FIN
 
 }
