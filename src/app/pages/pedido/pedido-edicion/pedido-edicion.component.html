@@ -33,7 +33,7 @@
                     <div class="col-sm">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Transacción</mat-label>
-                        <mat-select  name="transacion"  (selectionChange)="findTransaccion($event)">
+                        <mat-select [(ngModel)]="transaccion" name="transacion"  (selectionChange)="findTransaccion($event)">
                           <mat-option *ngFor="let ta of transacciones" [value]="ta">
                             {{ta.codTPed}}-{{ta.descri}}
                           </mat-option>

@@ -546,9 +546,12 @@ export class PedidoEdicionComponent implements OnInit {
                       });
       dialogRef.afterClosed().subscribe( result => {
         // VAMOR A RECORRER EL ARREGLO DE ITEMS
-        result.forEach(element => {
+       /* result.forEach( element => {
            this.verificarItems(element);
-        });
+        });*/
+        for(const i of result) {
+          this.verificarItems(i);
+        }
         this.llenarTablaArticulos();
         // total de general
         this.totalGeneral = this.getTotalPedido();
@@ -674,10 +677,7 @@ export class PedidoEdicionComponent implements OnInit {
 
       // total de general
       this.totalGeneral = this.getTotalPedido();
-      /*this.Toast.fire({
-        icon: 'success',
-        title: `Se aumento la cantidad del cod: ${dp.codigo}`
-      });*/
+
   }
 
   // ELIMINAR ARTICULO
@@ -776,7 +776,6 @@ export class PedidoEdicionComponent implements OnInit {
               }else{
                 this.crear_pedido('S', 'N');
               }
-
           }
       }
     });
@@ -928,8 +927,6 @@ export class PedidoEdicionComponent implements OnInit {
         dps.push(dPedido);
     }
     pedido.arpfolList = dps;
-    console.log(pedido);
-
     // VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
     this.arfaccService.saveArfacc(this.arfacc).subscribe( dato => {
       this.snackBar.open('Se actualizo el correlativo del pedido ', 'Salir',
@@ -942,11 +939,11 @@ export class PedidoEdicionComponent implements OnInit {
     // VAMOS A GUARDAR EL PEDIDO
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
       // GUARDAR GUIA REMISION
-      this.guardarGuiaRemision(dato);
-      this.guardarArinme1(dato);
+      this.guardarGuiaRemision(pedido);
+      this.guardarArinme1(pedido);
       this.actualizarArinse();
       this.actualizarArfacf();
-      this.snackBar.open('Se Guardo el pedido', 'Salir',
+      this.snackBar.open('Se GUARDO el PEDIDO', 'Salir',
       {
         duration: 3000,
         verticalPosition: 'top',
@@ -954,17 +951,16 @@ export class PedidoEdicionComponent implements OnInit {
       });
     });
     // VAMOS A BOLETEAR O FACTURAR
-    /*  VAMOS A COMENTAR POR EL MOMENTO DE PRUEBA DE GUIA REMISIÓN
     setTimeout(() => {
       this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden}}); }, 2000
     );
-    */
+    // FIN
   }
 
   // METODO QUE NOS PERMITE GUARDAR LA ARPFFE (GUIA DE REMISION)
   private guardarGuiaRemision(arpfoe: Arpfoe): void{
     const arpffepk = new Arpffepk();
-    arpffepk.noCia = arpfoe.arpfoePK.noCia;
+    arpffepk.noCia = this.cia;
     arpffepk.bodega = arpfoe.almaOrigen;
     const correlativo = '0000000';
     const cortar = this.arfacf.correlFict.toString().length  * -1;
@@ -991,7 +987,7 @@ export class PedidoEdicionComponent implements OnInit {
     arpffe.codFpago = this.tapfopa.tapfopaPK.codFpago;
     arpffe.almaOrigen = arpfoe.almaOrigen;
     arpffe.almaDestino = arpfoe.almaDestino;
-    arpffe.nombreDigi = this.arccmc.nombre;
+    arpffe.nombreDigi = arpfoe.nombreCliente;
     arpffe.indFactura = arpfoe.indFactura1;
     arpffe.indBoleta = arpfoe.indBoleta1;
     arpffe.codTienda = '001';
@@ -1010,9 +1006,9 @@ export class PedidoEdicionComponent implements OnInit {
     const arpffls: Arpffl[] = [];
     for ( const p of arpfoe.arpfolList ){
       const arpfflpk = new Arpfflpk();
-      arpffepk.noGuia = this.guia;
-      arpffepk.noCia = this.cia;
-      arpffepk.bodega = arpfoe.almaOrigen;
+      arpfflpk.noGuia = this.guia;
+      arpfflpk.noCia = this.cia;
+      arpfflpk.bodega = arpfoe.almaOrigen;
       arpfflpk.noArti = p.arpfolPK.noArti;
       const arpffl = new Arpffl();
       arpffl.arpfflPK = arpfflpk;
