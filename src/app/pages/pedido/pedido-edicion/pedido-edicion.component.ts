@@ -835,35 +835,28 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.motivoTraslado = '1';
     pedido.indBoleta1 = indBoleta;
     pedido.indFactura1 = indFactura;
-
     pedido.noCliente = this.groupEmpresa.get('ruc').value;
     pedido.ruc = this.groupEmpresa.get('ruc').value;
-
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
-
     pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
-
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-
     pedido.tipoPrecio = this.arfatp.idArfa.tipo;
     pedido.moneda = this.arcgmo.moneda;
     pedido.tipoCambio = this.tipocambio;
-
     pedido.subTotal = this.getTotalPedido() - this.getTotalIgv();
     pedido.tValorVenta = this.getTotalPedido() - this.getTotalIgv();
     pedido.totalBruto = this.getTotalPedido() - this.getTotalIgv();
     pedido.tImpuesto = this.getTotalIgv();
     pedido.tPrecio = this.getTotalPedido();
-
     pedido.impuesto = 18;
     pedido.estado = 'E';
     pedido.bodega = this.arintd.almaOri;
     pedido.igv = 18;
-    pedido.direccionComercial = this.arcctda.direccion;
+    pedido.direccionComercial = this.arcctda.direccion.substring(0,190);
     pedido.motivoTraslado = '1';
     pedido.nombreCliente = this.groupEmpresa.get('racSoc').value;
     pedido.codClasPed = 'V';
@@ -886,8 +879,6 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.tipoOperacion = '0101';
     pedido.emailPedido = this.email;
     pedido.tipoArti = '1';
-
-
     let contador = 0;
     const dps: Arpfol[] = [];
     for (const x of this.detPedidos){
@@ -952,7 +943,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
     // VAMOS A BOLETEAR O FACTURAR
     setTimeout(() => {
-      this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden}}); }, 2000
+      this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden, guia: this.guia}}); }, 2000
     );
     // FIN
   }
@@ -1024,8 +1015,6 @@ export class PedidoEdicionComponent implements OnInit {
     // GUARDAMOS LA GUIA DE REMISION
     this.arpffeService.guardar(arpffe).subscribe(value => {
       this.arpffe = value;
-      console.log('SE GUARDO LA GUIA DE REMISION !!!!!!!!!!!!!!!!!!!!!!');
-      console.log(this.arpffe);
     });
   }
   // FIN
@@ -1038,11 +1027,7 @@ export class PedidoEdicionComponent implements OnInit {
   // FIN
   // METODO QUE NOS PERMITE ACTUALIZAR ARFACF, INCREMENTAR CORRE-FICTA
   private actualizarArfacf(): void{
-    this.arfacfService.ingrementarCorreFicta(this.arfacf).subscribe(value => {
-       this.arfacf = value;
-       console.log('ARFACF :::::::::::::');
-       console.log(this.arfacf);
-    });
+    this.arfacfService.ingrementarCorreFicta(this.arfacf).subscribe();
   }
   // FIN
   // METODO QUE NOS PERMITE GUARDAR ARINME
@@ -1059,6 +1044,7 @@ export class PedidoEdicionComponent implements OnInit {
     arinme1.noOrden = ped.almaDestino;
     arinme1.noGuia = this.guia;
     arinme1.tipoDocRec = 'G';
+    arinme1.tipoDocRem = 'G';
     arinme1.serieDocRem = this.arfacf.serieGr;
     arinme1.corrDocRem = this.guia.substring(3);
     arinme1.noRefe = '';
@@ -1126,11 +1112,7 @@ export class PedidoEdicionComponent implements OnInit {
     }
     arinme1.arinml1List = arinml1s;
     // LLAMAMOS AL SERVICIO DE PARA GUARDAR EL REGISTRO DE MOVIMIENTO
-    this.arinme1Service.guardar(arinme1).subscribe(value => {
-      this.arinme1 = value;
-      console.log('ARINME1 :::::::::::::::::::::::::::::');
-      console.log(this.arinme1);
-    });
+    this.arinme1Service.guardar(arinme1).subscribe();
 
   }
   // FIN
