@@ -1,5 +1,5 @@
-
-import { Arpfoe } from './../../../models/Arpfoe';
+import { Arpffe } from './../../../models/arpffe';
+import { ArintdService } from './../../../services/arintd.service';
 import { Arinda } from './../../../models/Arinda';
 import { ArticuloService } from './../../../services/articulo.service';
 import { IdArpfol } from './../../../models/IdArpfol';
@@ -47,49 +47,69 @@ import { ArpfoeService } from '../../../services/arpfoe.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import * as moment from 'moment';
+import { Arintd } from '../../../models/arintd';
+import { Arfacf } from '../../../models/arfacf';
+import { ArfacfService } from '../../../services/arfacf.service';
+import { Arfacfpk } from '../../../models/arfacfpk';
+import { Arinse } from '../../../models/arinse';
+import { ArinseService } from '../../../services/arinse.service';
+import { ArpffeService } from '../../../services/arpffe.service';
+import { Arpfoe } from '../../../models/Arpfoe';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Arpffepk } from '../../../models/arpffepk';
+import {Arpffl} from '../../../models/arpffl';
+import {Arpfflpk} from '../../../models/arpfflpk';
+import {Arinme1} from '../../../models/arinme1';
+import {Arinme1pk} from '../../../models/arinme1pk';
+import {Arinml1} from '../../../models/arinml1';
+import {Arinml1pk} from '../../../models/arinml1pk';
+import {Arinme1Service} from '../../../services/arinme1.service';
 
 @Component({
   selector: 'app-pedido-edicion',
   templateUrl: './pedido-edicion.component.html'
 })
 export class PedidoEdicionComponent implements OnInit {
-
+  anularBF = 'N';
+  arinse: Arinse;
+  tipoItem = 'B';
   form: FormGroup;
-  //NUEVO CAMBIOS
-  groupEmpresa:FormGroup;
-  groupArticulo:FormGroup;
+  // NUEVO CAMBIOS
+  groupEmpresa: FormGroup;
+  groupArticulo: FormGroup;
 
   factuOptions: Observable<Arccmc[]>;
   arccmcs: Arccmc[];
-  //FIN
+  // FIN
 
   fechaSeleccionada: Date = new Date();
   detallePedido: Arpfol[] = [];
   articulos: Arinda[] = [];
-  //PEDIDO CABECERA MUESTRA
+  // PEDIDO CABECERA MUESTRA
   /*=====================================================*/
-  orden:string;
-  codCliente: string = '';
+  orden: string;
+  guia: string;
+  codCliente = '';
   nomCli: string;
   direccion: string;
   email: string;
-  //DETALLE PEDIDO MUESTRA
+  // DETALLE PEDIDO MUESTRA
   /*=====================================================*/
   tipoBS: string;
   articuloSeleccionado: Arinda;
   tipoAfectacion: string;
-  cantAsignada: number = 0;
-  precioCant: number = 0;
-  precio: number = 0;
-  pDSCTO3: number = 0;
-  impIgv: number = 0;
-  totalLin: number = 0;
+  cantAsignada = 0;
+  precioCant = 0;
+  precio = 0;
+  pDSCTO3 = 0;
+  impIgv = 0;
+  totalLin = 0;
 
-  totalGeneral:number=0;
-  subTotal:number=0;
-  totalIGV:number=0;
-  impuesto:number=18;
-
+  totalGeneral = 0;
+  subTotal = 0;
+  totalIGV = 0;
+  impuesto = 18;
+  arinme1: Arinme1;
   myControlArticulo: FormControl = new FormControl({value: '', disabled: true });
 
   articulosFiltrados: Observable<Arinda[]>;
@@ -99,6 +119,7 @@ export class PedidoEdicionComponent implements OnInit {
   public arfaccPK: IarfaccPK;
   public cia: string;
   public centro: string;
+  public codEmp: string;
   public usuario: string;
   public nroPedido: string;
   public fecha: Date;
@@ -124,16 +145,18 @@ export class PedidoEdicionComponent implements OnInit {
 
   public fechaP = new FormControl(new Date());
 
-  public tipoItem: string;
-
-  public detPedidos :Detpedido[] =[];
-  //NUEVO CAMBIOS
-  displayedColumns: string[] = ['tipo','codigo','medida','descripcion','cantidad','precio', 'igv', 'total','eliminar'];
-  //FIN
+  public detPedidos: Detpedido[] = [];
+  // NUEVO CAMBIOS
+  displayedColumns: string[] = ['tipo', 'codigo', 'medida', 'descripcion', 'cantidad', 'precio', 'igv', 'total', 'eliminar'];
+  // FIN
   dataSource: MatTableDataSource<Detpedido>;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
+  arccmcObservable: Observable<Arccmc[]>;
+  arccmc: Arccmc;
+
+  descBien = '';
   Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
@@ -146,6 +169,11 @@ export class PedidoEdicionComponent implements OnInit {
     }
   });
 
+  public arintd: Arintd;
+  public arfacf: Arfacf;
+
+  public arpffe: Arpffe;
+
   constructor(public pedidoService: PedidoService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
@@ -156,6 +184,12 @@ export class PedidoEdicionComponent implements OnInit {
               public arfatpService: ArfatpService,
               public tapfopaService: TapfopaService,
               public arcgmoService: ArcgmoService,
+              public arccmcService: ArccmcService,
+              public arinme1Service: Arinme1Service,
+              public arintdService: ArintdService,
+              public arinseService: ArinseService,
+              public arfacfService: ArfacfService,
+              public arpffeService: ArpffeService,
               private snackBar: MatSnackBar,
               private dialogItems: MatDialog,
               private router: Router,
@@ -166,6 +200,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.cia = sessionStorage.getItem('cia');
     this.centro = sessionStorage.getItem('centro');
     this.usuario = sessionStorage.getItem('usuario');
+    this.codEmp = sessionStorage.getItem('codEmp');
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -180,6 +215,8 @@ export class PedidoEdicionComponent implements OnInit {
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
 
+    // VAMOS A OPTENER LOS DATOS DEL CENTRO EMISOR
+    this.getCentroEmisor(this.cia, this.centro);
     this.listaMonedas();
     this.transaccionXCia();
     this.serieCorrelativoPedido();
@@ -201,56 +238,89 @@ export class PedidoEdicionComponent implements OnInit {
     });
 
     this.getCliente('99999999998');
-
-    this.groupEmpresa.get("ruc").valueChanges.subscribe(valueChange => {
-      if(valueChange.length > 3)
-         //this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
-         this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange).pipe(
+    // BUSCAR POR RUC
+    this.groupEmpresa.get('ruc').valueChanges.subscribe(valueChange => {
+      if (valueChange.length > 3) {
+         // this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
+         this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia, valueChange).pipe(
            map( value => value.resultado)
-         )
-      else
+         );
+      }
+      else {
         this.factuOptions = null;
+      }
+    });
+    // BUSCAR POR RAZON SOCIAL O NOMBRE
+    this.groupEmpresa.get('racSoc').valueChanges.subscribe(valueChange => {
+      if (valueChange.length > 3) {
+         const nombre: string = valueChange;
+         this.factuOptions = this.arccmcService.listaClientesDescripLike(this.cia, nombre.toUpperCase().trim());
+      }
+      else {
+        this.factuOptions = null;
+      }
     });
 
   }
-  //NUEVO CAMBIOS
-  setFormData($event: MatAutocompleteSelectedEvent) {
-    let factuOptions = $event.option.value;
-    if(factuOptions){
-      this.groupEmpresa.controls['ruc'].setValue(factuOptions.ruc, {emitEvent: false});
-      this.groupEmpresa.controls['racSoc'].setValue(factuOptions.nombre, {emitEvent: false});
+  // LIMPIANDO ITEMS LIBRES
+  public limpiarItemsLibre(): void{
+    this.groupArticulo = new FormGroup({
+      codProd: new FormControl(''),
+      desProd: new FormControl(''),
+      umProd: new FormControl({ value: 'UND', disabled: false }, Validators.required),
+      precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
+      cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
+    });
+  }
+
+  // BUSCAMOS CLIENTES POR SU NOMBRE O RAZON SOCIAL
+  public buscarClienteXnombre(e: any): void{
+    const nombre: string = e.target.value;
+    this.arccmcObservable = this.arccmcService.listaClientesDescripLike(this.cia, nombre.toUpperCase().trim());
+  }
+
+  // SELECCIONAMOS UN CLIENTE POR SU NOMBRE O RAZON SOCIA
+  public seleccionarClienteXdescrip($event: MatAutocompleteSelectedEvent): void{
+    this.arccmc = $event.option.value;
+    this.groupEmpresa.controls.ruc.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
+    this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
+    this.arcctdas = this.arccmc.arcctdaEntity;
+  }
+
+  // NUEVO CAMBIOS
+  setFormData($event: MatAutocompleteSelectedEvent): void {
+    const factuOptions = $event.option.value;
+    if (factuOptions){
+      this.groupEmpresa.controls.ruc.setValue(factuOptions.ruc, {emitEvent: false});
+      this.groupEmpresa.controls.racSoc.setValue(factuOptions.nombre, {emitEvent: false});
       this.arcctdas = factuOptions.arcctdaEntity;
     }
   }
 
-   //NUEVO CAMBIOS
-   public getDirecciones($event) {
+   // NUEVO CAMBIOS
+   public getDirecciones($event): void {
       this.arcctda = $event.value;
-     // console.log('DIRECCION');
-     // console.log(this.arcctda);
       this.ubigeo = this.arcctda.codiDepa.concat(this.arcctda.codiProv).concat(this.arcctda.codiDist);
   }
 
-  //FIN
-  filtrarArticulos(val: any) {
+  // FIN
+  filtrarArticulos(val: any): any {
     if (val != null) {
-      let filtro: string = String(val);
+      const filtro: string = String(val);
       this.arindaService.listaArtiDesc(sessionStorage.getItem('cia'), filtro.trim()).subscribe(data => {
         this.articulos = data;
       });
       return this.articulos;
     }
-
   }
-  mostrarArticulo(val: Arinda) {
+
+  mostrarArticulo(val: Arinda): any {
     return val ? `${val.idArti.noArti} ${val.descripcion}` : val;
-
   }
 
-  seleccionarArticulo(e: any) {
+  seleccionarArticulo(e: any): void {
     this.articuloSeleccionado = e.option.value;
     this.arindaService.precStock(sessionStorage.getItem('cia'), '1A001', 'F8', this.articuloSeleccionado.idArti.noArti).subscribe(data => {
-
       if (data.stock === null) {
         Swal.close();
         Swal.fire({
@@ -261,40 +331,40 @@ export class PedidoEdicionComponent implements OnInit {
       } else {
         this.precio = data.precio;
       }
-
-    })
+    });
   }
 
-  calcularImporte() {
-    this.precioCant = this.precio * this.cantAsignada
+  calcularImporte(): void {
+    this.precioCant = this.precio * this.cantAsignada;
     this.impIgv = (this.precio * this.cantAsignada) * 0.18;
     this.totalLin = (this.precio * this.cantAsignada) + this.impIgv;
   }
 
-  noOrden() {
+  noOrden(): void {
     this.pedidoService.noOrdern(sessionStorage.getItem('cia'), sessionStorage.getItem('centro')).subscribe(data => {
       this.orden = data;
-    })
+    });
   }
-  traeCliente() {
-    let datos = new DatosClienteDTO(sessionStorage.getItem('cia'));
+
+  traeCliente(): void {
+    const datos = new DatosClienteDTO(sessionStorage.getItem('cia'));
     datos.documento = this.codCliente.trim();
     this.clienteServices.traeCliente(datos).subscribe(data => {
       if (data.direccion != null) {
         this.direccion = data.direccion;
       } else {
-        this.form.controls['direccion'].enable();
+        this.form.controls.direccion.enable();
       }
       this.nomCli = data.nombre;
       if (data.email != null) {
         this.email = data.email;
       } else {
-        this.form.controls['email'].enable();
+        this.form.controls.email.enable();
       }
-      this.form.controls['articulo'].enable();
-      this.form.controls['cantAsignada'].enable();
+      this.form.controls.articulo.enable();
+      this.form.controls.cantAsignada.enable();
     }, err => {
-      if (err.status == 404) {
+      if (err.status === 404) {
         Swal.close();
         Swal.fire({
           allowOutsideClick: false,
@@ -302,132 +372,22 @@ export class PedidoEdicionComponent implements OnInit {
           title: 'Cliente no Existe o se Encuentra inactivo!!'
         });
       }
-    })
+    });
   }
-  estadoBotonCliente() {
+  estadoBotonCliente(): any {
     return (this.codCliente === '');
   }
 
-  // VAMOS AGREGAR LOS ITEMS
-  /*
-  public agregar(varinda1sp: Varinda1ps): void {
-
-    if (this.articuloSeleccionado) {
-      let cont = 0;
-      for (let i = 0; i < this.detallePedido.length; i++) {
-        let detalle = this.detallePedido[i];
-        if (detalle.idArpfol.noArti === this.articuloSeleccionado.idArti.noArti) {
-             cont++;
-             break;
-        }
-      }
-      //VERIFICAR SI EL ARTICULO ESTA DUPLICADO
-      if (cont > 0) {
-        Swal.close();
-        Swal.fire({
-          allowOutsideClick: false,
-          icon: 'info',
-          title: 'Articulo duplicado'
-        });
-      } else {
-        let idDetalle = new IdArpfol();
-        idDetalle.cia = sessionStorage.getItem('cia');
-        idDetalle.noOrden = this.orden;
-
-        idDetalle.noArti = this.articuloSeleccionado.idArti.noArti;
-        let detalle = new Arpfol();
-        detalle.idArpfol = idDetalle;
-        detalle.descripcion = this.articuloSeleccionado.descripcion;
-        if (this.cantAsignada > 0) {
-          detalle.tipoArti='B';
-          detalle.cantAsignada = this.cantAsignada;
-          detalle.precio = this.precio;
-          detalle.impIgv = this.impIgv;
-          detalle.totalLin = this.totalLin;
-          detalle.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-          detalle.operExoneradas = 0;
-          detalle.operGratuitas = 0;
-          detalle.operGravadas = this.precioCant;
-          detalle.operInafectas = 0;
-          detalle.tipoAfectacion = '10';
-          this.detallePedido.push(detalle);
-          this.getTotal();
-          this.myControlArticulo.reset();
-          this.tipoBS = '';
-          this.tipoAfectacion = '';
-          this.cantAsignada = 0;
-          this.precio = 0;
-          this.pDSCTO3 = 0;
-          this.impIgv = 0;
-          this.totalLin = 0;
-        }
-        else {
-          Swal.close();
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'info',
-            title: 'Agregar cantidad'
-          });
-        }
-      }
-    } else {
-      Swal.close();
-      Swal.fire({
-        allowOutsideClick: false,
-        icon: 'info',
-        title: 'Debe agregar Articulo'
-      });
-    }
-
-  }
-  */
-  removerDetalle(index: number) {
+  removerDetalle(index: number): void {
     this.detallePedido.splice(index, 1);
     this.getTotal();
   }
-  public getTotal() {
+
+  public getTotal(): void {
     this.totalGeneral =  this.detallePedido.map(t => t.totalLin).reduce((acc, value) => acc + value, 0);
-    //this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
+    // this.subTotal = this.detallePedido.map(t => t.operGravadas).reduce((acc, value) => acc + value, 0);
     this.totalIGV = this.detallePedido.map(t => t.impIgv).reduce((acc, value) => acc + value, 0);
     this.subTotal = this.totalGeneral - this.totalIGV;
-  }
-
-  limpiarControles() {
-    this.detallePedido = [];
-    this.articulos = [];
-
-    this.orden='';
-    this.codCliente='';
-    this.nomCli='';
-    this.direccion='';
-    this.email='';
-  //DETALLE PEDIDO MUESTRA
-  /*=====================================================*/
-    this.tipoBS='';
-    this.tipoAfectacion='';
-    this.cantAsignada= 0;
-    this.precioCant = 0;
-    this.precio = 0;
-    this.pDSCTO3 = 0;
-    this.impIgv = 0;
-    this.totalLin= 0;
-
-    this.totalGeneral=0;
-    this.subTotal=0;
-    this.totalIGV=0;
-    this.impuesto=18;
-
-
-    this.articuloSeleccionado = null;
-    //this.pacientesFiltrados = EMPTY;
-    //this.medicosFiltrados = EMPTY;
-    this.fechaSeleccionada = new Date();
-    this.fechaSeleccionada.setHours(0);
-    this.fechaSeleccionada.setMinutes(0);
-    this.fechaSeleccionada.setSeconds(0);
-    this.fechaSeleccionada.setMilliseconds(0);
-    this.myControlArticulo.reset();
-
   }
 
   // METODO QUE NOS PERMITE TRAER LA SERIE Y CORRELATIVO DEL PEDIDO
@@ -445,7 +405,7 @@ export class PedidoEdicionComponent implements OnInit {
       if (this.arfaccs.length === 1) {
          this.arfacc = this.arfaccs[0];
       }else{
-        this.snackBar.open('Debe elegir un Nro de Pedido para el centro: ' + this.centro,'Salir',
+        this.snackBar.open('Debe elegir un Nro de Pedido para el centro: ' + this.centro, 'Salir',
           {
             duration: 5000,
             verticalPosition: 'top',
@@ -463,6 +423,7 @@ export class PedidoEdicionComponent implements OnInit {
       this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json => {
         this.transacciones = json.resultado;
         this.buscarTransaccion('1315');
+        this.getTrasaccion(this.cia, this.transaccion.codTPed);
       },
         error => {
           console.error(error);
@@ -480,12 +441,12 @@ export class PedidoEdicionComponent implements OnInit {
 
   // METODO QUE TRAE EL TIPO DE CAMBIO DE FECHA ACTUAL
   public buscarTipoCambioClaseAndFecha(): void{
-    let date = new Date();
-    let day = `${(date.getDate())}`.padStart(2,'0');
-    let month = `${(date.getMonth()+1)}`.padStart(2,'0');
-    let year = date.getFullYear();
+    const date = new Date();
+    const day = `${(date.getDate())}`.padStart(2, '0');
+    const month = `${(date.getMonth() + 1)}`.padStart(2, '0');
+    const year = date.getFullYear();
 
-    this.arcgtcService.getTipoCambioClaseAndFecha('02',`${day}/${month}/${year}`).subscribe(json => {
+    this.arcgtcService.getTipoCambioClaseAndFecha('02', `${day}/${month}/${year}`).subscribe(json => {
          this.arcgtc = json.resultado;
          this.tipocambio = this.arcgtc.tipoCambio;
     },
@@ -500,9 +461,9 @@ export class PedidoEdicionComponent implements OnInit {
 
   }
 
-  //METODO QUE NOS PERMITE TRAER LA LISTA DE PRECIO DE PUNTO DE VENTA
+  // METODO QUE NOS PERMITE TRAER LA LISTA DE PRECIO DE PUNTO DE VENTA
   public listaPrecio(): void{
-    this.arfatpService.getAllListaPrecio(this.cia,'S').subscribe(json => {
+    this.arfatpService.getAllListaPrecio(this.cia, 'S').subscribe(json => {
       this.arfatps = json.resultado;
       this.buscarListaPrecio('A3');
     },
@@ -526,13 +487,13 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
-  //CAMBIAR MONEDA POR LISTA DE PRECIO
-  public cambiarMoneda(arfatp :Arfatp): void{
+  // CAMBIAR MONEDA POR LISTA DE PRECIO
+  public cambiarMoneda(arfatp: Arfatp): void{
      this.buscarMoneda(arfatp.moneda);
   }
-  //FIN
+  // FIN
 
-  //BUSCAR FORMA DE PAGO
+  // BUSCAR FORMA DE PAGO
   public buscarFormaPago(cod: string): void{
     for (const t of this.tapfopas) {
       if (t.tapfopaPK.codFpago === cod) {
@@ -542,15 +503,15 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
-  //VAMOS A LISTAR LAS FORMAS DE PAGO
+  // VAMOS A LISTAR LAS FORMAS DE PAGO
   public listarFormaPago(): void{
-     this.tapfopaService.listarFormaPagoCiaAndEstado(this.cia,'A').subscribe(json => {
+     this.tapfopaService.listarFormaPagoCiaAndEstado(this.cia, 'A').subscribe(json => {
         this.tapfopas = json.resultado;
         this.buscarFormaPago('01');
-     })
+     });
   }
 
- //BUSCAR MONEDA
+ // BUSCAR MONEDA
  public buscarMoneda(cod: string): void{
     for (const m of this.arcgmos) {
       if (m.moneda === cod) {
@@ -564,137 +525,125 @@ export class PedidoEdicionComponent implements OnInit {
   public listaMonedas(): void{
     this.arcgmoService.listarArcgmo().subscribe(json => {
       this.arcgmos = json.resultado;
-      //console.log(this.arcgmos);
-   })
+      // console.log(this.arcgmos);
+   });
   }
 
-  //CLIENTE DE INICIO
+  // CLIENTE DE INICIO
   public getCliente(ruc: string): void{
-    this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,ruc).pipe(
+    this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia, ruc).pipe(
       map( value => value.resultado)
     );
   }
 
-  //EVENTO CUANDO HACE UN CAMBIO EL RADIO BUTTON DE TIPO ITEMS
-  public getTipoItem(event: MatRadioChange){
-    //console.log(event.source.name, event.value);
-    if (event.value === 'B') {
-       console.log("Entro en el radio button : BIEN");
-    }else{
-      console.log("Entro en el radio button : LIBRE")
-    }
-
-  }
-  //FIN RADIO BUTTON DE TIPO ITEMS
-
-  //ABRIR DIALOGO DE ITEMs
+  // ABRIR DIALOGO DE ITEMs
   public openDialogoItem(): void{
-      //console.log(this.groupArticulo.get('desProd').value);
-      let buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.groupArticulo.get('desProd').value);
-      const dialogRef = this.dialogItems.open(ItemsDialogoComponent,{
+      // console.log(this.groupArticulo.get('desProd').value);
+      const buscarItem = new BuscarItem(this.cia, this.arfatp.idArfa.tipo, this.descBien.toUpperCase().trim());
+      const dialogRef = this.dialogItems.open(ItemsDialogoComponent, {
                         width: '100%',
-                        data:buscarItem
+                        data: buscarItem
                       });
       dialogRef.afterClosed().subscribe( result => {
-        //VAMOR A RECORRER EL ARREGLO DE ITEMS
-        result.forEach(element => {
+        // VAMOR A RECORRER EL ARREGLO DE ITEMS
+       /* result.forEach( element => {
            this.verificarItems(element);
-        });
+        });*/
+        for(const i of result) {
+          this.verificarItems(i);
+        }
         this.llenarTablaArticulos();
-        //total de general
+        // total de general
         this.totalGeneral = this.getTotalPedido();
       });
   }
-  //LLENAR TABLA DE ARTICULOS
+  // LLENAR TABLA DE ARTICULOS
   private llenarTablaArticulos(): void{
     this.dataSource = new MatTableDataSource(this.detPedidos);
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
   }
 
-  //VERIFICAR DUPLICADO DE ITEMS
+  // VERIFICAR DUPLICADO DE ITEMS
   public verificarItems(dp: Detpedido): void {
-    if (this.detPedidos.length == 0){
-          //this.detPedidos.push(dp);
+    if (this.detPedidos.length === 0){
+          // this.detPedidos.push(dp);
           this.actualizarCorrelativo(dp);
     } else {
-       let cod = dp.codigo;
+       const cod = dp.codigo;
        let valor = 'N';
-       //VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
-       for (var i in this.detPedidos){
-            if(cod == this.detPedidos[i].codigo){
+       // VAMOS A RECORRER EL ARREGLO SI YA EXISTE EL ITEM
+       for (const i in this.detPedidos){
+            if (cod === this.detPedidos[i].codigo){
               valor = 'S';
               break;
             }
         }
 
-       if(valor == 'N'){
+       if (valor === 'N'){
          this.actualizarCorrelativo(dp);
        }
     }
   }
 
-   //ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
-  //LLENAR DETALLE DE PEDIDO
+   // ACTUALIZANDO EL CORRELATIVO DE LOS ITEMS
+  // LLENAR DETALLE DE PEDIDO
   private actualizarCorrelativo(va: Detpedido): void{
-      if(this.arfatp.moneda === this.arcgmo.moneda){
-        let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
-          va.cantidad,va.precio,va.igv,va.total);
+      if (this.arfatp.moneda === this.arcgmo.moneda){
+        const d = new Detpedido(this.detPedidos.length + 1, va.tipo, va.codigo, va.medida, va.descripcion,
+          va.cantidad, va.precio, va.igv, va.total);
         this.detPedidos.push(d);
       }else{
-        if(this.arfatp.moneda === 'SOL' && this.arcgmo.moneda === 'DOL' ){
-            let prec = va.precio / this.tipocambio;
-            let igv = prec * 0.18;
-            let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
-              va.cantidad,prec,igv,(prec+igv));
+        if (this.arfatp.moneda === 'SOL' && this.arcgmo.moneda === 'DOL' ){
+            const prec = va.precio / this.tipocambio;
+            const igv = prec * 0.18;
+            const d = new Detpedido(this.detPedidos.length + 1, va.tipo, va.codigo, va.medida, va.descripcion,
+              va.cantidad, prec, igv, (prec + igv));
             this.detPedidos.push(d);
         }
-        if(this.arfatp.moneda === 'DOL' && this.arcgmo.moneda === 'SOL' ){
-            let prec = va.precio * this.tipocambio;
-            let igv = prec * 0.18;
-            let d = new Detpedido(this.detPedidos.length +1,va.tipo,va.codigo,va.medida,va.descripcion,
-              va.cantidad,prec,igv ,(prec+igv));
+        if (this.arfatp.moneda === 'DOL' && this.arcgmo.moneda === 'SOL' ){
+            const prec = va.precio * this.tipocambio;
+            const igv = prec * 0.18;
+            const d = new Detpedido(this.detPedidos.length + 1, va.tipo, va.codigo, va.medida, va.descripcion,
+              va.cantidad, prec, igv , (prec + igv));
             this.detPedidos.push(d);
         }
       }
 
   }
-  //FIN
 
-  //FIN
-
-  //TOTAL DE TOTAL
+  // TOTAL DE TOTAL
    private getTotalPedido(): number{
     return this.detPedidos.map(t => t.total).reduce((acc, value) => acc + value, 0);
   }
-  //FIN
+  // FIN
 
-  //TOTAL DE IGV
+  // TOTAL DE IGV
   private getTotalIgv(): number{
     return this.detPedidos.map(t => t.igv).reduce((acc, value) => acc + value, 0);
   }
-  //FIN
+  // FIN
 
-  //TOTAL DE P.U
+  // TOTAL DE P.U
   private getTotalPU(): number{
     return this.detPedidos.map(t => t.precio).reduce((acc, value) => acc + value, 0);
   }
-  //FIN
+  // FIN
 
-  //CALCULAR RESTA
+  // CALCULAR RESTA
   public calcularResta(dp: Detpedido): void{
-    let cantidad = dp.cantidad - 1;
+    const cantidad = dp.cantidad - 1;
     if (cantidad > 0) {
-      let codigo = dp.codigo;
+      const codigo = dp.codigo;
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
-           if(codigo === item.codigo){
+           if (codigo === item.codigo){
               item.cantidad = cantidad;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
            }
            return item;
       } );
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
 
       this.Toast.fire({
@@ -702,7 +651,7 @@ export class PedidoEdicionComponent implements OnInit {
         title: `Se resto la cantidad del cod: ${dp.codigo}`
       });
     }else{
-      this.snackBar.open(`La cantidad  del articulo ${dp.descripcion} no debe ser CERO`,'Salir',
+      this.snackBar.open(`La cantidad  del articulo ${dp.descripcion} no debe ser CERO`, 'Salir',
         {
           duration: 1000,
           verticalPosition: 'top',
@@ -711,30 +660,27 @@ export class PedidoEdicionComponent implements OnInit {
     }
   }
 
-  //CALCULAR SUMA
-  public calcularSuma(event: any,dp: Detpedido): void{
-      let cant: number = event.target.value;
-      let codigo = dp.codigo;
-      let cantidad = cant;
+  // CALCULAR SUMA
+  public calcularSuma(event: any, dp: Detpedido): void{
+      const cant: number = event.target.value;
+      const codigo = dp.codigo;
+      const cantidad = cant;
 
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
-           if(codigo === item.codigo){
+           if (codigo === item.codigo){
               item.cantidad = cantidad;
-              item.igv = (dp.precio * 0.18 )* cantidad;
-              item.total = (dp.precio * 1.18 )* cantidad;
+              item.igv = (dp.precio * 0.18 ) * cantidad;
+              item.total = (dp.precio * 1.18 ) * cantidad;
            }
            return item;
       } );
 
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
-      /*this.Toast.fire({
-        icon: 'success',
-        title: `Se aumento la cantidad del cod: ${dp.codigo}`
-      });*/
+
   }
 
-  //ELIMINAR ARTICULO
+  // ELIMINAR ARTICULO
   public eliminarArticulo(dp: Detpedido): void{
     Swal.fire({
       title: 'Estas seguro de eliminar?',
@@ -745,10 +691,10 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-          let cod = dp.codigo;
+          const cod = dp.codigo;
           this.detPedidos = this.detPedidos.filter( (item: Detpedido) => cod !== item.codigo );
           this.llenarTablaArticulos();
-          //total de general
+          // total de general
           this.totalGeneral = this.getTotalPedido();
       }
 
@@ -756,40 +702,40 @@ export class PedidoEdicionComponent implements OnInit {
 
   }
 
-  //CAMBIAMOS EL TIPO DE MONEDA DEL DETALLE DEL PEDIDO
+  // CAMBIAMOS EL TIPO DE MONEDA DEL DETALLE DEL PEDIDO
   public cambiarMonedaDetPedido(a: Arcgmo): void{
-    if(this.arfatp.moneda === 'SOL' && a.moneda === 'SOL'){
+    if (this.arfatp.moneda === 'SOL' && a.moneda === 'SOL'){
 
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
               item.precio = item.precio * this.tipocambio;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
-            return item;
+              return item;
       } );
       this.llenarTablaArticulos();
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
 
-    } else if(this.arfatp.moneda === 'SOL' && a.moneda === 'DOL'){
+    } else if (this.arfatp.moneda === 'SOL' && a.moneda === 'DOL'){
         this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
                   item.precio = item.precio / this.tipocambio;
                   item.igv = item.calcularIgv();
                   item.total = item.calcularTotal();
-                return item;
+                  return item;
         } );
         this.llenarTablaArticulos();
-        //total de general
+        // total de general
         this.totalGeneral = this.getTotalPedido();
 
-    }else if(this.arfatp.moneda === 'DOL' && a.moneda === 'SOL'){
+    }else if (this.arfatp.moneda === 'DOL' && a.moneda === 'SOL'){
       this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
               item.precio = item.precio * this.tipocambio;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
-            return item;
+              return item;
       } );
       this.llenarTablaArticulos();
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
 
     }else{
@@ -797,16 +743,16 @@ export class PedidoEdicionComponent implements OnInit {
               item.precio = item.precio / this.tipocambio;
               item.igv = item.calcularIgv();
               item.total = item.calcularTotal();
-            return item;
+              return item;
       } );
       this.llenarTablaArticulos();
-      //total de general
+      // total de general
       this.totalGeneral = this.getTotalPedido();
     }
   }
-  //FIN
-  //CREACION DE UNA BOLETA
-  public crearBoleta(){
+  // FIN
+  // CREACION DE UNA BOLETA
+  public crearBoleta(): void{
     Swal.fire({
       title: '¿Está seguro de crear una BOLETA?',
       icon: 'warning',
@@ -816,30 +762,27 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-          if(this.totalGeneral <= 700){
-            this.crear_pedido('S','N');
+          if (this.totalGeneral <= 700){
+              this.crear_pedido('S', 'N');
           }else{
-              let ruc: string = this.groupEmpresa.get("ruc").value;
-              if( ruc === '99999999998' || ruc === '99999999999' ){
-                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+              const ruc: string = this.groupEmpresa.get('ruc').value;
+              if ( ruc === '99999999998' || ruc === '99999999999' ){
+                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
                 {
                   duration: 5000,
                   verticalPosition: 'top',
                   horizontalPosition: 'center'
                 });
               }else{
-                this.crear_pedido('S','N');
+                this.crear_pedido('S', 'N');
               }
-
           }
-
       }
-
     });
   }
-  //FIN
-  //CREACION DE UNA FACTURA
-  public crearFactura(){
+  // FIN
+  // CREACION DE UNA FACTURA
+  public crearFactura(): void{
     Swal.fire({
       title: '¿Está seguro de crear una FACTURA?',
       icon: 'warning',
@@ -849,35 +792,36 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        let ruc: string = this.groupEmpresa.get("ruc").value;
-        if( ruc === '99999999998' || ruc === '99999999999' ){
-          this.snackBar.open(`Ingrese su RUC del cliente y el cliente es nuevo registralo.`,'Salir',
+        const ruc: string = this.groupEmpresa.get('ruc').value;
+        if ( ruc === '99999999998' || ruc === '99999999999' ){
+          this.snackBar.open(`Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
           {
             duration: 5000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
         }else{
-          this.crear_pedido('N','S');
+          this.crear_pedido('N', 'S');
         }
 
       }
 
     });
   }
-  //FIN
+  // FIN
 
-  //CREAR PEDIDO
+  // CREAR PEDIDO
   public crear_pedido(indBoleta: string, indFactura: string): void{
-    let correlativo = '0000000';
-    let cortar = this.arfacc.consDesde.toString().length  * -1;
-    this.orden = this.arfacc.arfaccPK.serie+correlativo.slice(0,cortar)+this.arfacc.consDesde;
-    //PEDIDO PK
-    let arpfoePK = new IdArpfoe();
-    arpfoePK.noCia = sessionStorage.getItem('cia');
+
+    const correlativo = '0000000';
+    const cortar = this.arfacc.consDesde.toString().length  * -1;
+    this.orden = this.arfacc.arfaccPK.serie + correlativo.slice(0, cortar) + this.arfacc.consDesde;
+    // PEDIDO PK
+    const arpfoePK = new IdArpfoe();
+    arpfoePK.noCia = this.cia;
     arpfoePK.noOrden = this.orden;
-    //PEDIDO
-    let pedido = new Arpfoe();
+    // PEDIDO
+    const pedido = new Arpfoe();
     pedido.arpfoePK = arpfoePK;
     pedido.grupo = '00';
     pedido.tipoFpago = '20';
@@ -885,84 +829,68 @@ export class PedidoEdicionComponent implements OnInit {
 
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
-    pedido.codiDepa = this.ubigeo.substring(0,2);//150137
-    pedido.codiProv = this.ubigeo.substring(2,3);
-    pedido.codiDist = this.ubigeo.substring(3,2);
+    pedido.codiDepa = this.ubigeo.substring(0, 2); // 150137
+    pedido.codiProv = this.ubigeo.substring(2, 3);
+    pedido.codiDist = this.ubigeo.substring(3, 2);
     pedido.motivoTraslado = '1';
     pedido.indBoleta1 = indBoleta;
     pedido.indFactura1 = indFactura;
-
-    pedido.noCliente = this.groupEmpresa.get("ruc").value;
-    pedido.ruc = this.groupEmpresa.get("ruc").value;
-
+    pedido.noCliente = this.groupEmpresa.get('ruc').value;
+    pedido.ruc = this.groupEmpresa.get('ruc').value;
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
-    //console.log('Forma de Pago : '+this.tapfopa.tapfopaPK.codFpago);
     pedido.codFpago = this.tapfopa.tapfopaPK.codFpago;
-    /*
-    pedido.fechaRegistro = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
-    pedido.fAprobacion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
-    pedido.fRecepcion = this.datepipe.transform(this.fechaSeleccionada,'YYYY-MM-DDTHH:mm:ss');
-    */
     pedido.fechaRegistro = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fAprobacion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
     pedido.fRecepcion = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-
     pedido.tipoPrecio = this.arfatp.idArfa.tipo;
     pedido.moneda = this.arcgmo.moneda;
     pedido.tipoCambio = this.tipocambio;
-
     pedido.subTotal = this.getTotalPedido() - this.getTotalIgv();
     pedido.tValorVenta = this.getTotalPedido() - this.getTotalIgv();
     pedido.totalBruto = this.getTotalPedido() - this.getTotalIgv();
     pedido.tImpuesto = this.getTotalIgv();
     pedido.tPrecio = this.getTotalPedido();
-
-
     pedido.impuesto = 18;
-    pedido.estado= 'E';
-    pedido.bodega = '1A001';
+    pedido.estado = 'E';
+    pedido.bodega = this.arintd.almaOri;
     pedido.igv = 18;
-    pedido.direccionComercial = this.arcctda.direccion;
+    pedido.direccionComercial = this.arcctda.direccion.substring(0,190);
     pedido.motivoTraslado = '1';
-    pedido.nombreCliente = this.groupEmpresa.get("racSoc").value;
-    pedido.codClasPed ='V';
+    pedido.nombreCliente = this.groupEmpresa.get('racSoc').value;
+    pedido.codClasPed = 'V';
     pedido.tipoPago = '20';
     pedido.tValorVenta = this.getTotalPU();
-    pedido.almaOrigen = '1A001';
-    pedido.almaDestino = '1XLIE';
-    //pedido.noClienteSalida = this.codCliente;
-    pedido.totalBruto= this.getTotalPU();
-    /*pedido.codTPed1='1352';
-    pedido.codTPedb='1353';
-    pedido.codTPedn='1214';*/
-    pedido.centro=sessionStorage.getItem('centro');
-    pedido.codCaja ='C11';
+    pedido.almaOrigen = this.arintd.almaOri;
+    pedido.almaDestino = this.arintd.almaDes;
+
+    pedido.totalBruto = this.getTotalPU();
+
+    pedido.centro = sessionStorage.getItem('centro');
+    pedido.codCaja = 'C11';
     pedido.cajera = '000002';
-    pedido.centroCosto='3201';
+    pedido.centroCosto = '3201';
 
     pedido.operExoneradas = 0;
     pedido.operGratuitas = 0;
-    pedido.operGravadas=this.getTotalPedido() - this.getTotalIgv();
+    pedido.operGravadas = this.getTotalPedido() - this.getTotalIgv();
     pedido.operInafectas = 0;
     pedido.tipoOperacion = '0101';
     pedido.emailPedido = this.email;
     pedido.tipoArti = '1';
-
-
     let contador = 0;
-    let dps: Arpfol[] = [];
-    for(let x of this.detPedidos){
+    const dps: Arpfol[] = [];
+    for (const x of this.detPedidos){
         contador = contador + 1;
-        let dPedidoPK = new IdArpfol();
+        const dPedidoPK = new IdArpfol();
         dPedidoPK.noCia = sessionStorage.getItem('cia');
         dPedidoPK.noOrden = this.orden;
         dPedidoPK.noArti = x.codigo;
 
-        let dPedido = new Arpfol();
+        const dPedido = new Arpfol();
         dPedido.arpfolPK = dPedidoPK;
-        dPedido.noCliente = this.groupEmpresa.get("ruc").value;
+        dPedido.noCliente = this.groupEmpresa.get('ruc').value;
         dPedido.tipoArti = 'C';
         dPedido.artiNuevo = 'N';
         dPedido.bodega = '1A001';
@@ -990,74 +918,243 @@ export class PedidoEdicionComponent implements OnInit {
         dps.push(dPedido);
     }
     pedido.arpfolList = dps;
-    console.log(pedido);
-
-    //VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
+    // VAMOS A GUARDAR LA SERIE Y EL CORRELATIVO DEL PEDIDO
     this.arfaccService.saveArfacc(this.arfacc).subscribe( dato => {
-      this.snackBar.open('Se actualizo el correlativo del pedido ','Salir',
+      this.snackBar.open('Se actualizo el correlativo del pedido ', 'Salir',
           {
             duration: 1000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
     });
-    //VAMOS A GUARDAR EL PEDIDO
+    // VAMOS A GUARDAR EL PEDIDO
     this.arpfoeService.savePedido(pedido).subscribe(dato => {
-      this.snackBar.open('Se Guardo el pedido','Salir',
+      // GUARDAR GUIA REMISION
+      this.guardarGuiaRemision(pedido);
+      this.guardarArinme1(pedido);
+      this.actualizarArinse();
+      this.actualizarArfacf();
+      this.snackBar.open('Se GUARDO el PEDIDO', 'Salir',
       {
         duration: 3000,
         verticalPosition: 'top',
         horizontalPosition: 'center'
       });
     });
-    //VAMOS A BOLETEAR O FACTURAR
-    // this.router.navigateByUrl(`/pedido/arfafe/new?noCia=${this.cia}&noOrden=${this.orden}`);
+    // VAMOS A BOLETEAR O FACTURAR
     setTimeout(() => {
-      this.router.navigate(['pedido/arfafe/new'],{queryParams: {noCia:this.cia,noOrden:this.orden}})},2000
+      this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden, guia: this.guia}}); }, 2000
     );
-
+    // FIN
   }
 
-  //AÑADIR ITEMS LIBRES
-  public addItem(){
-    //console.log(this.groupArticulo.value);
-    let cod: string = this.groupArticulo.get('codProd').value;
-    let um: string = this.groupArticulo.get('umProd').value;
-    let descrip: string = this.groupArticulo.get('desProd').value;
-    let cantidad: number = this.groupArticulo.get('cantProd').value;
+  // METODO QUE NOS PERMITE GUARDAR LA ARPFFE (GUIA DE REMISION)
+  private guardarGuiaRemision(arpfoe: Arpfoe): void{
+    const arpffepk = new Arpffepk();
+    arpffepk.noCia = this.cia;
+    arpffepk.bodega = arpfoe.almaOrigen;
+    const correlativo = '0000000';
+    const cortar = this.arfacf.correlFict.toString().length  * -1;
+    this.guia = this.arfacf.serieGr + correlativo.slice(0, cortar) + this.arfacf.correlFict;
+    arpffepk.noGuia = this.guia;
+    const arpffe = new Arpffe();
+    arpffe.arpffePK = arpffepk;
+    arpffe.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    arpffe.grupo = '00';
+    arpffe.noCliente = arpfoe.noCliente;
+    arpffe.noVendedor = this.codEmp;
+    arpffe.descripcion = `Generado por Inventarios - Transc.:${arpfoe.codTPed}, No Doc.:${this.arinse.secuencia}`;
+    arpffe.noOrden = arpfoe.arpfoePK.noOrden;
+    arpffe.estado = 'D';
+    arpffe.tipoDoc = '';
+    arpffe.noFactu = '';
+    arpffe.centro = this.centro;
+    arpffe.tipo = 'V';
+    arpffe.clase = 'V';
+    arpffe.noDocu = this.arinse.secuencia.toString();
+    arpffe.tipoTransc = arpfoe.codTPed;
+    arpffe.usuario = 'VENTAS';
+    arpffe.fechaInicio = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    arpffe.codFpago = this.tapfopa.tapfopaPK.codFpago;
+    arpffe.almaOrigen = arpfoe.almaOrigen;
+    arpffe.almaDestino = arpfoe.almaDestino;
+    arpffe.nombreDigi = arpfoe.nombreCliente;
+    arpffe.indFactura = arpfoe.indFactura1;
+    arpffe.indBoleta = arpfoe.indBoleta1;
+    arpffe.codTienda = '001';
+    arpffe.tipoGuia = 'GR';
+    arpffe.imprime = 'S';
+    arpffe.indPvent = 'S';
+    arpffe.codCaja = 'C11';
+    arpffe.indFerias = 'N';
+    arpffe.indProvincia = 'N';
+    arpffe.consumo = 'N';
+    arpffe.convenio = 'N';
+    arpffe.indCodBarra = 'N';
+    arpffe.indFicta = 'N';
+    arpffe.indProforma = 'N';
+    // DETALLE DE GUIA DE REMISION
+    const arpffls: Arpffl[] = [];
+    for ( const p of arpfoe.arpfolList ){
+      const arpfflpk = new Arpfflpk();
+      arpfflpk.noGuia = this.guia;
+      arpfflpk.noCia = this.cia;
+      arpfflpk.bodega = arpfoe.almaOrigen;
+      arpfflpk.noArti = p.arpfolPK.noArti;
+      const arpffl = new Arpffl();
+      arpffl.arpfflPK = arpfflpk;
+      arpffl.descripcion = p.descripcion;
+      arpffl.cantidad = p.cantEntreg.toString();
+      arpffl.indParentesco = 'N';
+      arpffl.noLinea = p.noLinea;
+      arpffl.tipoBs = this.tipoItem;
+      // AGREGAR EL DETALLE DE GUIA
+      arpffls.push(arpffl);
+    }
+    arpffe.arpfflList = arpffls;
+    // GUARDAMOS LA GUIA DE REMISION
+    this.arpffeService.guardar(arpffe).subscribe(value => {
+      this.arpffe = value;
+    });
+  }
+  // FIN
+  // METODO QUE NOS PERMITE ACTUALIZAR EL NO-DOCU
+  private actualizarArinse(): void{
+    this.arinseService.actualizar(this.arinse).subscribe(value => {
+       this.arinse = value;
+    });
+  }
+  // FIN
+  // METODO QUE NOS PERMITE ACTUALIZAR ARFACF, INCREMENTAR CORRE-FICTA
+  private actualizarArfacf(): void{
+    this.arfacfService.ingrementarCorreFicta(this.arfacf).subscribe();
+  }
+  // FIN
+  // METODO QUE NOS PERMITE GUARDAR ARINME
+  private guardarArinme1(ped: Arpfoe): void{
+    const arinme1pk = new Arinme1pk();
+    arinme1pk.noCia = this.cia;
+    arinme1pk.bodega = ped.almaOrigen;
+    arinme1pk.tipoDoc = ped.codTPed;
+    arinme1pk.noDocu = this.arinse.secuencia.toString();
+    // ARINME1
+    const arinme1 = new Arinme1();
+    arinme1.arinme1PK = arinme1pk;
+    arinme1.grupo = '1A';
+    arinme1.noOrden = ped.almaDestino;
+    arinme1.noGuia = this.guia;
+    arinme1.tipoDocRec = 'G';
+    arinme1.tipoDocRem = 'G';
+    arinme1.serieDocRem = this.arfacf.serieGr;
+    arinme1.corrDocRem = this.guia.substring(3);
+    arinme1.noRefe = '';
+    arinme1.tipoDocRec = 'P';
+    arinme1.corrDocRec = '';
+    arinme1.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+    arinme1.estado = 'D';
+    arinme1.formaPago = this.tapfopa.tapfopaPK.codFpago;
+    arinme1.tipoCambio = this.tipocambio;
+    arinme1.anoProce = Number(moment(this.fechaSeleccionada).format('YYYY'));
+    arinme1.mesProce = Number(moment(this.fechaSeleccionada).format('MM'));
+    arinme1.moneda = this.arcgmo.moneda;
+    arinme1.indControl = 'N';
+    arinme1.statusControl = 'N';
+    arinme1.usuario = this.usuario;
+    arinme1.almaOrigen = ped.almaOrigen;
+    arinme1.almaDestino = ped.almaDestino;
+    arinme1.motivoTraslado = '1';
+    arinme1.noPedMant = ped.arpfoePK.noOrden;
+    arinme1.noCliente = ped.noCliente;
+    arinme1.direccionComercial = ped.direccionComercial;
+    arinme1.noVendedor = this.codEmp;
+    arinme1.tipoCosto = 'P';
+    arinme1.indGuiado = 'S';
+    arinme1.codFpago = ped.codFpago;
+    arinme1.tipoArti = '1';
+    arinme1.claseTransc = 'V';
+    arinme1.nombreDigi = ped.nombreCliente;
+    arinme1.indFactura = ped.indFactura1;
+    arinme1.indBoleta = ped.indBoleta1;
+    arinme1.codTienda = '001';
+    arinme1.codDirEntrega = '001';
+    arinme1.codDirSalida = '001';
+    arinme1.imprime = 'N';
+    arinme1.centro = this.centro;
+    arinme1.indPvent = 'S';
+    arinme1.codCaja = 'C11';
+    arinme1.indProvincia = 'N';
+    arinme1.convenio = 'N';
+    arinme1.consumo = 'N';
+    arinme1.demasia = 'N';
+    arinme1.grabaCodBarra = 'N';
+    arinme1.indCodBarra = 'N';
+    // DETALLE ARINME1
+    const arinml1s: Arinml1[] = [];
+    for (const pl of ped.arpfolList){
+      const arinml1pk = new Arinml1pk();
+      arinml1pk.noCia = this.cia;
+      arinml1pk.bodega = ped.almaOrigen;
+      arinml1pk.tipoDoc = ped.codTPed;
+      arinml1pk.noDocu = this.arinse.secuencia.toString();
+      arinml1pk.noArti = pl.arpfolPK.noArti;
+      const arinml1 = new Arinml1();
+      arinml1.arinml1PK = arinml1pk;
+      arinml1.noLinea = pl.noLinea;
+      arinml1.lote = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
+      arinml1.noEntrada = '-';
+      arinml1.unidades = pl.cantEntreg;
+      arinml1.contenido = pl.cantEntreg;
+      arinml1.undReferencia = pl.cantEntreg;
+      arinml1.loteLog = pl.cantEntreg;
+      arinml1.stockAlmacen = pl.cantEntreg;
+      arinml1.tipoBs = this.tipoItem;
+      arinml1s.push(arinml1);
+    }
+    arinme1.arinml1List = arinml1s;
+    // LLAMAMOS AL SERVICIO DE PARA GUARDAR EL REGISTRO DE MOVIMIENTO
+    this.arinme1Service.guardar(arinme1).subscribe();
 
-    let precio: number = this.groupArticulo.get('precProd').value / 1.18;
-    let igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+  }
+  // FIN
+  // AÑADIR ITEMS LIBRES
+  public addItem(): void{
+    // console.log(this.groupArticulo.value);
+    const cod: string = this.groupArticulo.get('codProd').value;
+    const um: string = this.groupArticulo.get('umProd').value;
+    const descrip: string = this.groupArticulo.get('desProd').value;
+    const cantidad: number = this.groupArticulo.get('cantProd').value;
 
-    let total = (precio * cantidad) + igv;
-
-    let d = new Detpedido(this.detPedidos.length +1,'L',cod.toUpperCase(),um.toUpperCase(),descrip.toUpperCase(),cantidad,precio,igv,total);
-    //console.log(d);
+    const precio: number = this.groupArticulo.get('precProd').value / 1.18;
+    const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+    const total = (precio * cantidad) + igv;
+    const d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
+      cantidad, precio, igv, total);
     if (precio <= 0){
-      this.snackBar.open(`El precio no debe ser CERO.`,'Salir',
+      this.snackBar.open(`El precio no debe ser CERO.`, 'Salir',
       {
         duration: 1000,
         verticalPosition: 'top',
         horizontalPosition: 'center'
       });
     }else{
-        //BUSCAMOS SI EXISTE ITEM
-        let dp = this.detPedidos.find(x => x.codigo === d.codigo);
-        //console.log(dp);
+        // BUSCAMOS SI EXISTE ITEM
+        const dp = this.detPedidos.find(x => x.codigo === d.codigo);
+        // console.log(dp);
         if (dp === undefined) {
           this.detPedidos.push(d);
-          this.snackBar.open(`Se agrego el articulo`,'Salir',
+          this.snackBar.open(`Se agrego el articulo`, 'Salir',
           {
             duration: 1000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
           this.llenarTablaArticulos();
-          //total de general
+          // total de general
           this.totalGeneral = this.getTotalPedido();
+          this.limpiarItemsLibre();
         }else{
-          //EL CODIGO YA EXISTE
-          this.snackBar.open(`El codigo ya existe del articulo ${dp.descripcion}`,'Salir',
+          // EL CODIGO YA EXISTE
+          this.snackBar.open(`El codigo ya existe del articulo ${dp.descripcion}`, 'Salir',
           {
             duration: 1000,
             verticalPosition: 'top',
@@ -1065,8 +1162,56 @@ export class PedidoEdicionComponent implements OnInit {
           });
         }
     }
-
-
   }
- //FIN
+  // FIN
+
+  // SELECCIONAR UNA TRANSACCION
+  private getTrasaccion(cia: string, trans: string): void{
+      this.arintdService.findArintd(cia, trans).subscribe(data => {
+        this.arintd = data;
+        // VERIFICAMOS SI EL DOCUMENTO NO TIENE G
+        if ( this.arintd.docuGene === 'G'){
+          // BUSCAR EL NO-DOCU
+          this.getNoDocu(this.cia, this.arintd.almaOri, trans);
+        }else{
+          this.anularBF = 'S';
+          this.snackBar.open(`Tipo de Documento Incorrecto, Verifiqué`, 'Salir',
+          {
+            duration: 2000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+        }
+      });
+  }
+
+  // BUSCAMOS EL NO_DOCU DE LA COMPAÑIA, BODEGA y TRANSACCION
+  private getNoDocu(cia: string, bodega: string, trans: string): void{
+      this.arinseService.getArinse(cia, bodega, trans).subscribe(value => {
+         this.arinse = value;
+      });
+  }
+
+  // SELECCIONAR CENTRO EMISOR
+  private getCentroEmisor(cia: string, centro: string): void{
+     const arfacfpk = new Arfacfpk();
+     arfacfpk.noCia = cia;
+     arfacfpk.centro = centro;
+     this.arfacfService.getArfacf(arfacfpk).subscribe( data => {
+         this.arfacf = data;
+     });
+  }
+  // FIN
+  // EVENTO SELECCIONAR DE TRANSACCION
+  public findTransaccion($event): void{
+    this.transaccion = $event.value;
+    /*console.log('TRANSACCION :::::::');
+    console.log(this.transaccion);*/
+    this.getTrasaccion(this.cia, this.transaccion.codTPed);
+  }
+  // SABER QUE TIPO DE ITEM ESTAMOS TRABAJANDO
+  public saberItem(tipo: string): void{
+    this.tipoItem = tipo;
+  }
+
 }

@@ -26,27 +26,32 @@
                        <div class="col-sm-10">
                             <div class="row">
                               <div class="col-sm-10">
+                                 <div class="row">
                                    <!--RUC-->
-                                  <mat-form-field appearance="outline" class="w-100">
-                                    <mat-label>RUC / DNI</mat-label>
-                                    <input type="text" minlength="8" maxlength="11" required matInput placeholder="Ingrese RUC o DNI" [(ngModel)]="rucDni">
-                                  </mat-form-field>
-                                  <!--RAZON SOCIAL O NOMBRE-->
-                                  <mat-form-field appearance="outline" floatLabel="always">
-                                    <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
-                                    <input matInput
-                                    [(ngModel)]="rznombre"
-                                    (keyup)="buscarClienteXnombre($event)"
-                                    [matAutocomplete]="auto"
-                                    >
-                                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
-                                        <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
-                                            <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                                                <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
-                                            </div>
-                                        </mat-option>
-                                    </mat-autocomplete>
-                                  </mat-form-field>
+                                   <div class="col-sm-3">
+                                     <mat-form-field appearance="outline" class="w-100">
+                                       <mat-label>RUC / DNI</mat-label>
+                                       <input type="text" minlength="8" maxlength="11" required matInput placeholder="Ingrese RUC o DNI" [(ngModel)]="rucDni">
+                                     </mat-form-field>
+                                   </div>
+                                   <!--RAZON SOCIAL O NOMBRE-->
+                                   <div class="col-sm-9">
+                                     <mat-form-field appearance="outline" floatLabel="always">
+                                       <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
+                                       <input matInput
+                                              [(ngModel)]="rznombre"
+                                              (keyup)="buscarClienteXnombre($event)"
+                                              [matAutocomplete]="auto">
+                                       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
+                                         <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
+                                           <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                                             <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
+                                           </div>
+                                         </mat-option>
+                                       </mat-autocomplete>
+                                     </mat-form-field>
+                                   </div>
+                                 </div>
                               </div>
                               <div class="col-sm-pull-2">
                                 <div class="example-button-container">

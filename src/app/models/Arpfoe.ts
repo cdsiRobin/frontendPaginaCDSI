@@ -72,7 +72,6 @@ export class Arpfoe {
   operInafectas: number;
   tipoOperacion: string;
   emailPedido: string;
-
   arpfolList: Arpfol[];
 
 }

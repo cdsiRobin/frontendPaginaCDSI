@@ -33,7 +33,7 @@
                     <div class="col-sm">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Transacción</mat-label>
-                        <mat-select [(ngModel)]="transaccion" name="transacion">
+                        <mat-select [(ngModel)]="transaccion" name="transacion"  (selectionChange)="findTransaccion($event)">
                           <mat-option *ngFor="let ta of transacciones" [value]="ta">
                             {{ta.codTPed}}-{{ta.descri}}
                           </mat-option>
@@ -54,7 +54,7 @@
                 </div>
                 <!--FIN-->
                 <!--CLIENTE-->
-                  <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
                     <!--RUC DE CLIENTE-->
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                         <mat-label>RUC</mat-label>
@@ -71,32 +71,33 @@
                         </mat-autocomplete>
                     </mat-form-field>
                     <!--RAZON SOCIAL DE CLIENTE-->
-                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm">
-                        <mat-label>Razón Social</mat-label>
-                        <input matInput
-                        formControlName="racSoc"
-                        [matAutocomplete]="auto"
-                        [matAutocompleteConnectedTo]="origin">
+                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
+                      <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
+                      <input matInput
+                             formControlName="racSoc"
+                             [matAutocompleteConnectedTo]="origin"
+                             [matAutocomplete]="auto">
+                      <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
+                        <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
+                          <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                            <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
+                          </div>
+                        </mat-option>
+                      </mat-autocomplete>
                     </mat-form-field>
+
                 </div>
                 <div class="row">
                     <!--DIRECCIONES DEL CLIENTE-->
                     <div class="col-sm">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Direcciónes</mat-label>
-                        <mat-select name="direccion" (selectionChange)=" getDirecciones($event)">
+                        <mat-select name="direccion" (selectionChange)="getDirecciones($event)">
                           <mat-option *ngFor="let d of arcctdas" [value]="d">
                             {{d.nombre}}-{{d.direccion}}
                           </mat-option>
                         </mat-select>
                       </mat-form-field>
-
-                      <!--
-                      <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Dirección</mat-label>
-                            <input disabled="true" matInput placeholder="Placeholder" value="Direccion">
-                        </mat-form-field>
-                      -->
                     </div>
                     <!--UBIGEO-->
                     <div class="col-sm-4">
@@ -108,29 +109,6 @@
                 </div>
 
                 <!--FIN CLIENTES-->
-                <!-- VENDEDOR
-                <div class="row">
-                    <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Vendedor</mat-label>
-                            <input matInput placeholder="Placeholder" value="Nombre vendedor">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="row">
-                            <mat-form-field class="materialAncho"  appearance="outline" class="col-sm-4">
-                              <mat-label>Tipo</mat-label>
-                              <mat-select name="tipo">
-                              </mat-select>
-                            </mat-form-field>
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
-                                <mat-label>Numero</mat-label>
-                                <input matInput placeholder="Placeholder" value="Num">
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </div>
-                -->
 
             </div>
             <div class="col-sm-4 p-3">
@@ -211,16 +189,8 @@
         <!--TIPO DE ITEM-->
         <div class="row">
             <div class="col-sm-12">
-              <!--
-              <div class="col-sm-2">
-                <mat-radio-group aria-label="Select an option" [(ngModel)]="tipoItem" (change)="getTipoItem($event)">
-                  <mat-radio-button value="B" checked>Bien</mat-radio-button>
-                  <mat-radio-button value="L">Libre</mat-radio-button>
-                </mat-radio-group>
-              </div>
-              -->
               <mat-tab-group animationDuration="0ms">
-                <mat-tab label="Bien">
+                <mat-tab label="Bien" (click)="saberItem('B')">
                   <!--AÑADIR ITEMS-->
                   <div class="row">
                     <div class="col-sm-12">
@@ -229,7 +199,7 @@
                         <div class="col-sm-6">
                             <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
                               <mat-label>Descripción</mat-label>
-                              <input matInput placeholder="Placeholder" name="descripItem">
+                              <input matInput type="text" [(ngModel)]="descBien"  placeholder="Ingrese nombre articulo" name="bien" >
                             </mat-form-field>
                         </div>
                         <div class="example-button-container">
@@ -240,56 +210,57 @@
                     </div>
                   </div>
                   </div>
-                <!--FIN AÑADIR ITEMS-->
+                  <!--FIN AÑADIR ITEMS-->
                 </mat-tab>
-                <mat-tab label="Libre">
+                <mat-tab label="Libre" (click)="saberItem('L')">
                   <!--AÑADIR ITEMS LIBRE-->
                     <div class="row">
                       <div class="col-sm-12">
-                        <div class="row" [formGroup]="groupArticulo">
-                          <!--CODIGO DE ITEM-->
-                          <div class="col-sm-2">
+                        <form [formGroup]="groupArticulo" #frmItemLibre="ngForm" (ngSubmit)="addItem()">
+                          <div class="row">
+                            <!--CODIGO DE ITEM-->
+                            <div class="col-sm-2">
                               <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                                  <mat-label>Codigo</mat-label>
-                                  <input matInput type="text" placeholder="Ingrese Cod" formControlName="codProd" name="codProd">
+                                <mat-label>Codigo</mat-label>
+                                <input matInput type="text" required placeholder="Ingrese Cod" formControlName="codProd" name="codProd">
                               </mat-form-field>
-                          </div>
-                          <!--UM DEL ITEM-->
-                          <div class="col-sm-1">
-                            <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                            </div>
+                            <!--UM DEL ITEM-->
+                            <div class="col-sm-1">
+                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                                 <mat-label>UM</mat-label>
-                                <input matInput type="text" formControlName="umProd" name="umProd">
-                            </mat-form-field>
-                          </div>
-                          <!--DESCRIPCION DEL ITEM-->
-                          <div class="col-sm-5">
+                                <input matInput type="text" required formControlName="umProd" name="umProd">
+                              </mat-form-field>
+                            </div>
+                            <!--DESCRIPCION DEL ITEM-->
+                            <div class="col-sm-5">
                               <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
                                 <mat-label>Descripción</mat-label>
-                                <input matInput placeholder="Ingrese descripción" formControlName="desProd" name="desProd">
+                                <input matInput placeholder="Ingrese descripción" required formControlName="desProd" name="desProd">
                               </mat-form-field>
-                          </div>
-                          <!--CANTIDAD DEL ITEM-->
-                          <div class="col-sm-1">
-                            <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                            </div>
+                            <!--CANTIDAD DEL ITEM-->
+                            <div class="col-sm-1">
+                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                                 <mat-label>Cant</mat-label>
-                                <input matInput type="number" formControlName="cantProd" name="cantProd">
-                            </mat-form-field>
-                          </div>
-                          <!--PRECIO DEL ITEM-->
-                          <div class="col-sm-2">
-                            <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                <input matInput type="number" required formControlName="cantProd" name="cantProd">
+                              </mat-form-field>
+                            </div>
+                            <!--PRECIO DEL ITEM-->
+                            <div class="col-sm-2">
+                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                                 <mat-label>Precio</mat-label>
-                                <input matInput type="number" formControlName="precProd" name="precProd">
-                            </mat-form-field>
-                          </div>
-
-                          <div class="col-sm-1 p-1">
-                              <button mat-raised-button color="primary" type="button" (click)="addItem()">
+                                <input matInput type="number" required formControlName="precProd" name="precProd">
+                              </mat-form-field>
+                            </div>
+                            <!-- BOTON PARA INGRESAR UN NUEVO ITEMS LIBRE -->
+                            <div class="col-sm-1 p-1">
+                              <button mat-raised-button color="primary" type="submit" [disabled]="frmItemLibre.invalid">
                                 <mat-icon aria-hidden="false" aria-label="Example home icon">add_shopping_cart</mat-icon>
                               </button>
+                            </div>
                           </div>
-
-                      </div>
+                        </form>
                     </div>
                     </div>
                   <!--FIN AÑADIR ITEMS-->
@@ -367,7 +338,6 @@
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
-
                 <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
               </div>
               <!--FIN TABLA-->

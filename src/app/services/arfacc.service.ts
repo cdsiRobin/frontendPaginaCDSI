@@ -26,7 +26,7 @@ export class ArfaccService extends GenericoService{
          return response.detalle;
       })
     );
- }
+   }
 
   // VAMOS A CONSULTAR LA SERIE Y CORRELATIVO
   public getSerieAndCorrelativoPedido(arfacc: Arfacc): Observable<Arfacc[]>{
