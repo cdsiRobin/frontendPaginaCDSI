@@ -1,4 +1,4 @@
-export class ArfacfPK {
+export class Arfacfpk {
     noCia:string;
     centro:string;
 }

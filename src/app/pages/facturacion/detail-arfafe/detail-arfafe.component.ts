@@ -1,6 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { ArfafeDTO } from "src/app/DTO/arfafeDTO";
 import { DatosClienteDTO } from "src/app/DTO/DatosClienteDTO";
 import pdfMake from 'pdfmake/build/pdfmake';
@@ -12,11 +12,11 @@ import { ArccmcService } from "src/app/services/arccmc.service";
 import { ArcgtcService } from "src/app/services/arcgtc.service";
 import { ArfafeService } from "src/app/services/arfafe.service";
 import { ArfatpService } from "src/app/services/arfatp.service";
-import { TapfopaService } from "src/app/services/tapfopa.service";
 import { Utils } from "../utils";
 import { ArfafpService } from "src/app/services/arfafp.service";
-import { Arfafp } from "src/app/models/Arfafp";
 import { ArfacfService } from "src/app/services/arfacf.service";
+import { Arfafp } from "src/app/models/Arfafp";
+import { Arfacfpk } from "src/app/models/Arfacfpk";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -115,9 +115,13 @@ export class DetailArfafeComponent implements OnInit {
   }
 
   public centroEmisor(){
-    this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
+    //this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
+    let arfacfPk: Arfacfpk = new Arfacfpk();
+    arfacfPk.noCia = sessionStorage.getItem('cia');
+    arfacfPk.centro = sessionStorage.getItem('centro');
+    this.arfacfservice.getArfacf(arfacfPk)
     .subscribe(data => {
-        this.nomCentro = data.resultado.descripcion;
+        this.nomCentro = data.descripcion;
     })
   }
 

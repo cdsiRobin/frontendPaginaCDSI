@@ -1,7 +1,7 @@
-import { ArfacfPK } from "./arfacfPK";
+import { Arfacfpk } from "./Arfacfpk";
 
 export class Arfacf {
-    arfacfPK: ArfacfPK;
+    arfacfPK: Arfacfpk;
     descripcion: string;
     transPtoVentaPed: string;
     transPtoVentaCaja: string;

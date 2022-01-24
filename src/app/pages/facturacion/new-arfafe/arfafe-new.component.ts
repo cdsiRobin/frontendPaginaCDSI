@@ -27,7 +27,9 @@ import { Utils } from "../utils";
 import { ArfacfService } from 'src/app/services/arfacf.service';
 import { ArfafpService } from 'src/app/services/arfafp.service';
 import { Arfafp } from 'src/app/models/Arfafp';
-import { ArfafpPK } from 'src/app/models/ArfafpPK';
+import { Arfacfpk } from 'src/app/models/Arfacfpk';
+import { ArpffeService } from 'src/app/services/arpffe.service';
+import { Arpffe } from 'src/app/models/arpffe';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -41,6 +43,7 @@ export class NewArfafeComponent implements OnInit {
     arfacc:Arfacc = new Arfacc();
     arfafp: Arfafp = new Arfafp();
     arfatp: Arfatp = new Arfatp();
+    arpffe: Arpffe = new Arpffe();
     cia: string;
     doc: string;
     fact: string;
@@ -52,6 +55,7 @@ export class NewArfafeComponent implements OnInit {
   correlativo = '0000000';
 
   noCia: string;
+  noGuia: string;
   noOrden: string;
   tipoDoc: string;
   tipoCambio: number;
@@ -67,49 +71,66 @@ export class NewArfafeComponent implements OnInit {
     private arfafpservice: ArfafpService,
     private arfatpService: ArfatpService,
     private arfacfservice: ArfacfService,
+    public arpffeService: ArpffeService,
     public datepipe: DatePipe,
     private router: Router) { }
 
 
   ngOnInit(): void {
     Utils.getImageDataUrlFromLocalPath1('assets/Logo2.jpg').then(
-    result => this.logoDataUrl = result
-  )
-  this.arfacc.arfaccPK = new ArfaccPK();
-  this.detalle.arfafePK = new ArfafePK();
+        result => this.logoDataUrl = result
+    )
+    this.arfacc.arfaccPK = new ArfaccPK();
+    this.detalle.arfafePK = new ArfafePK();
     this.centroEmisor();
-    this.route.queryParams.subscribe(p => {
-      let idArpfoe: IdArpfoe = new IdArpfoe();
-      this.noCia = p['noCia'];
-      this.noOrden = p['noOrden'];
-      // this.tipoArfafe = p['tipoA'];
-      idArpfoe.noCia = this.noCia;
-      idArpfoe.noOrden = this.noOrden;
-      console.log(idArpfoe);
-      this.pedidoService.pedidoParaFactura(idArpfoe).pipe(
-        map((response: Infor<Arpfoe>) => response.resultado)).
-        subscribe(d => {console.log(d);this.setArfafe(d)});
-    });
+    this.traerData();
   }
 
   traerData(){
-      let idArpfoe: IdArpfoe = new IdArpfoe();
       this.route.queryParams.subscribe(p => {
+        let idArpfoe: IdArpfoe = new IdArpfoe();
         this.noCia = p['noCia'];
         this.noOrden = p['noOrden'];
+        this.noGuia = p['guia'];
         idArpfoe.noCia = this.noCia;
         idArpfoe.noOrden = this.noOrden;
         this.pedidoService.pedidoParaFactura(idArpfoe).pipe(
           map((response: Infor<Arpfoe>) => response.resultado)).
-          subscribe(d => {console.log(d);this.setArfafe(d)});
+          subscribe(d => {
+              console.log(d);
+              this.setArfafe(d);
+              this.traerGuia(d.bodega);
+            });
       });
   }
+
+  traerGuia(bodega: string){
+    this.arpffeService.consultarGuia(this.noCia,bodega,this.noGuia)
+    .subscribe( data => {
+        this.arpffe = data;
+        console.log(this.arpffe);
+    })
+  }
+
+  updateGuia(){
+    this.arpffe.estado = 'F';
+    this.arpffe.tipoDoc = this.detalle.arfafePK.tipoDoc;
+    this.arpffe.noFactu = this.detalle.arfafePK.noFactu;
+
+    console.log(this.arpffe);
+    this.arpffeService.guardar(this.arpffe).subscribe(data => 
+        console.log(data), error => console.log(error)
+    );
+  }
+
   addArfafe(){
 
     this.detalle.fecha = new Date();
 
     this.arfafeService.addArfafe(this.detalle)
     .subscribe(data => console.log(data), error => console.log(error));
+
+    this.updateGuia();
 
     this.arfaccService.saveArfacc(this.arfacc)
     .subscribe(data => console.log(data), error => console.log(error));
@@ -136,7 +157,7 @@ export class NewArfafeComponent implements OnInit {
       this.arfaccService.getSerieAndCorrelativoPedido(corre).subscribe(d => {
 
         this.arfacc = d[0];
-        this.arfacc.consDesde-=1;
+        this.arfacc.consDesde;
         console.log(this.arfacc);
         //creacion llave primaria
         this.detalle.arfafePK = new ArfafePK();
@@ -153,7 +174,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.estado = 'D';
         this.detalle.ind_PVENT = arfoe.indPvent;
         this.detalle.no_ORDEN = arfoe.arpfoePK.noOrden;
-        this.detalle.tipo_CLIENTE = arfoe.tipoDocCli;
+        //this.detalle.tipo_CLIENTE = arfoe.tipoDocCli;
         this.detalle.no_CLIENTE = arfoe.noCliente;
         this.traeCliente();
         this.detalle.no_VENDEDOR = arfoe.noVendedor;
@@ -206,6 +227,8 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.est_RES_CON = 'N';
         this.detalle.imp_FACT_DESC = 'N';
         this.detalle.ind_GUIA_TEXTO = 'N';
+        this.detalle.no_GUIA = this.noGuia;
+        this.detalle.tipo = 'N';
         this.listaPrecio(arfoe.tipoPrecio);
         // this.TCambio();
         this.formaPago(arfoe.codFpago);
@@ -233,16 +256,16 @@ export class NewArfafeComponent implements OnInit {
             arfafl.precio_UNIT = parseFloat(this.trunc(list.precio,5));
             arfafl.tipo_AFECTACION = list.tipoAfectacion;
             arfafl.tipo_ARTI = list.tipoArti;
-
+            arfafl.total_LIN = list.totalLin;
             this.detalle.oper_GRAVADAS += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
             this.detalle.sub_TOTAL += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
-            console.log(this.detalle.oper_GRAVADAS);
             this.totalFactu += list.totalLin;
             this.totalIGV += arfafl.imp_IGV;
             this.detalle.impuesto += arfafl.imp_IGV;
             this.detalle.arfaflList.push(arfafl);
           }
         );
+        this.totalFactu = parseFloat(this.trunc(this.totalFactu,3));
         this.detalle.total = this.totalFactu;
         this.detalle.total_BRUTO = this.totalFactu;
         this.detalle.cajera = sessionStorage.getItem('codEmp');
@@ -310,9 +333,13 @@ export class NewArfafeComponent implements OnInit {
   }
   
   public centroEmisor(){
-    this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
+    //this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
+    let arfacfPk: Arfacfpk = new Arfacfpk();
+    arfacfPk.noCia = sessionStorage.getItem('cia');
+    arfacfPk.centro = sessionStorage.getItem('centro');
+    this.arfacfservice.getArfacf(arfacfPk)
     .subscribe(data => {
-        this.nomCentro = data.resultado.descripcion;
+        this.nomCentro = data.descripcion;
     })
   }
 
