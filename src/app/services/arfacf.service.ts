@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GenericoService } from './generico/generico.service';
 import { HttpClient } from '@angular/common/http';
-import { Arfacfpk } from '../models/arfacfpk';
+import { Arfacfpk } from '../models/Arfacfpk';
 import { Observable } from 'rxjs';
 import { Arfacf } from '../models/arfacf';
 import { ConsultaExitosa } from '../interfaces/consulta-exitosa';

@@ -26,6 +26,7 @@ import { NuestroProductosComponent } from './nuestro-productos/nuestro-productos
 import {PedidoRoutingModule} from './pedido/pedido-routing.module';
 import { ArfafeRoutingModule } from './facturacion/arfafe-routing.module';
 import { ArcgtcRoutingModule } from './arcgtc/arcgtc-routing.module';
+import { ItemRoutingModule } from './items/item-routing.module';
 
 const routes: Routes = [
 
@@ -75,7 +76,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     PedidoRoutingModule,
     ArfafeRoutingModule,
-    ArcgtcRoutingModule
+    ArcgtcRoutingModule,
+    ItemRoutingModule
   ],
   exports: [RouterModule]
 })

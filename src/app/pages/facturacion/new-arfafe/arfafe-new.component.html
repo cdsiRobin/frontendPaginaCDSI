@@ -8,52 +8,52 @@
         <div class="row">
             <div class="col-sm m-3" style="border-right: 1px solid lightgray;">
                 <div class="row">
+                    <div class="col-sm-5">
+                        <div class="row">
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                                <mat-label>Serie</mat-label>
+                                <input [readonly]="true" matInput placeholder="Placeholder" name="SerieDoc"
+                                [(ngModel)]="arfacc.arfaccPK.serie">
+                            </mat-form-field>
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
+                                <mat-label>Correlativo</mat-label>
+                                <input [readonly]="true" matInput placeholder="Placeholder" name="CorrelDoc"
+                                [(ngModel)]="correlativo">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" class="w-100">
+                            <mat-label>Vendedor</mat-label>
+                            <input [readonly]="true" matInput placeholder="Placeholder" name="vendor"
+                            [(ngModel)]="detalle.cuser">
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row">
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                         <mat-label>RUC</mat-label>
-                        <input  matInput name="ruc" [(ngModel)]="detalle.no_CLIENTE">
+                        <input [readonly]="true" matInput name="ruc" [(ngModel)]="detalle.no_CLIENTE">
                     </mat-form-field>
                     <mat-form-field appearance="outline" floatLabel="always" class="col-sm">
                         <mat-label>Razón Social</mat-label>
-                        <input matInput name="racsoc" [(ngModel)]="detalle.nbr_CLIENTE">
+                        <input [readonly]="true" matInput name="racsoc" [(ngModel)]="detalle.nbr_CLIENTE">
                     </mat-form-field>
                 </div>
                 <div class="row">
                     <div class="col-sm">
                         <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                             <mat-label>Dirección</mat-label>
-                            <input disabled="true" matInput placeholder="Placeholder" name="direc"
+                            <input [readonly]="true" matInput placeholder="Placeholder" name="direc"
                             [(ngModel)]="detalle.direccion">
                         </mat-form-field>
                     </div>
                     <div class="col-sm-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Ubigeo</mat-label>
-                            <input disabled="true" matInput placeholder="Placeholder" name="ubigeo"
+                            <input [readonly]="true" matInput placeholder="Placeholder" name="ubigeo"
                             [(ngModel)]="detalle.codi_DEPA + detalle.codi_PROV + detalle.codi_DIST">
                         </mat-form-field>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Vendedor</mat-label>
-                            <input matInput placeholder="Placeholder" name="vendor"
-                            [(ngModel)]="detalle.cuser">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm-5">
-                        <div class="row">
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
-                                <mat-label>Tipo</mat-label>
-                                <input matInput placeholder="Placeholder" name="tipoDoc"
-                                [(ngModel)]="detalle.tipo_DOC_CLI">
-                            </mat-form-field>
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
-                                <mat-label>Numero</mat-label>
-                                <input matInput placeholder="Placeholder" name="numCli"
-                                [(ngModel)]="detalle.num_DOC_CLI">
-                            </mat-form-field>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -62,13 +62,13 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>L.Precios</mat-label>
-                            <input matInput name="Nom_precio" [(ngModel)]="arfatp.descripcion">
+                            <input [readonly]="true" matInput name="Nom_precio" [(ngModel)]="arfatp.descripcion">
                         </mat-form-field>
                     </div>
                     <div class="col-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>T.C.</mat-label>
-                            <input disabled="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="tipoCambio">
+                            <input [readonly]="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="detalle.tipo_CAMBIO">
                         </mat-form-field>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>F.Pago</mat-label>
-                            <input matInput name="Forma_pago" [(ngModel)]="tapfopa.descripcion">
+                            <input [readonly]="true" matInput name="Forma_pago" [(ngModel)]="arfafp.descripcion">
                         </mat-form-field>
                     </div>
                 </div>
@@ -96,13 +96,13 @@
                     <div class="col-sm-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Centro</mat-label>
-                            <input matInput name="centroEmi" [(ngModel)]="detalle.centro">
+                            <input [readonly]="true" matInput name="centroEmi" [(ngModel)]="detalle.centro">
                         </mat-form-field>
                     </div>
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Nombre Centro</mat-label>
-                            <input matInput value="Non_centro">
+                            <input [readonly]="true" matInput name="nomCentroEmi" [(ngModel)]="nomCentro">
                         </mat-form-field>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
                     <tr *ngFor ="let data of detalle.arfaflList">
                         <td class="text-right">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
-                        <td>{{ data.unidMed }}</td>
+                        <td>{{ uniMed[data.arfaflPK.consecutivo] }}</td>
                         <td>{{ data.descripcion }}</td>
                         <td class="text-right">{{ data.tipo_AFECTACION }}</td>
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
@@ -161,10 +161,9 @@
         </div>
         <div class="row mt-5">
             <div class="col-sm d-flex justify-content-center">
-                <button mat-raised-button color="primary">btn1</button>
             </div>
             <div class="col-sm d-flex justify-content-center">
-                <button mat-raised-button color="primary">btn2</button>
+                <button mat-raised-button color="primary" (click)="updateGuia()">btn3</button>
             </div>
             <div class="col-sm d-flex justify-content-center">
                 <button mat-raised-button color="primary" (click)="traerData()">btn3</button>

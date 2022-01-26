@@ -1,0 +1,24 @@
+<div class="container mt-3">
+    <div class="col-7 col-sm">
+        <div class="row">
+            <div class="col col-sm">
+                <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Compañia:</mat-label>
+                    <!-- <input [readonly]="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="detalle.tipo_CAMBIO"> -->
+                    <input [readonly]="true" name="cia" matInput value="HS IMPORT COMPANY S.A.C.">
+                </mat-form-field>
+            </div>
+            <div class="col col-sm">
+                <mat-form-field appearance="outline">
+                    <mat-label>Choose a date</mat-label>
+                    <input matInput [matDatepicker]="picker">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </mat-form-field>                  
+            </div>
+            <div class="col col-sm"></div>
+        </div>
+    </div>
+    <div class="col-4 col-sm">
+    </div>
+</div>

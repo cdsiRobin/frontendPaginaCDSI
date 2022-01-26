@@ -77,7 +77,7 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>F.Pago</mat-label>
-                            <input matInput name="Forma_pago" [(ngModel)]="tapfopa.descripcion">
+                            <input matInput name="Forma_pago" [(ngModel)]="arfafp.descripcion">
                         </mat-form-field>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Nombre Centro</mat-label>
-                            <input matInput value="Non_centro">
+                            <input matInput name="nomCentroEmi" [(ngModel)]="nomCentro">
                         </mat-form-field>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                         <td class="text-right">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
                         <td>und</td>
-                        <td>descrip</td>
+                        <td>{{ data.descripcion }}</td>
                         <td class="text-right">{{ data.tipo_AFECTACION }}</td>
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
                         <td class="text-right">{{ data.precio_UNIT }}</td>
@@ -147,5 +147,15 @@
 
     </form>
 
-
+    <div class="row mt-5">
+        <div class="col-sm d-flex justify-content-center">
+        </div>
+        <div class="col-sm d-flex justify-content-center">
+        </div>
+        <div class="col-sm d-flex justify-content-center">
+        </div>
+        <div class="col-sm d-flex justify-content-center">
+            <button mat-raised-button color="primary" (click)="ProperDesing()">imprimir</button>
+        </div>
+    </div>
 </div>

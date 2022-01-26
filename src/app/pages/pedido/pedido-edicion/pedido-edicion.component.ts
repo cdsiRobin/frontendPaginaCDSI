@@ -50,7 +50,7 @@ import * as moment from 'moment';
 import { Arintd } from '../../../models/arintd';
 import { Arfacf } from '../../../models/arfacf';
 import { ArfacfService } from '../../../services/arfacf.service';
-import { Arfacfpk } from '../../../models/arfacfpk';
+import { Arfacfpk } from '../../../models/Arfacfpk';
 import { Arinse } from '../../../models/arinse';
 import { ArinseService } from '../../../services/arinse.service';
 import { ArpffeService } from '../../../services/arpffe.service';

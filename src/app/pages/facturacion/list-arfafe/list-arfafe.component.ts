@@ -1,6 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Arfafe } from "src/app/models/Arfafe";
@@ -22,13 +23,14 @@ export class ListArfafeComponent implements OnInit {
   centroEmi: string = 'Centro';
   public ConEstado = 'All';
   public ConCosto = 'Central';
-  tipoDoc = 'F';
+  tipoDoc = 'B';
   factu= '';
   pven= true;
   spin= false;
   pv: string;
   fecHasta = new Date;
-  fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
+  // fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
+  fecDesde = new Date;
 
   fec1: string;
   fec2: string;
@@ -39,7 +41,7 @@ export class ListArfafeComponent implements OnInit {
   dataSource = new MatTableDataSource<Arfafe>(ELEMENT_DATA);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
   arf: Arfafe;
 
   constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute,
@@ -47,12 +49,13 @@ export class ListArfafeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarData();
+    
   }
 
   cargarData(){
     this.dataSource = new MatTableDataSource(ELEMENT_DATA);
     this.dataSource.data = [];
-    this.fec1 = this.datepipe.transform(this.fecDesde,'dd/MM/yyyy');
+    this.fec1 = this.datepipe.transform(this.fecDesde.setMonth(this.fecDesde.getMonth()-1),'dd/MM/yyyy');
     this.fec2 = this.datepipe.transform(this.fecHasta,'dd/MM/yyyy');
     if(this.pven) this.pv = 'S'; else this.pv = 'N';
     this.arfafeService.listaArfafe('01',this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
@@ -62,6 +65,7 @@ export class ListArfafeComponent implements OnInit {
         this.dataSource.data.push(list[i]);
         }
       this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
     });
     console.log(this.dataSource.data);
     console.log(this.fec1 + '  --  '+this.fec2);

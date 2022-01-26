@@ -47,6 +47,7 @@ import { ArfafeModule } from './facturacion/arfafe.module';
 import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.component';
 import { ArcgtcModule } from './arcgtc/arcgtc.module';
 import { ArccmcComponent } from './arccmc/arccmc.component';
+import { ItemModule } from './items/item.module';
 
 @NgModule({
   declarations: [
@@ -103,6 +104,7 @@ import { ArccmcComponent } from './arccmc/arccmc.component';
     BrowserAnimationsModule,
     PedidoModule,
     ArfafeModule,
+    ItemModule,
     ArcgtcModule,
     MaterialModule
   ]
