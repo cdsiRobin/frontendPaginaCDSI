@@ -118,7 +118,7 @@ export class NewArfafeComponent implements OnInit {
     this.arpffe.noFactu = this.detalle.arfafePK.noFactu;
 
     console.log(this.arpffe);
-    this.arpffeService.guardar(this.arpffe).subscribe(data => 
+    this.arpffeService.guardar(this.arpffe).subscribe(data =>
         console.log(data), error => console.log(error)
     );
   }
@@ -277,7 +277,7 @@ export class NewArfafeComponent implements OnInit {
       });
 
     }
-    
+
     trunc (x, de = 0) {
         return Number(Math.round(parseFloat(x + 'e' + de)) + 'e-' + de).toFixed(de);
       }
@@ -331,7 +331,7 @@ export class NewArfafeComponent implements OnInit {
     }
     });
   }
-  
+
   public centroEmisor(){
     //this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
     let arfacfPk: Arfacfpk = new Arfacfpk();
@@ -479,7 +479,7 @@ export class NewArfafeComponent implements OnInit {
                             table: {
                               headerRows: 0,
                               widths: ['70%', '30%'],
-                  
+
                               body: bodyDet
                             }
                           }
@@ -505,7 +505,7 @@ export class NewArfafeComponent implements OnInit {
                 width: 515,
                 table: {
                   headerRows: 1,
-                  widths: ['100%'],        
+                  widths: ['100%'],
                   body: [
                       [{text: 'Sus pagos depositar al banco Credito',
                       fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
@@ -574,7 +574,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     },
                     {
                         width: 350,
@@ -591,7 +591,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     },
                     {
                         width: 350,
@@ -608,7 +608,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     },
                     {
                         width: 250,
@@ -625,7 +625,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     }
                 ],
                 {
@@ -648,7 +648,7 @@ export class NewArfafeComponent implements OnInit {
                     width: 110,
                     table: {
                       headerRows: 1,
-                      widths: [100],        
+                      widths: [100],
                       body: [
                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
                           [
@@ -701,7 +701,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9  
+                                        fontSize: 9
                                     },
                                     {
                                         width: 165,
@@ -718,7 +718,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     }
                                 ]
                             },
@@ -737,7 +737,7 @@ export class NewArfafeComponent implements OnInit {
                                     }
                                 ],
                                 color: 'black',
-                                fontSize: 9 
+                                fontSize: 9
                             },
                             {
                                 columns: [
@@ -756,7 +756,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     },
                                     {
                                         width: 515/2,
@@ -773,7 +773,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     }
                                 ]
                             },
@@ -794,7 +794,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     },
                                     {
                                         width: '*',
@@ -811,7 +811,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     },
                                     {
                                         width: '*',
@@ -828,7 +828,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     },
                                     {
                                         width: '*',
@@ -845,7 +845,7 @@ export class NewArfafeComponent implements OnInit {
                                             }
                                         ],
                                         color: 'black',
-                                        fontSize: 9 
+                                        fontSize: 9
                                     }
                                 ]
                             }
