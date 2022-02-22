@@ -883,6 +883,8 @@ export class NewArfafeComponent implements OnInit {
     pdfMake.createPdf(documentDefinition).open();
   }
 
+  
+
 
   }
 
