@@ -88,7 +88,7 @@ export class MenuPventaComponent implements OnInit {
           Swal.fire({
             allowOutsideClick: false,
             icon: 'info',
-            title: `El usuario: ${this.empleadoSeleccionado.nombre} no tiene una caja abierta activa`
+            title: `Usuario: ${this.empleadoSeleccionado.nombre} no tiene una caja abierta activa`
           });
           this.cajaService.totalCajas(datos).subscribe(data => {
             this.cajaService.cajasCreadas.next(data);

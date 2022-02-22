@@ -75,8 +75,8 @@ export class Login2Component implements OnInit {
             icon: 'info',
             title: 'Vendedor Sin usuario'
           });
-        this.guardarCampos();
-        this.abrirDialogo();
+        // this.guardarCampos();
+        // this.abrirDialogo();
         }
       });
     }, err => {
