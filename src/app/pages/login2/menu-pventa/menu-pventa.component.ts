@@ -85,11 +85,11 @@ export class MenuPventaComponent implements OnInit {
           }
         } else {
           Swal.close();
-          Swal.fire({
+          /*Swal.fire({
             allowOutsideClick: false,
             icon: 'info',
             title: `Usuario: ${this.empleadoSeleccionado.nombre} no tiene una caja abierta activa`
-          });
+          }); */
           this.cajaService.totalCajas(datos).subscribe(data => {
             this.cajaService.cajasCreadas.next(data);
           })

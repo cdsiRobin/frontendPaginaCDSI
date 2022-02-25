@@ -23,12 +23,12 @@
       </button>
 
       <mat-divider></mat-divider>
-      <button mat-menu-item routerLink="/perfil">
+      <button mat-menu-item routerLink="perfil">
         <mat-icon>account_box</mat-icon>
         <span>Mi Perfil</span>
       </button>
       <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.opened = false" >
+      <button mat-menu-item (click)="salir()" >
         <mat-icon>exit_to_app</mat-icon>
         <span>Cerrar Sesión</span>
       </button>
@@ -38,6 +38,11 @@
   <mat-sidenav-container class="example-sidenav-container">
     <mat-sidenav #sidenav style="width: 200px" mode="push">
       <app-vendedor></app-vendedor>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="sidenav.toggle()" routerLink="perfil" style="cursor: pointer">
+        <mat-icon>account_box</mat-icon>
+        <span>Mi Perfil</span>
+      </button>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="sidenav.toggle()" routerLink="nuevo" style="cursor: pointer">
         <mat-icon>add_shopping_cart</mat-icon>
@@ -63,31 +68,7 @@
         <mat-icon>view_carousel</mat-icon>
         <span>Consultar F-B</span>
       </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.toggle()" routerLink="/especialidad" style="cursor: pointer">
-        <mat-icon>star_rate</mat-icon>
-        <span>Especialidades</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.toggle()" routerLink="/medico" style="cursor: pointer">
-        <mat-icon>healing</mat-icon>
-        <span>Médicos</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.toggle()" routerLink="/examen" style="cursor: pointer">
-        <mat-icon>assignment</mat-icon>
-        <span>Examenes</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.toggle()" routerLink="/paciente" style="cursor: pointer">
-        <mat-icon>accessibility</mat-icon>
-        <span>Pacientes</span>
-      </button>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="sidenav.toggle()" routerLink="/reporte" style="cursor: pointer">
-        <mat-icon>assessment</mat-icon>
-        <span>Reportes</span>
-      </button>
+
     </mat-sidenav>
 
     <mat-sidenav-content>

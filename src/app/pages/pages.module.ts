@@ -48,6 +48,7 @@ import { ItemsDialogoComponent } from './articulo/items-dialogo/items-dialogo.co
 import { ArcgtcModule } from './arcgtc/arcgtc.module';
 import { ArccmcComponent } from './arccmc/arccmc.component';
 import { ItemModule } from './items/item.module';
+import { ArccvcComponent } from './arccvc/arccvc.component';
 
 @NgModule({
   declarations: [
@@ -85,7 +86,8 @@ import { ItemModule } from './items/item.module';
     Login2Component,
     MenuPventaComponent,
     ItemsDialogoComponent,
-    ArccmcComponent
+    ArccmcComponent,
+    ArccvcComponent
   ],
   exports: [
     ProgressComponent,

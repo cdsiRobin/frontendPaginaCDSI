@@ -1,6 +1,7 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-pedido',
@@ -27,4 +28,25 @@ export class PedidoComponent implements OnInit {
           horizontalPosition: 'center'
         });
   }
+  // METODO QUE VAMOS A SALIR DEL SISTEMA
+  public salir(): void{
+    Swal.fire({
+      title: 'Estás seguro de cerrar sessión?',
+      showDenyButton: true,
+      confirmButtonText: 'SI',
+      denyButtonText: `NO`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+          this.eliminarAlmacenamientoSession();
+      }
+    })
+  }
+  // FIN
+  // ELIMINAR ALMACENAMIENTO DE SESSION
+  private eliminarAlmacenamientoSession(): void{
+    sessionStorage.clear();
+    this.router.navigate(['dashboard/log_arti']);
+  }
+  // FIN
 }

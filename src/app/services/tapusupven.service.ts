@@ -1,4 +1,4 @@
-import { DatosCajaDTO } from './../DTO/DatosCajaDTO';
+
 import { TapUsuPven } from './../models/TapUsuPven';
 import { OtherService } from './other.service';
 import { HttpClient } from '@angular/common/http';

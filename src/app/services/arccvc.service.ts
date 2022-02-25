@@ -3,6 +3,7 @@ import { OtherService } from './other.service';
 import { Arccvc } from './../models/Arccvc';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { GenericoService } from './generico/generico.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,10 +16,10 @@ export class ArccvcService {
     return this.http.get<Arccvc[]>(this.url.getUrl()+`/vendedores/list/${cia}`);
   }
   getVendedor(vendedor:VendedorDTO){
-    return this.http.post<Arccvc>(this.url.getUrl()
-      +`/vendedores/vendedor`,vendedor);
+    return this.http.post<Arccvc>(this.url.getUrl()+`/vendedores/vendedor`,vendedor);
   }
   vendeCaja(vendedor:VendedorDTO){
     return this.http.post<VendedorDTO>(this.url.getUrl()+`/vendedores/vendedor/caja`,vendedor);
   }
+
 }

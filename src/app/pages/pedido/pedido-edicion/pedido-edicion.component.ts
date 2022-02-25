@@ -1,3 +1,4 @@
+
 import { Arpffe } from './../../../models/arpffe';
 import { ArintdService } from './../../../services/arintd.service';
 import { Arinda } from './../../../models/Arinda';
@@ -35,7 +36,6 @@ import { Tapfopa } from '../../../models/tapfopa';
 import { ArcgmoService } from '../../../services/arcgmo.service';
 import { Arcgmo } from '../../../models/arcgmo';
 import { ArcctdaEntity } from '../../../models/arcctda-entity';
-import { MatRadioChange } from '@angular/material/radio';
 import { MatDialog } from '@angular/material/dialog';
 import { ItemsDialogoComponent } from '../../articulo/items-dialogo/items-dialogo.component';
 import { BuscarItem } from '../../../models/buscar-item';
@@ -55,7 +55,6 @@ import { Arinse } from '../../../models/arinse';
 import { ArinseService } from '../../../services/arinse.service';
 import { ArpffeService } from '../../../services/arpffe.service';
 import { Arpfoe } from '../../../models/Arpfoe';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { Arpffepk } from '../../../models/arpffepk';
 import {Arpffl} from '../../../models/arpffl';
 import {Arpfflpk} from '../../../models/arpfflpk';
@@ -64,6 +63,8 @@ import {Arinme1pk} from '../../../models/arinme1pk';
 import {Arinml1} from '../../../models/arinml1';
 import {Arinml1pk} from '../../../models/arinml1pk';
 import {Arinme1Service} from '../../../services/arinme1.service';
+import { Arinum } from '../../../models/arinum';
+import { ArinumService } from '../../../services/arinum.service';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -72,7 +73,7 @@ import {Arinme1Service} from '../../../services/arinme1.service';
 export class PedidoEdicionComponent implements OnInit {
   anularBF = 'N';
   arinse: Arinse;
-  tipoItem = 'B';
+  tipoItem = 'L';
   form: FormGroup;
   // NUEVO CAMBIOS
   groupEmpresa: FormGroup;
@@ -171,10 +172,11 @@ export class PedidoEdicionComponent implements OnInit {
 
   public arintd: Arintd;
   public arfacf: Arfacf;
-
   public arpffe: Arpffe;
+  public arinums: Array<Arinum>;
 
   constructor(public pedidoService: PedidoService,
+              public arinumService: ArinumService,
               public clienteServices: ArccmcService,
               public arindaService: ArticuloService,
               public arfaccService: ArfaccService,
@@ -261,7 +263,16 @@ export class PedidoEdicionComponent implements OnInit {
       }
     });
 
+    this.listarUnidades();
+
   }
+  // LISTAMOS TODAS LAS UNIDADES POR COMPAÑIA
+  private listarUnidades(): void {
+    this.arinumService.listarDepartXcia(this.cia).subscribe(u => {
+      this.arinums = u;
+    });
+  }
+  // FIN
   // LIMPIANDO ITEMS LIBRES
   public limpiarItemsLibre(): void{
     this.groupArticulo = new FormGroup({

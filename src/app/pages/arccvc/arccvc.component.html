@@ -1,0 +1,62 @@
+<div class="container-fluid">
+  <!--TITULO-->
+  <div class="row page-titles">
+    <div class="col-md-5 align-self-center">
+      <h3 class="text-themecolor font-weight-bold">Datos del Usuario</h3>
+    </div>
+    <div class="col-md-7 align-self-center">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/pedido">Home</a></li>
+        <li class="breadcrumb-item active">Usuario</li>
+      </ol>
+    </div>
+    <div>
+      <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
+    </div>
+  </div>
+  <!--FIN DE TITUTLO-->
+  <!--FORMULARIO DE USUARIO-->
+  <div class="container border rounded p-5">
+    <div class="row">
+        <div class="col-sm-12">
+            <form [formGroup]="fArccvc" #frmArccvc="ngForm" (ngSubmit)="modificar()">
+              <div class="row">
+                  <!--FORMULARIO CLIENTE-->
+                  <div class="col-sm-12">
+                    <!--codigo-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput required type="number" placeholder="CODIGO" formControlName="codigo">
+                    </mat-form-field>
+                    <!--descripcion-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="text" minlength="5" maxlength="50" placeholder="NOMBRE Y APELLIDOS" required formControlName="descripcion">
+                      <small *ngIf="f.descripcion.errors?.required && f.descripcion.touched" class="invalido">Nombre y Apellidos es requerido</small>
+                      <small *ngIf="f.descripcion.errors?.minlength" class="invalido">El campo debe ser mayor a 5 caracteres</small>
+                    </mat-form-field>
+                    <!--pass-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="password" minlength="2" maxlength="100" placeholder="NUEVO PASSWORD" formControlName="pass">
+                      <small *ngIf="f.pass.errors?.required && f.pass.touched" class="invalido">Password es requerido</small>
+                      <small *ngIf="f.pass.errors?.minlength" class="invalido">El campo debe ser de 2 caracteres</small>
+                    </mat-form-field>
+                    <!--vpass-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="password" minlength="2" maxlength="100" placeholder="VERIFICAR PASSWORD" formControlName="vpass">
+                      <small *ngIf="f.vpass.errors?.required && f.vpass.touched" class="invalido">Verificar password es requerido</small>
+                      <small *ngIf="f.vpass.errors?.minlength" class="invalido">El campo debe ser de 2 caracteres</small>
+                    </mat-form-field>
+                   <!--FIN FORMULARIO USUARIO-->
+                  </div>
+
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="fArccvc.invalid">
+                  <mat-icon>done</mat-icon>
+                  <span>MODIFICAR</span>
+                </button>
+              </div>
+            </form>
+        </div>
+    </div>
+  </div>
+  <!--FIN-->
+</div>

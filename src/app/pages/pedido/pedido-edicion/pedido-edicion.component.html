@@ -199,6 +199,65 @@
         <div class="row">
             <div class="col-sm-12">
               <mat-tab-group animationDuration="0ms">
+
+                <mat-tab label="Libre" (click)="saberItem('L')">
+                  <!--AÑADIR ITEMS LIBRE-->
+                    <div class="row">
+                      <div class="col-sm-12">
+                          <form [formGroup]="groupArticulo" #frmItemLibre="ngForm" (ngSubmit)="addItem()">
+                            <div class="row">
+                              <!--CODIGO DE ITEM-->
+                              <div class="col-sm-2">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                  <mat-label>Codigo</mat-label>
+                                  <input matInput type="text" required placeholder="Ingrese Cod" formControlName="codProd" name="codProd">
+                                </mat-form-field>
+                              </div>
+                              <!--UM DEL ITEM-->
+                              <div class="col-sm-2">
+                                <mat-form-field appearance="outline" class="w-100">
+                                  <mat-label>U.M</mat-label>
+                                  <mat-select required formControlName="umProd" name="moneda">
+                                    <mat-option *ngFor="let m of arinums" [value]="m.arinumPK.unidad">
+                                      {{m.nom}}
+                                    </mat-option>
+                                  </mat-select>
+                                </mat-form-field>
+
+                              </div>
+                              <!--DESCRIPCION DEL ITEM-->
+                              <div class="col-sm-4">
+                                <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
+                                  <mat-label>Descripción</mat-label>
+                                  <input matInput placeholder="Ingrese descripción" required formControlName="desProd" name="desProd">
+                                </mat-form-field>
+                              </div>
+                              <!--CANTIDAD DEL ITEM-->
+                              <div class="col-sm-1">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                  <mat-label>Cant</mat-label>
+                                  <input matInput type="number" required formControlName="cantProd" name="cantProd">
+                                </mat-form-field>
+                              </div>
+                              <!--PRECIO DEL ITEM-->
+                              <div class="col-sm-2">
+                                <mat-form-field appearance="outline" floatLabel="always" class="w-100">
+                                  <mat-label>Precio</mat-label>
+                                  <input matInput type="number" required formControlName="precProd" name="precProd">
+                                </mat-form-field>
+                              </div>
+                              <!-- BOTON PARA INGRESAR UN NUEVO ITEMS LIBRE -->
+                              <div class="col-sm-1 p-1">
+                                <button mat-raised-button color="primary" type="submit" [disabled]="frmItemLibre.invalid">
+                                  <mat-icon aria-hidden="false" aria-label="Example home icon">add_shopping_cart</mat-icon>
+                                </button>
+                              </div>
+                            </div>
+                          </form>
+                    </div>
+                    </div>
+                  <!--FIN AÑADIR ITEMS-->
+                </mat-tab>
                 <mat-tab label="Bien" (click)="saberItem('B')">
                   <!--AÑADIR ITEMS-->
                   <div class="row">
@@ -219,59 +278,6 @@
                     </div>
                   </div>
                   </div>
-                  <!--FIN AÑADIR ITEMS-->
-                </mat-tab>
-                <mat-tab label="Libre" (click)="saberItem('L')">
-                  <!--AÑADIR ITEMS LIBRE-->
-                    <div class="row">
-                      <div class="col-sm-12">
-                        <form [formGroup]="groupArticulo" #frmItemLibre="ngForm" (ngSubmit)="addItem()">
-                          <div class="row">
-                            <!--CODIGO DE ITEM-->
-                            <div class="col-sm-2">
-                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                                <mat-label>Codigo</mat-label>
-                                <input matInput type="text" required placeholder="Ingrese Cod" formControlName="codProd" name="codProd">
-                              </mat-form-field>
-                            </div>
-                            <!--UM DEL ITEM-->
-                            <div class="col-sm-1">
-                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                                <mat-label>UM</mat-label>
-                                <input matInput type="text" required formControlName="umProd" name="umProd">
-                              </mat-form-field>
-                            </div>
-                            <!--DESCRIPCION DEL ITEM-->
-                            <div class="col-sm-5">
-                              <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
-                                <mat-label>Descripción</mat-label>
-                                <input matInput placeholder="Ingrese descripción" required formControlName="desProd" name="desProd">
-                              </mat-form-field>
-                            </div>
-                            <!--CANTIDAD DEL ITEM-->
-                            <div class="col-sm-1">
-                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                                <mat-label>Cant</mat-label>
-                                <input matInput type="number" required formControlName="cantProd" name="cantProd">
-                              </mat-form-field>
-                            </div>
-                            <!--PRECIO DEL ITEM-->
-                            <div class="col-sm-2">
-                              <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                                <mat-label>Precio</mat-label>
-                                <input matInput type="number" required formControlName="precProd" name="precProd">
-                              </mat-form-field>
-                            </div>
-                            <!-- BOTON PARA INGRESAR UN NUEVO ITEMS LIBRE -->
-                            <div class="col-sm-1 p-1">
-                              <button mat-raised-button color="primary" type="submit" [disabled]="frmItemLibre.invalid">
-                                <mat-icon aria-hidden="false" aria-label="Example home icon">add_shopping_cart</mat-icon>
-                              </button>
-                            </div>
-                          </div>
-                        </form>
-                    </div>
-                    </div>
                   <!--FIN AÑADIR ITEMS-->
                 </mat-tab>
               </mat-tab-group>

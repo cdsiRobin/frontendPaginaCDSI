@@ -8,6 +8,7 @@ import { NewArfafeComponent } from '../facturacion/new-arfafe/arfafe-new.compone
 import { DetailArfafeComponent } from '../facturacion/detail-arfafe/detail-arfafe.component';
 import { NewArcgtcComponent } from '../arcgtc/new-arcgtc/new-arcgtc.component';
 import { ArccmcComponent } from '../arccmc/arccmc.component';
+import { ArccvcComponent } from '../arccvc/arccvc.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,7 @@ const routes: Routes = [
           },
           { path: 'edicion/:orden', component: PedidoEdicionComponent },
           { path: 'caja', component: CajaComponent },
+          { path: 'perfil', component: ArccvcComponent },
           { path: 'arfafe' ,
             children: [
               { path: '', redirectTo: 'list', pathMatch: 'full' },
