@@ -18,7 +18,7 @@ const ELEMENT_DATA: Arfafe[] = [];
 
 export class ListArfafeComponent implements OnInit {
 
-  cia: string= '01';
+  cia: string= sessionStorage.getItem('cia');
   compania: string = 'Nombre de compañia';
   centroEmi: string = 'Centro';
   public ConEstado = 'All';
@@ -58,7 +58,7 @@ export class ListArfafeComponent implements OnInit {
     this.fec1 = this.datepipe.transform(this.fecDesde.setMonth(this.fecDesde.getMonth()-1),'dd/MM/yyyy');
     this.fec2 = this.datepipe.transform(this.fecHasta,'dd/MM/yyyy');
     if(this.pven) this.pv = 'S'; else this.pv = 'N';
-    this.arfafeService.listaArfafe('01',this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
+    this.arfafeService.listaArfafe(this.cia,this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
     .subscribe(list => {
       this.arfafe = list;
       for(var i = 0; i<list.length; i++){

@@ -30,6 +30,7 @@ import { Arfafp } from 'src/app/models/Arfafp';
 import { Arfacfpk } from 'src/app/models/Arfacfpk';
 import { ArpffeService } from 'src/app/services/arpffe.service';
 import { Arpffe } from 'src/app/models/arpffe';
+import { MatSnackBar } from '@angular/material/snack-bar';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -47,6 +48,8 @@ export class NewArfafeComponent implements OnInit {
     cia: string;
     doc: string;
     fact: string;
+    selecc: string;
+    arfaccList: Arfacc[] = [];
     logoDataUrl: string;
     nomCentro: string;
     uniMed: string[] = ['Med'];
@@ -73,11 +76,12 @@ export class NewArfafeComponent implements OnInit {
     private arfacfservice: ArfacfService,
     public arpffeService: ArpffeService,
     public datepipe: DatePipe,
-    private router: Router) { }
+    private router: Router,
+    private sb: MatSnackBar) { }
 
 
   ngOnInit(): void {
-    Utils.getImageDataUrlFromLocalPath1('assets/Logo2.jpg').then(
+    Utils.getImageDataUrlFromLocalPath1('assets/Logo'+sessionStorage.getItem('cia')+'.jpg').then(
         result => this.logoDataUrl = result
     )
     this.arfacc.arfaccPK = new ArfaccPK();
@@ -124,20 +128,45 @@ export class NewArfafeComponent implements OnInit {
   }
 
   addArfafe(){
+    // console.log(this.selecc);
+    if(this.selecc === undefined) {
+        // console.log('Seleccionar serie');
+        const snackBar = this.sb.open('Debe seleccionar una serie','Cerrar',{ duration : 3000});
+        snackBar.onAction().subscribe(() => this.sb.dismiss());
+    } 
+    else {
 
-    this.detalle.fecha = new Date();
+        // console.log('imprimio factura');
+        // this.detalle.fecha = new Date();
+        // console.log(this.detalle);
+        this.detalle.fecha = new Date();
 
-    this.arfafeService.addArfafe(this.detalle)
-    .subscribe(data => console.log(data), error => console.log(error));
+        this.arfafeService.addArfafe(this.detalle)
+        .subscribe(data => console.log(data), error => console.log(error));
 
-    this.updateGuia();
+        this.updateGuia();
 
-    this.arfaccService.saveArfacc(this.arfacc)
-    .subscribe(data => console.log(data), error => console.log(error));
+        this.arfaccService.saveArfacc(this.arfacc)
+        .subscribe(data => console.log(data), error => console.log(error));
 
-    setTimeout(() => {this.ProperDesing();
-      this.router.navigate(['pedido/arfafe/list'])},1000
-    );
+        setTimeout(() => {this.ProperDesing();
+        this.router.navigate(['pedido/arfafe/list'])},1000
+        );
+        }
+    }
+
+    public cambioSerie(selecc){
+        // console.log('entro select');
+        for (const l of this.arfaccList) {
+            if (l.arfaccPK.serie === selecc) {
+                this.arfacc = l;
+                let cortar = this.arfacc.consDesde.toString().length  * -1;
+                this.correlativo = this.correlativo.slice(0,cortar)+this.arfacc.consDesde;
+                this.detalle.arfafePK.noFactu = this.arfacc.arfaccPK.serie+this.correlativo;
+                // console.log(this.arfacc);
+                break;
+            }
+        }
     }
 
     setArfafe(arfoe: Arpfoe){
@@ -155,19 +184,24 @@ export class NewArfafeComponent implements OnInit {
       corre.activo = 'S';
 
       this.arfaccService.getSerieAndCorrelativoPedido(corre).subscribe(d => {
-
-        this.arfacc = d[0];
-        this.arfacc.consDesde;
-        console.log(this.arfacc);
+        // this.arfaccList = d;
+        for(const l of d){
+            if(l.arfaccPK.serie.slice(0,1) === this.tipoDoc){
+                this.arfaccList.push(l);
+            }
+        }
+        //this.arfacc = d[0];
+        //this.arfacc.consDesde;
+        //console.log(d);
         //creacion llave primaria
         this.detalle.arfafePK = new ArfafePK();
 
         this.detalle.arfafePK.noCia = sessionStorage.getItem('cia');
         //creacion correlativo
-        let cortar = d[0].consDesde.toString().length  * -1;
+        /*let cortar = d[0].consDesde.toString().length  * -1;
         this.correlativo = this.correlativo.slice(0,cortar)+d[0].consDesde;
-        this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+this.correlativo;
-        // this.detalle.arfafePK.noFactu = 'F0010002212';
+        this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+this.correlativo;*/
+        
         this.detalle.arfafePK.tipoDoc = this.tipoDoc;
 
         //insercion data adicional
@@ -249,6 +283,7 @@ export class NewArfafeComponent implements OnInit {
             arfafl.cantidad_ENTR = list.cantEntreg;
             arfafl.descripcion = list.descripcion;
             arfafl.p_DSCTO3 = 0;
+            arfafl.tipo_BS = list.tipoBs;
             arfafl.imp_IGV = parseFloat(this.trunc(list.impIgv,2));
             arfafl.igv = list.igv;
             this.uniMed.push(list.medida);
@@ -359,13 +394,13 @@ export class NewArfafeComponent implements OnInit {
         body.push(
             [{text: l.no_ARTI, bold: false, fontSize: 8},
             {text: l.descripcion, bold: false, fontSize: 8},
-            {text: 'UND', bold: false, fontSize: 8},
+            {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
             {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
             {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
             {text: 0.00, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.imp_IGV, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.total, bold: false, fontSize: 8, alignment: 'right'}
+            {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.total.toFixed(2), bold: false, fontSize: 8, alignment: 'right'}
             ]
         );
       });
@@ -554,8 +589,8 @@ export class NewArfafeComponent implements OnInit {
         {
             columns: [
                 {
-                    width: 70,
-                    height: 100,
+                    width: 50,
+                    height: 70,
                     image: this.logoDataUrl
                 },
                 [
@@ -569,12 +604,12 @@ export class NewArfafeComponent implements OnInit {
                                 bold:true
                             },
                             {
-                                text: 'WWW.HS-IMPORT.COM',
+                                text: 'WWW.CDSI.COM.PE/RYSE',
                                 fontSize: 8
                             }
                         ],
                         color: 'black',
-                        fontSize: 9
+                        fontSize: 9  
                     },
                     {
                         width: 350,
@@ -586,12 +621,12 @@ export class NewArfafeComponent implements OnInit {
                                 bold:true
                             },
                             {
-                                text: 'VENTAS@HS-IMPORT.COM',
+                                text: 'rysesperanza@hotmail.com',
                                 fontSize: 8
                             }
                         ],
                         color: 'black',
-                        fontSize: 9
+                        fontSize: 9  
                     },
                     {
                         width: 350,
@@ -603,12 +638,12 @@ export class NewArfafeComponent implements OnInit {
                                 bold:true
                             },
                             {
-                                text: '01 3545576 / 983537208',
+                                text: '01 7820798 / 965428693 / 937802577',
                                 fontSize: 8
                             }
                         ],
                         color: 'black',
-                        fontSize: 9
+                        fontSize: 9  
                     },
                     {
                         width: 250,
@@ -620,12 +655,12 @@ export class NewArfafeComponent implements OnInit {
                                 bold:true
                             },
                             {
-                                text: 'AV. SANTA ANA MZ A 33 LT:36 CULTURA PERUANA MODERNA (SANTA ANITA) - SANTA ANITA - LIMA - LIMA',
+                                text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
                                 fontSize: 8
                             }
                         ],
                         color: 'black',
-                        fontSize: 9
+                        fontSize: 9  
                     }
                 ],
                 {
@@ -648,12 +683,12 @@ export class NewArfafeComponent implements OnInit {
                     width: 110,
                     table: {
                       headerRows: 1,
-                      widths: [100],
+                      widths: [100],        
                       body: [
                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
                           [
                             {
-                                text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,
+                                text: 'RUC: '+'20213092571'+' '+this.detalle.arfafePK.noFactu,
                                 bold: true,
                                 fontSize: 10
                             }

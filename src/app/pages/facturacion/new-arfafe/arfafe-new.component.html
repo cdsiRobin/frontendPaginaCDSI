@@ -3,19 +3,27 @@
     <!-- <mat-label>fecha: </mat-label>
     <span> {{ detalle.fecha | date }} </span> -->
     <!-- <span> {{idArfoe.cia}} | {{idArfoe.noOrden}} </span> -->
-    
     <form class="w-100">
         <div class="row">
             <div class="col-sm m-3" style="border-right: 1px solid lightgray;">
                 <div class="row">
-                    <div class="col-sm-5">
+                    <div class="col-sm-6">
                         <div class="row">
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                            <!-- <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
                                 <mat-label>Serie</mat-label>
                                 <input [readonly]="true" matInput placeholder="Placeholder" name="SerieDoc"
                                 [(ngModel)]="arfacc.arfaccPK.serie">
-                            </mat-form-field>
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
+                            </mat-form-field> -->
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-6">
+                                <mat-label>Serie</mat-label>
+                                <mat-select name="serieD" (selectionChange)="cambioSerie(selecc)" 
+                                [(ngModel)]="selecc">
+                                  <mat-option [value]="corre.arfaccPK.serie" *ngFor="let corre of arfaccList">
+                                      {{ corre.arfaccPK.serie}}
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-6">
                                 <mat-label>Correlativo</mat-label>
                                 <input [readonly]="true" matInput placeholder="Placeholder" name="CorrelDoc"
                                 [(ngModel)]="correlativo">
@@ -166,7 +174,7 @@
                 <!-- <button mat-raised-button color="primary" (click)="updateGuia()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
-                <!-- <button mat-raised-button color="primary" (click)="traerData()">btn3</button> -->
+                <!-- <button mat-raised-button color="primary" (click)="pruebaCorre()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
                 <button mat-raised-button color="primary" (click)="addArfafe()">Caja</button>
