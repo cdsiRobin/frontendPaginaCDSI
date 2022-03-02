@@ -49,7 +49,7 @@ export class ListArfafeComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarData();
-    
+
   }
 
   cargarData(){
@@ -67,8 +67,7 @@ export class ListArfafeComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
-    console.log(this.dataSource.data);
-    console.log(this.fec1 + '  --  '+this.fec2);
+
   }
 
   _filtrarList(){

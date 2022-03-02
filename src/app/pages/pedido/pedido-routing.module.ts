@@ -9,6 +9,7 @@ import { DetailArfafeComponent } from '../facturacion/detail-arfafe/detail-arfaf
 import { NewArcgtcComponent } from '../arcgtc/new-arcgtc/new-arcgtc.component';
 import { ArccmcComponent } from '../arccmc/arccmc.component';
 import { ArccvcComponent } from '../arccvc/arccvc.component';
+import { ListapedComponent } from './listaped/listaped.component';
 
 const routes: Routes = [
   {
@@ -16,6 +17,7 @@ const routes: Routes = [
     children: [
           // { path: '', component: PedidoComponent },
           { path: 'nuevo', component: PedidoEdicionComponent },
+          { path: 'lista', component: ListapedComponent },
           { path: 'arcgtc' ,
             children: [
               { path: '', redirectTo: 'new', pathMatch: 'full' },

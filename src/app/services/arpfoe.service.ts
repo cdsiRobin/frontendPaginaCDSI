@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { Guardar } from '../interfaces/guardar';
 import { map } from 'rxjs/operators';
 import { Arccvc } from '../models/Arccvc';
+import { ConsultaExitosas } from '../interfaces/consulta-exitosas';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,15 @@ import { Arccvc } from '../models/Arccvc';
 export class ArpfoeService extends GenericoService {
 
   constructor(private http: HttpClient) { super(); }
+
+  //LISTAMOS TODOS LOS PEDIDOS
+  public listarPedidosPV(cia: string, indPv: string, fec1: string, fec2: string): Observable< Array<Arpfoe> >{
+    return this.http.get<ConsultaExitosas<Arpfoe>>(this.url + `/arpfoe/pv?cia=${cia}&indPven=${indPv}&fec1=${fec1}&fec2=${fec2}`, this.options).pipe(
+      map( (reponse: ConsultaExitosas<Arpfoe>) => {
+        return reponse.resultado;
+      } )
+    );
+  }
 
   // METODO PARA GUARDAR EL PEDDIO
   public savePedido(arpfoe: Arpfoe): Observable<Arpfoe>{

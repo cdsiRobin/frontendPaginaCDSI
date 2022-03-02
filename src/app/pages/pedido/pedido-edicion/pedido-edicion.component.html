@@ -56,7 +56,7 @@
                 <!--CLIENTE-->
                 <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
                     <!--RUC DE CLIENTE-->
-                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
+                    <mat-form-field class="col-sm-3" appearance="outline" floatLabel="always">
                         <mat-label>RUC</mat-label>
                         <input matInput
                         formControlName="ruc"
@@ -71,7 +71,7 @@
                         </mat-autocomplete>
                     </mat-form-field>
                     <!--RAZON SOCIAL DE CLIENTE-->
-                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-8">
+                    <mat-form-field class="col-sm-6" appearance="outline" floatLabel="always" >
                       <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
                       <input matInput
                              formControlName="racSoc"
@@ -85,6 +85,11 @@
                         </mat-option>
                       </mat-autocomplete>
                     </mat-form-field>
+
+                    <div class="col-sm-2">
+                        <a mat-raised-button routerLink="/pedido/arccmc/new" style="cursor: pointer">Nuevo Cliente</a>
+                    </div>
+
 
                 </div>
                 <div class="row">
@@ -121,6 +126,7 @@
 
             </div>
             <div class="col-sm-4 p-3">
+
                 <div class="row">
                     <div class="col-sm">
                         <!--LISTA DE PRECIO-->
@@ -135,6 +141,7 @@
                     </div>
 
                 </div>
+
                 <div class="row">
                     <div class="col-sm">
                         <!--FORMA DE PAGO-->
@@ -177,22 +184,7 @@
                       </mat-form-field>
                     </div>
                 </div>
-                <!--
-                <div class="row">
-                    <div class="col-sm-4">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Centro</mat-label>
-                            <input matInput value="Nro">
-                        </mat-form-field>
-                    </div>
-                    <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
-                            <mat-label>Nombre Centro</mat-label>
-                            <input matInput value="Non_centro">
-                        </mat-form-field>
-                    </div>
-                </div>
-                -->
+
             </div>
         </div>
         <!--TIPO DE ITEM-->
@@ -364,6 +356,7 @@
         <mat-card>
             <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{totalGeneral | number : '1.2-2'}}</button>
             <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{totalGeneral | number : '1.2-2'}}</button>
+            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearCotizacion()">PROFORMA {{totalGeneral | number : '1.2-2'}}</button>
         </mat-card>
         <!--FIN DE TOTALES-->
     </form>

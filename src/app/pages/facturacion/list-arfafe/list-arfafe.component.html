@@ -1,10 +1,8 @@
-<!-- html listas -->
-<!-- <button (click)="getArfafeDetalle()">listar</button> -->
 <div class="container pt-2 h-100">
-  <!-- <p class="font-weight-light">{{compania}}</p> -->
+
     <p class="text-center mb-4 font-weight-bold">Listado de Facturas y Boletas</p>
-    
-        <div class="row">
+
+    <div class="row">
             <div class="col-sm-3">
                 <mat-form-field appearance="fill" floatLabel="always">
                     <mat-label>N° Factura:</mat-label>
@@ -36,8 +34,8 @@
                     <span matSuffix> - {{ centroEmi }}</span>
                   </mat-form-field>
             </div>
-        </div>
-        <div class="row">
+    </div>
+    <div class="row">
           <div class="col-sm-3">
             <mat-form-field appearance="fill">
                 <mat-label>tipo</mat-label>
@@ -67,40 +65,12 @@
           <mat-label class="h6 m-2">P.V.</mat-label>
             <mat-slide-toggle class="m-2" [(ngModel)]="pven"></mat-slide-toggle>
           <button class="float-right" mat-raised-button (click)="_filtrarList()" color="primary">Buscar</button>
-          <div *ngIf="spin">
-            <mat-spinner [diameter]="20"></mat-spinner> 
+          <div class="float-center" *ngIf="spin">
+            <mat-spinner [diameter]="50"></mat-spinner>
           </div>
         </div>
-        </div>
-    <!-- <table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th scope="col">TD</th>
-            <th scope="col">Factura</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Guia</th>
-            <th scope="col">Orden</th>
-            <th scope="col">Cliente</th>
-            <th scope="col">Moneda</th>
-            <th scope="col">Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor ="let factura of arfafe">
-            <td><button (click)="getArfafeDetalle(factura.arfafePK.noCia,factura.arfafePK.tipoDoc,
-                factura.arfafePK.noFactu)" class="btn">D</button></td>
-            <td>{{ factura.arfafePK.tipoDoc }}</td>
-            <td>{{ factura.arfafePK.noFactu }}</td>
-            <td>{{ factura.fecha }}</td>
-            <td>{{ factura.no_GUIA }}</td>
-            <td>{{ factura.no_ORDEN }}</td>
-            <td>{{ factura.no_CLIENTE }}</td>
-            <td>{{ factura.moneda }}</td>
-            <td>{{ factura.total }}</td>
-        </tr>
-    </tbody>
-    </table> -->
+    </div>
+
     <div class="mat-elevation-z8">
         <table style="width: 100%;" mat-table [dataSource]="dataSource" matSort matSortActive="fecha" matSortDirection="desc">
             <ng-container matColumnDef="detalle">
@@ -149,7 +119,7 @@
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </table>
         <mat-paginator [pageSizeOptions]="[5]"
-                 showFirstLastButtons 
+                 showFirstLastButtons
                  aria-label="Select page of arfafe">
   </mat-paginator>
     </div>

@@ -1,0 +1,135 @@
+<div class="container pt-2 h-100">
+  <h1 class="text-center mb-4 font-weight-bold">Listado de Pedidos</h1>
+
+  <form [formGroup]="fBuscar" #frmBuscar="ngForm" (ngSubmit)="buscar()">
+        <div class="row">
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill" floatLabel="always">
+                    <mat-label>N° Pedido:</mat-label>
+                    <input matInput type="text" formControlName="pedido" (keyup)="buscarPedido($event)" class="example-right-center" >
+                  </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+              <mat-form-field appearance="fill" floatLabel="always">
+                  <mat-label>RUC / DNI:</mat-label>
+                  <input type="number" matInput formControlName="rucDni" (keyup)="buscarPedido($event)" class="example-right-center" >
+                </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill">
+                    <mat-label>Estado</mat-label>
+                    <mat-select formControlName="estado">
+                      <mat-option value="0">:: Todos ::</mat-option>
+                      <mat-option value="R">COTIZADO</mat-option>
+                      <mat-option value="A">ANULADO</mat-option>
+                      <mat-option value="E">APROBADO</mat-option>
+                      <mat-option value="G">GUIADO</mat-option>
+                      <mat-option value="D">CERRADO</mat-option>
+                      <mat-option value="Q">ATENDO PF</mat-option>
+                      <mat-option value="C">ATENDO B/F</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <mat-form-field appearance="fill" floatLabel="always">
+                    <mat-label>Centro emisor</mat-label>
+                    <input matInput type="number" formControlName="centro" maxlength="2" class="example-right-align" placeholder="Centro Emisor">
+                    <span matSuffix> - </span>
+                  </mat-form-field>
+            </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-3">
+            <mat-form-field appearance="fill">
+              <mat-label>Desde</mat-label>
+              <input matInput  formControlName="desde" [matDatepicker]="picker">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker ngDefaultControl></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-3">
+            <mat-form-field appearance="fill">
+              <mat-label>Hasta</mat-label>
+              <input matInput formControlName="hasta" [matDatepicker]="picker1">
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker #picker1  ngDefaultControl></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-3">
+            <mat-form-field appearance="fill">
+                <mat-label>Modulo</mat-label>
+                <mat-select formControlName="pv">
+                  <mat-option value="S">Punto Venta</mat-option>
+                </mat-select>
+              </mat-form-field>
+          </div>
+          <div class="example-button-container">
+            <button mat-fab color="primary" type="submit" [disabled]="fBuscar.invalid">
+              <mat-icon>search</mat-icon>
+            </button>
+          </div>
+
+        </div>
+  </form>
+
+  <div class="mat-elevation-z8">
+      <table style="width: 100%;" mat-table [dataSource]="dataSource" matSort matSortActive="fecha" matSortDirection="desc">
+          <ng-container matColumnDef="detalle">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let element">
+                  <button (click)="buscarProforma(element.arpfoePK.noOrden)" *ngIf="element.estado === 'Q'" class="btn btn-secondary"
+                  style="font-family: Roboto, 'Helvetica Neue', sans-serif; font-size: 14px; font-weight: bold;">D</button>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="arpfoePK.noOrden">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> Nro Pedido </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.arpfoePK.noOrden}} </td>
+            </ng-container>
+            <ng-container matColumnDef="noCliente">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> RUC/DNI </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.noCliente}} </td>
+            </ng-container>
+            <ng-container matColumnDef="fRecepcion">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> FECHA </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.fRecepcion | date:'dd-MM-yyyy'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="codTPed">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> TRANS. </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.codTPed}} </td>
+            </ng-container>
+            <ng-container matColumnDef="centro">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> CENTRO </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.centro}} </td>
+            </ng-container>
+            <ng-container matColumnDef="estado">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> ESTADO </th>
+              <td class="text-center" mat-cell *matCellDef="let element">
+                <mat-select disableRipple mat-cell [value]="element.estado">
+                  <mat-option value="R">COTIZADO</mat-option>
+                  <mat-option value="A">ANULADO</mat-option>
+                  <mat-option value="E">APROBADO</mat-option>
+                  <mat-option value="G">GUIADO</mat-option>
+                  <mat-option value="D">CERRADO</mat-option>
+                  <mat-option value="Q">ATENDO PF</mat-option>
+                  <mat-option value="C">ATENDO B/F</mat-option>
+                </mat-select>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="moneda">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> MONEDA </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.moneda}} </td>
+            </ng-container>
+            <ng-container matColumnDef="tPrecio">
+              <th class="text-center" mat-header-cell *matHeaderCellDef> TOTAL </th>
+              <td class="text-center" mat-cell *matCellDef="let element"> {{element.tPrecio | number:'1.2-2' }} </td>
+            </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[5]"
+               showFirstLastButtons
+               aria-label="Select page of arfafe">
+      </mat-paginator>
+  </div>
+
+</div>

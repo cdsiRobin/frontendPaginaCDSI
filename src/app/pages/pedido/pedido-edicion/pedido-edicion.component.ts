@@ -820,6 +820,22 @@ export class PedidoEdicionComponent implements OnInit {
     });
   }
   // FIN
+  // CREACION DE UNA BOLETA
+  public crearCotizacion(): void{
+      Swal.fire({
+        title: '¿Está seguro de crear una Proforma?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes'
+      }).then((result) => {
+        if (result.isConfirmed) {
+            this.crear_pedido('N', 'N');
+        }
+      });
+    }
+    // FIN
 
   // CREAR PEDIDO
   public crear_pedido(indBoleta: string, indFactura: string): void{
@@ -864,7 +880,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.tImpuesto = this.getTotalIgv();
     pedido.tPrecio = this.getTotalPedido();
     pedido.impuesto = 18;
-    pedido.estado = 'E';
+    pedido.estado = 'Q';
     pedido.bodega = this.arintd.almaOri;
     pedido.igv = 18;
     pedido.direccionComercial = this.arcctda.direccion.substring(0,190);
@@ -875,14 +891,11 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.tValorVenta = this.getTotalPU();
     pedido.almaOrigen = this.arintd.almaOri;
     pedido.almaDestino = this.arintd.almaDes;
-
     pedido.totalBruto = this.getTotalPU();
-
     pedido.centro = sessionStorage.getItem('centro');
     pedido.codCaja = 'C11';
     pedido.cajera = '000002';
     pedido.centroCosto = '3201';
-
     pedido.operExoneradas = 0;
     pedido.operGratuitas = 0;
     pedido.operGravadas = this.getTotalPedido() - this.getTotalIgv();
@@ -945,17 +958,15 @@ export class PedidoEdicionComponent implements OnInit {
       this.guardarArinme1(pedido);
       this.actualizarArinse();
       this.actualizarArfacf();
-      this.snackBar.open('Se GUARDO el PEDIDO', 'Salir',
+      this.snackBar.open('SE GUARDO PROFORMA', 'Salir',
       {
         duration: 3000,
         verticalPosition: 'top',
         horizontalPosition: 'center'
       });
     });
-    // VAMOS A BOLETEAR O FACTURAR
-    setTimeout(() => {
-      this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden, guia: this.guia}}); }, 2000
-    );
+    // VAMOS A LA LISTA DE PEDIDOS
+      this.router.navigate(['pedido/lista']);
     // FIN
   }
 

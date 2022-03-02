@@ -9,6 +9,7 @@ import {MaterialModule} from '../../material/material.module';
 import {AppRoutingModule} from '../../app-routing.module';
 import {VendedorComponent} from '../vendedor/vendedor.component';
 import { DialogSerieComponent } from './dialog-serie/dialog-serie.component';
+import { ListapedComponent } from './listaped/listaped.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { DialogSerieComponent } from './dialog-serie/dialog-serie.component';
     PedidoComponent,
     PedidoEdicionComponent,
     VendedorComponent,
-    DialogSerieComponent
+    DialogSerieComponent,
+    ListapedComponent
   ],
   imports: [
     CommonModule,
