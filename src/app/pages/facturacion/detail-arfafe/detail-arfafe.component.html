@@ -131,7 +131,7 @@
                     <tr *ngFor ="let data of detalle.arfaflList">
                         <td class="text-right">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
-                        <td>und</td>
+                        <td>{{ uniMed[data.arfaflPK.consecutivo] }}</td>
                         <td>{{ data.descripcion }}</td>
                         <td class="text-right">{{ data.tipo_AFECTACION }}</td>
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
