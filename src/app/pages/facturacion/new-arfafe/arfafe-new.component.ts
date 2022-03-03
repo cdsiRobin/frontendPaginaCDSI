@@ -92,16 +92,11 @@ export class NewArfafeComponent implements OnInit {
 
   traerData(){
       this.route.queryParams.subscribe(p => {
-        let idArpfoe: IdArpfoe = new IdArpfoe();
         this.noCia = p['noCia'];
         this.noOrden = p['noOrden'];
         this.noGuia = p['guia'];
-        idArpfoe.noCia = this.noCia;
-        idArpfoe.noOrden = this.noOrden;
-        this.pedidoService.pedidoParaFactura(idArpfoe).pipe(
-          map((response: Infor<Arpfoe>) => response.resultado)).
+        this.pedidoService.pedidoParaFactura(this.noCia, this.noOrden).
           subscribe(d => {
-              console.log(d);
               this.setArfafe(d);
               this.traerGuia(d.bodega);
             });
@@ -133,7 +128,7 @@ export class NewArfafeComponent implements OnInit {
         // console.log('Seleccionar serie');
         const snackBar = this.sb.open('Debe seleccionar una serie','Cerrar',{ duration : 3000});
         snackBar.onAction().subscribe(() => this.sb.dismiss());
-    } 
+    }
     else {
 
         // console.log('imprimio factura');
@@ -201,7 +196,7 @@ export class NewArfafeComponent implements OnInit {
         /*let cortar = d[0].consDesde.toString().length  * -1;
         this.correlativo = this.correlativo.slice(0,cortar)+d[0].consDesde;
         this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+this.correlativo;*/
-        
+
         this.detalle.arfafePK.tipoDoc = this.tipoDoc;
 
         //insercion data adicional
@@ -609,7 +604,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     },
                     {
                         width: 350,
@@ -626,7 +621,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     },
                     {
                         width: 350,
@@ -643,7 +638,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     },
                     {
                         width: 250,
@@ -660,7 +655,7 @@ export class NewArfafeComponent implements OnInit {
                             }
                         ],
                         color: 'black',
-                        fontSize: 9  
+                        fontSize: 9
                     }
                 ],
                 {
@@ -683,7 +678,7 @@ export class NewArfafeComponent implements OnInit {
                     width: 110,
                     table: {
                       headerRows: 1,
-                      widths: [100],        
+                      widths: [100],
                       body: [
                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
                           [
@@ -918,7 +913,7 @@ export class NewArfafeComponent implements OnInit {
     pdfMake.createPdf(documentDefinition).open();
   }
 
-  
+
 
 
   }

@@ -44,7 +44,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { ArpfoeService } from '../../../services/arpfoe.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import * as moment from 'moment';
 import { Arintd } from '../../../models/arintd';
@@ -83,6 +83,7 @@ export class PedidoEdicionComponent implements OnInit {
   factuOptions: Observable<Arccmc[]>;
   arccmcs: Arccmc[];
   // FIN
+  savePed = true;
 
   fechaSeleccionada: Date = new Date();
   detallePedido: Arpfol[] = [];
@@ -196,6 +197,7 @@ export class PedidoEdicionComponent implements OnInit {
               private snackBar: MatSnackBar,
               private dialogItems: MatDialog,
               private router: Router,
+              private route: ActivatedRoute,
               public datepipe: DatePipe
               ) { }
 
@@ -265,7 +267,21 @@ export class PedidoEdicionComponent implements OnInit {
     });
 
     this.listarUnidades();
+    // TRAER EL PEDIDOD
+    this.traerPedido();
 
+  }
+  // VAMOS A TRAER EL PEDIDO
+  private traerPedido(){
+      this.route.queryParams.subscribe(p => {
+        if (p['noOrden'] !== undefined) {
+            this.pedidoService.pedidoParaFactura(this.cia, p['noOrden']).
+              subscribe(p => {
+                console.warn(p);
+
+                }, error => { console.warn(error.error.estado.mensaje);});
+        }
+      });
   }
   // LISTAMOS TODAS LAS UNIDADES POR COMPAÑIA
   private listarUnidades(): void {
@@ -557,10 +573,7 @@ export class PedidoEdicionComponent implements OnInit {
                         data: buscarItem
                       });
       dialogRef.afterClosed().subscribe( result => {
-        // VAMOR A RECORRER EL ARREGLO DE ITEMS
-       /* result.forEach( element => {
-           this.verificarItems(element);
-        });*/
+
         for(const i of result) {
           this.verificarItems(i);
         }
@@ -881,7 +894,12 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.tImpuesto = this.getTotalIgv();
     pedido.tPrecio = this.getTotalPedido();
     pedido.impuesto = 18;
-    pedido.estado = 'Q';
+    if (indBoleta === 'N' && indFactura === 'N') {
+      pedido.estado = 'R';
+    } else {
+      pedido.estado = 'C';
+    }
+
     pedido.bodega = this.arintd.almaOri;
     pedido.igv = 18;
     pedido.direccionComercial = this.arcctda.direccion.substring(0,190);
@@ -959,16 +977,30 @@ export class PedidoEdicionComponent implements OnInit {
       this.guardarArinme1(pedido);
       this.actualizarArinse();
       this.actualizarArfacf();
-      this.snackBar.open('SE GUARDO PROFORMA', 'Salir',
-      {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center'
-      });
-    });
-    // VAMOS A LA LISTA DE PEDIDOS
-      this.router.navigate(['pedido/lista']);
-    // FIN
+    }, error => {
+      this.savePed = false;
+      Swal.fire('No se pudo guardo la información.'); }
+    );
+    if(this.savePed) {
+      if (indBoleta === 'N' && indFactura === 'N') {
+          this.snackBar.open('SE GUARDO COTIZACIÓN', 'Salir',
+          {
+            duration: 1500,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+          });
+          // VAMOS A LA LISTA DE PEDIDOS
+          this.router.navigate(['pedido/lista']);
+          // FIN
+      }else{
+          // VAMOS A BOLETEAR O FACTURAR
+          setTimeout(() => {
+            this.router.navigate(['pedido/arfafe/new'], {queryParams: {noCia: this.cia, noOrden: this.orden, guia: this.guia}}); }, 2000
+          );
+          // FIN
+      }
+    }
+
   }
 
   // METODO QUE NOS PERMITE GUARDAR LA ARPFFE (GUIA DE REMISION)

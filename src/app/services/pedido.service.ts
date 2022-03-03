@@ -4,10 +4,12 @@ import { PedidoDTO } from './../DTO/PedidoDTO';
 import { HttpClient } from '@angular/common/http';
 import { Arpfoe } from './../models/Arpfoe';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { IdArpfoe } from '../models/IdArpfoe';
 import { GenericoService } from './generico/generico.service';
 import { Infor } from '../interfaces/infor';
+import { ConsultaExitosa } from '../interfaces/consulta-exitosa';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -18,9 +20,17 @@ export class PedidoService extends GenericoService {
   mensajeCambio = new Subject<string>();
   constructor(public http: HttpClient) { super(); }
 
-  pedidoParaFactura(datos: IdArpfoe){
+  /*pedidoParaFactura(datos: IdArpfoe){
     const body = JSON.stringify(datos);
     return this.http.post<Infor<Arpfoe>>(this.url+`/arpfoe/id`,body, this.options);
+  }*/
+
+  public pedidoParaFactura(cia: string, cod: string): Observable<Arpfoe>{
+    return this.http.get<ConsultaExitosa<Arpfoe>>(this.url + `/arpfoe/id?cia=${cia}&cod=${cod}`, this.options).pipe(
+      map( (reponse: ConsultaExitosa<Arpfoe>) => {
+        return reponse.resultado;
+      } )
+    );
   }
 
   registraPedido(pedido: PedidoDTO){
