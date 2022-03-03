@@ -68,7 +68,8 @@ import { ArinumService } from '../../../services/arinum.service';
 
 @Component({
   selector: 'app-pedido-edicion',
-  templateUrl: './pedido-edicion.component.html'
+  templateUrl: './pedido-edicion.component.html',
+  styleUrls: ['./pedido-edicion.component.scss']
 })
 export class PedidoEdicionComponent implements OnInit {
   anularBF = 'N';
