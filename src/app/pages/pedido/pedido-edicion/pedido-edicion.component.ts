@@ -72,6 +72,7 @@ import { ArinumService } from '../../../services/arinum.service';
   styleUrls: ['./pedido-edicion.component.scss']
 })
 export class PedidoEdicionComponent implements OnInit {
+  d: Detpedido;
   anularBF = 'N';
   arinse: Arinse;
   tipoItem = 'L';
@@ -1179,12 +1180,20 @@ export class PedidoEdicionComponent implements OnInit {
     const descrip: string = this.groupArticulo.get('desProd').value;
     const cantidad: number = this.groupArticulo.get('cantProd').value;
 
-    const precio: number = this.groupArticulo.get('precProd').value / 1.18;
-    const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
-    const total = (precio * cantidad) + igv;
-    const d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
-      cantidad, precio, igv, total);
-    if (precio <= 0){
+    if(um === 'UND'){
+      const precio  = this.groupArticulo.get('precProd').value / 1.18;
+      const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+      const total = (precio * cantidad) + igv;
+      this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
+        cantidad, precio, igv, total);
+    } else {
+      const total = this.groupArticulo.get('precProd').value * cantidad;
+      const precio  = total / 1.18;
+      const igv = precio * 0.18;
+      this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
+        cantidad, precio, igv, total);
+    }
+    if (this.groupArticulo.get('precProd').value <= 0){
       this.snackBar.open(`El precio no debe ser CERO.`, 'Salir',
       {
         duration: 1000,
@@ -1193,10 +1202,10 @@ export class PedidoEdicionComponent implements OnInit {
       });
     }else{
         // BUSCAMOS SI EXISTE ITEM
-        const dp = this.detPedidos.find(x => x.codigo === d.codigo);
+        const dp = this.detPedidos.find(x => x.codigo === this.d.codigo);
         // console.log(dp);
         if (dp === undefined) {
-          this.detPedidos.push(d);
+          this.detPedidos.push(this.d);
           this.snackBar.open(`Se agrego el articulo`, 'Salir',
           {
             duration: 1000,
