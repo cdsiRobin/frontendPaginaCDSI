@@ -95,7 +95,7 @@ export class NewArfafeComponent implements OnInit {
         this.noCia = p['noCia'];
         this.noOrden = p['noOrden'];
         this.noGuia = p['guia'];
-        this.pedidoService.pedidoParaFactura(this.noCia, this.noOrden).
+        this.pedidoService.pedidoParaFactura1(this.noCia, this.noOrden).
           subscribe(d => {
               this.setArfafe(d);
               this.traerGuia(d.bodega);
@@ -158,7 +158,11 @@ export class NewArfafeComponent implements OnInit {
                 let cortar = this.arfacc.consDesde.toString().length  * -1;
                 this.correlativo = this.correlativo.slice(0,cortar)+this.arfacc.consDesde;
                 this.detalle.arfafePK.noFactu = this.arfacc.arfaccPK.serie+this.correlativo;
-                // console.log(this.arfacc);
+                this.detalle.arfaflList.forEach(
+                    list => {
+                        list.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
+                    }
+                );
                 break;
             }
         }
@@ -270,7 +274,7 @@ export class NewArfafeComponent implements OnInit {
             arfafl.arfaflPK = new arfaflPK();
             arfafl.arfaflPK.noCia = this.detalle.arfafePK.noCia;
             arfafl.arfaflPK.tipoDoc = this.detalle.arfafePK.tipoDoc;
-            arfafl.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
+            //arfafl.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
             arfafl.arfaflPK.consecutivo = list.noLinea;
             arfafl.no_ARTI = list.arpfolPK.noArti;
             arfafl.bodega = list.bodega;
