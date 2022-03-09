@@ -1,0 +1,151 @@
+<!--ESTADO-->
+<div class="row">
+  <div class="col-sm-12">
+    <mat-slide-toggle [(ngModel)]="estadoNuevo">Buscar en SUNAT</mat-slide-toggle>
+  </div>
+</div>
+<!--FIN-->
+<!--BUSCAR CLIENE-->
+<div class="row" [hidden]="!estadoNuevo">
+  <form class="formulario" [formGroup]="fBuscarSunat" #frmBuscarSunat="ngForm" (ngSubmit)="buscarSunat()">
+    <div class="col-sm-12">
+      <div class="row">
+          <div class="col-sm-8">
+            <mat-form-field appearance="fill">
+              <mat-label>BUSCAR POR RUC O DNI</mat-label>
+              <input formControlName="rucDni" matInput type="text" placeholder="Buscar por RUC o DNI" minlength="8" maxlength="11">
+              <mat-error *ngIf="fbs.rucDni.errors?.minlength">Minimo es 8 digitos</mat-error>
+              <mat-error *ngIf="fbs.rucDni.errors?.pattern">Solo numeros</mat-error>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-2">
+            <button type="submit" [disabled]="frmBuscarSunat.invalid" mat-raised-button color="primary" style="cursor: pointer">
+              <mat-icon>search</mat-icon>SUNAT
+            </button>
+          </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!--FIN-->
+<mat-divider></mat-divider>
+<!--FORMULARIO CLIENE-->
+<div class="row" style="margin-top: 10px;">
+  <form class="formulario" [formGroup]="fArccmc" #frmArccmc="ngForm" (ngSubmit)="guardarArccmc()">
+    <div class="col-sm-12">
+      <div class="row">
+          <div class="col-sm-12">
+              <div class="row">
+                <div class="col-sm-6">
+                    <!--CODIGO-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput required type="number" placeholder="CODIGO" required formControlName="codigo">
+                    </mat-form-field>
+                </div>
+              </div>
+              <!--NOMBRE-->
+              <mat-form-field class="example-full-width">
+                <input matInput type="text" minlength="3" maxlength="200" placeholder="RAZON SOCIAL / NOMBRES Y APELLIDOS" required formControlName="nombre">
+                <small *ngIf="f.nombre.errors?.required && f.nombre.touched" class="invalido">Nombre es requerido</small>
+                <small *ngIf="f.nombre.errors?.minlength" class="invalido">El campo debe ser mayor a 3 caracteres</small>
+              </mat-form-field>
+              <!--RUC y DNI-->
+              <div class="row">
+                <div class="col-sm-6">
+                    <!--RUC-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="number" minlength="11" maxlength="11" placeholder="RUC" formControlName="ruc">
+                      <!-- <small *ngIf="f.ruc.errors?.required && f.ruc.touched" class="invalido">RUC es requerido</small> -->
+                      <small *ngIf="f.ruc.errors?.minlength" class="invalido">El campo debe ser de 11 caracteres</small>
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                    <!--DNI-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="number" minlength="8" maxlength="8" placeholder="DNI" formControlName="dni">
+                      <!-- <small *ngIf="f.ruc.errors?.required && f.ruc.touched" class="invalido">DNI es requerido</small> -->
+                    </mat-form-field>
+                </div>
+              </div>
+              <!--TELEFONO y CELULAR-->
+              <div class="row">
+                <div class="col-sm-6">
+                   <!--TELEFONO-->
+                  <mat-form-field class="example-full-width">
+                    <input matInput type="tel" placeholder="TELEFONO" formControlName="telefono">
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                    <!--CELULAR-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="tel" placeholder="CELULAR" formControlName="celular">
+                    </mat-form-field>
+                </div>
+              </div>
+              <!--WEB y EMAIL-->
+              <div class="row">
+                <div class="col-sm-6">
+                   <!--WEB-->
+                  <mat-form-field class="example-full-width">
+                    <input matInput type="text" placeholder="WEB" formControlName="web">
+                  </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                    <!--EMAIL-->
+                    <mat-form-field class="example-full-width">
+                      <input matInput type="email" minlength="5" placeholder="EMAIL" formControlName="email">
+                      <small *ngIf="f.email.errors?.required && f.email.touched" class="invalido">Email es requerido</small>
+                      <small *ngIf="f.email.errors?.minlength" class="invalido">El campo debe ser de 5 caracteres</small>
+                    </mat-form-field>
+                </div>
+              </div>
+              <!--DIRECCION-->
+              <mat-form-field class="example-full-width">
+                <input matInput type="text" minlength="3" maxlength="200" placeholder="DIRECCIÓN" required formControlName="direccionD">
+                <small *ngIf="f.direccionD.errors?.required && f.direccionD.touched" class="invalido">Dirección es requerido</small>
+                <small *ngIf="f.direccionD.errors?.minlength" class="invalido">El campo debe ser mayor a 3 caracteres</small>
+              </mat-form-field>
+              <!--DEPARTAMENTO-->
+              <mat-form-field>
+                <mat-select formControlName="codiDepa" placeholder="Departamento" (selectionChange)="seleccionarDepartamento()">
+                    <mat-option *ngFor="let e of arccdps" [value]="e.arccdpPK.codiDepa">{{e.descDepa}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!--FIN-->
+              <!--PROVINCIA-->
+              <mat-form-field>
+                <mat-select formControlName="codiProv" placeholder="PROVINCIA" (selectionChange)="seleccionarProvincia()">
+                    <mat-option *ngFor="let e of arccprs" [value]="e.arccprPK.codiProv">{{e.descProv}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!--FIN-->
+              <!--DISTRITO-->
+              <mat-form-field>
+                <mat-select formControlName="codiDist" placeholder="DISTRITO" (selectionChange)="seleccionarDistrito()">
+                    <mat-option *ngFor="let e of arccdis" [value]="e.arccdiPK.codiDist">{{e.descDist}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <!--FIN-->
+          </div>
+      </div>
+    </div>
+    <!--BOTONES-->
+    <div class="col-sm-12">
+      <div class="row">
+          <div class="col-sm-6">
+            <button type="button" class="formulario" (click)="cerrarModalArccmc()" mat-raised-button style="cursor: pointer">
+              <mat-icon>logout</mat-icon>Salir
+            </button>
+          </div>
+          <div class="col-sm-6">
+            <button type="submit" class="formulario" [disabled]="fArccmc.invalid" mat-raised-button color="primary" style="cursor: pointer">
+              <mat-icon>save</mat-icon>Guardar
+            </button>
+          </div>
+      </div>
+    </div>
+  </form>
+
+</div>
+<!--FIN-->
+

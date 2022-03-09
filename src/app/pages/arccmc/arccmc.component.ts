@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ArccmcService } from '../../services/arccmc.service';
 import { Empresa } from '../../models/empresa';
 import { Persona } from '../../models/persona';
@@ -25,7 +25,7 @@ export class ArccmcComponent implements OnInit {
   centro: string;
   usuario: string;
 
-  rucDni: string;
+  rucDni: string = '';
   rznombre: string;
 
   fArccmc: FormGroup;
@@ -103,7 +103,10 @@ export class ArccmcComponent implements OnInit {
     //BUSCAMOS LAS PROVINCIAS
     this.arccmcService.listarProvincXciaAndDepart(this.cia,this.depar).subscribe(data =>{
        this.arccprs = data;
+    }, error => {
+      console.warn(error);
     });
+
   }
 
   //SELECCIONAR PROVINCIA POR COMPAÑIA Y DEPARTAMENTO
@@ -137,16 +140,16 @@ export class ArccmcComponent implements OnInit {
     if(cantidad == 11){
       this.arccmcService.buscarClienteRUCApiSunat(this.rucDni.trim()).subscribe( value => {
         this.empresa = value;
-        this.mensajeBuscar('RUC');
         this.iniciarFormularioEmpresa(this.empresa);
       });
     }
     if(cantidad == 8){
-      this.arccmcService.buscarClienteDNIApiSunat(this.rucDni).subscribe( value => {
-        //console.log(value);
+      this.arccmcService.buscarClienteDNIApiSunat(this.rucDni.trim()).subscribe( value => {
         this.persona = value;
         this.mensajeBuscar('DNI');
         this.iniciarFormularioPersona(this.persona);
+      }, () => {
+        console.log('SE TERMINO DE CONSULATAR...');
       });
     }
   }
@@ -162,6 +165,7 @@ export class ArccmcComponent implements OnInit {
       id : new FormControl(e.numeroDocumento),
       nombre : new FormControl(e.nombre),
       direccion : new FormControl(e.direccion),
+      dni : new FormControl(e.numeroDocumento),
       ruc : new FormControl(''),
       telefono : new FormControl(''),
       celular : new FormControl(''),
@@ -206,6 +210,7 @@ export class ArccmcComponent implements OnInit {
         id : new FormControl(e.numeroDocumento),
         nombre : new FormControl(e.nombre),
         direccion : new FormControl(e.direccion),
+        dni : new FormControl(''),
         ruc : new FormControl(e.numeroDocumento),
         telefono : new FormControl(''),
         celular : new FormControl(''),
@@ -236,14 +241,17 @@ export class ArccmcComponent implements OnInit {
       });
   }
 
-  //FORMULARIO
+  //INICIAR FORMULARIO
   public iniciarFormulario(){
     this.fArccmc = new FormGroup({
       cia : new FormControl(this.cia),
       id : new FormControl(this.rucDni),
       nombre : new FormControl(''),
       direccion : new FormControl(''),
-      ruc : new FormControl(''),
+      dni: new FormControl({value: '', disabled: false },
+        [Validators.minLength(8), Validators.pattern(/^-?(0|[1-9]\d*)?$/)]),
+      ruc: new FormControl({value: '', disabled: false },
+        [Validators.minLength(11), Validators.pattern(/^-?(0|[1-9]\d*)?$/)]),
       telefono : new FormControl(''),
       celular : new FormControl(''),
       extranjero : new FormControl('N'), // N
@@ -275,6 +283,7 @@ export class ArccmcComponent implements OnInit {
 
   //FORMULARIO ARCCMC
   public iniciarFormularioArccmc(a: Arccmc){
+
     this.arcctdas = a.arcctdaEntity;
     this.arcctda = this.arcctdas[0];
     this.buscandoDeparProvDistrito(this.arcctda);
@@ -355,7 +364,6 @@ export class ArccmcComponent implements OnInit {
  //LISTAR  PROVINCIAS POR DEPARTAMENTO
  public listarProvincia(): void{
    this.arccmcService.listarProvincXciaAndDepart(this.cia,this.depar).subscribe( data => {
-     //console.log('LISTA DE PROVINCIA, cia : '+this.cia+' , DEPAR : '+this.depar);
      this.arccprs = data;
      this.buscarProvincia();
    });
@@ -366,7 +374,7 @@ export class ArccmcComponent implements OnInit {
     this.arccdis = data;
     this.buscarDistrito();
   });
-}
+ }
   //METODO PARA GUARDAR EL CLIENTE
   public guardarCliente(){
     let rznombre: string =  this.fArccmc.get('nombre').value;
@@ -378,6 +386,7 @@ export class ArccmcComponent implements OnInit {
 
      arccmc.objIdArc = idArccmc;
      arccmc.nombre = rznombre.substring(0,199).toUpperCase();
+     arccmc.dni = this.fArccmc.get('dni').value;
      arccmc.ruc = this.fArccmc.get('ruc').value;
      arccmc.direccion = this.fArccmc.get('direccion').value;
      arccmc.telefono = this.fArccmc.get('telefono').value;
@@ -391,12 +400,10 @@ export class ArccmcComponent implements OnInit {
      arccmc.email = this.fArccmc.get('email').value;
      //DIRECCION
      let arcctda = new ArcctdaEntity();
-
      let idArcctda = new ArcctdaPKEntity();
      idArcctda.noCia = this.cia;
      idArcctda.codTienda = '001';
      idArcctda.noCliente = this.fArccmc.get('id').value;
-
      arcctda.arcctdaPKEntity = idArcctda;
      arcctda.nombre ='LEGAL';
      arcctda.direccion = this.fArccmc.get('direccionD').value;
@@ -414,31 +421,32 @@ export class ArccmcComponent implements OnInit {
      arcctda.noCliente1 ='';
      arcctda.estabSunat ='0000';
 
-     let arcctdas: ArcctdaEntity[] = [];
+     const arcctdas: Array<ArcctdaEntity> = [];
      //this.arcctdas.push(arcctda);
      arcctdas.push(arcctda);
 
      arccmc.arcctdaEntity = arcctdas;
      //GUARDAR
      this.arccmcService.guardarCliente(arccmc).subscribe( data => {
-        //this.arccmc = data;
         this.snackBar.open("Se registró ", "Aviso", { duration: 2000 });
         setTimeout(() => {
           this.Limpiar();
         }, 2000);
-     });
+     }, error => {
+        Swal.fire(error);
+     }, ()=> console.warn('Se termino el servicio de guardado de cliente !!!..'));
 
   }
 
   //LIMPIAR FORMULARIO
   public Limpiar(): void{
+    this.rucDni = '';
     this.arccdp = undefined;
     this.arccpr = undefined;
     this.arccprs = [];
     this.arccdi = undefined;
     this.arccdis = [];
     this.iniciarFormulario();
-
   }
 
 }
