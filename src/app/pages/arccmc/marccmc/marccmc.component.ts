@@ -433,6 +433,7 @@ export class MarccmcComponent implements OnInit {
      arcctdas.push(arcctda);
 
      arccmc.arcctdaEntity = arcctdas;
+     this.arccmc = arccmc;
      return arccmc;
   }
   // FIN

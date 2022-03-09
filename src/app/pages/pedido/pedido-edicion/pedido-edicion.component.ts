@@ -1325,6 +1325,8 @@ export class PedidoEdicionComponent implements OnInit {
           height: '80%',
           data: this.arccmc
     });
+    this.groupEmpresa.controls['codCli'].setValue('');
+    this.groupEmpresa.controls['racSoc'].setValue('');
   }
   // FIN
 
