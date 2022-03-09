@@ -12,6 +12,7 @@ import { Persona } from '../../../models/persona';
 import { ArcctdaEntity } from '../../../models/arcctda-entity';
 import { ArcctdaPKEntity } from '../../../models/arcctda-pkentity';
 import { IdArccmc } from '../../../models/IdArccmc';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-marccmc',
@@ -37,6 +38,7 @@ export class MarccmcComponent implements OnInit {
   public persona: Persona;
 
   constructor(private arccmcService: ArccmcService,
+    private snackBar: MatSnackBar,
     private dialogRef: MatDialogRef<MarccmcComponent>,
     @Inject(MAT_DIALOG_DATA) private data: Arccmc
     ) { }
@@ -44,7 +46,7 @@ export class MarccmcComponent implements OnInit {
   ngOnInit(): void {
     this.cia = sessionStorage.getItem('cia');
     this.iniciarFormularioBusquedaSunat();
-    this.iniciarFormularioArccmc();
+
     this.verificarCliente();
     this.traerDepartamentosXcia();
     this.seleccionarDepartamento();
@@ -176,14 +178,57 @@ export class MarccmcComponent implements OnInit {
   // FIN
   // EDITAR CLIENTE
   private editarCliente(arccmc: Arccmc): void{
-
+     this.editarFormularioArccmc(arccmc);
   }
   // FIN
   // NUEVO CLIENTE
   private nuevoCliente(): void {
-
+    this.iniciarFormularioArccmc();
   }
   // FIN
+   //FORMULARIO ARCCMC
+  private editarFormularioArccmc(a: Arccmc): void{
+        this.depar = a.arcctdaEntity[0].codiDepa;
+        this.prov = a.arcctdaEntity[0].codiProv;
+        this.distr = a.arcctdaEntity[0].codiDist;
+
+      this.fArccmc = new FormGroup({
+        codigo : new FormControl({value: a.objIdArc.id, disabled: true }),
+        nombre : new FormControl(a.nombre),
+        direccion : new FormControl(a.direccion),
+        dni : new FormControl(a.dni),
+        ruc : new FormControl(a.ruc),
+        telefono : new FormControl(a.telefono),
+        celular : new FormControl(a.celular),
+        extranjero : new FormControl(a.extranjero), // N
+        tipo : new FormControl(a.tipo), // N
+        activo : new FormControl(a.activo),
+        web : new FormControl(a.web),
+        pais : new FormControl(a.pais),
+        documento : new FormControl(a.documento),//RUC o DNI
+        email : new FormControl(a.email),
+        //DIRECCION
+        noCliente : new FormControl(a.objIdArc.id),
+        codTienda : new FormControl(a.arcctdaEntity[0].arcctdaPKEntity.codTienda),
+        nombreD : new FormControl(a.arcctdaEntity[0].nombre),
+        direccionD : new FormControl(a.arcctdaEntity[0].direccion),
+        telefonoD : new FormControl(a.arcctdaEntity[0].telefono),
+        fax : new FormControl(a.arcctdaEntity[0].fax),
+        direOfi : new FormControl(''),
+        codiDepa : new FormControl(a.arcctdaEntity[0].codiDepa),
+        codiProv : new FormControl(a.arcctdaEntity[0].codiProv),
+        codiDist : new FormControl(a.arcctdaEntity[0].codiDist),
+        tipoDir : new FormControl(a.arcctdaEntity[0].tipoDir),
+        activoD : new FormControl(a.arcctdaEntity[0].activo),
+        tipoEnti : new FormControl(a.arcctdaEntity[0].tipoEnti),
+        codSuc : new FormControl(a.arcctdaEntity[0].codSuc),
+        noCliente1 : new FormControl(''),
+        estabSunat : new FormControl(a.arcctdaEntity[0].codSuc)
+      });
+      this.listarProvincia();
+      this.listarDistrito();
+  }
+  // fin
 
    //SELECCIONAR DEPARTAMENTOS POR COMPAÑIA
    public seleccionarDepartamento(){
@@ -308,16 +353,34 @@ export class MarccmcComponent implements OnInit {
         });
   }
   // FIN
-  // METODO QUE NOS PERMITE GUARDAR EL CLIENTE
+  //EVENTO QUE NOS PERMITE GUARDAR EL CLIENTE
   public guardarArccmc(): void {
-     this.mensajeBusca('Guardando los datos del nuevo cliente.');
-     //GUARDAR
-     this.arccmcService.guardarCliente(this.getArccmc()).subscribe( data => {
-       Swal.close();
-       Swal.fire('Se guardo correctamente.');
-    }, error => {
-        Swal.fire(error);
-    }, ()=> Swal.close());
+    Swal.fire({
+      title: '¿Está seguro de guardar los datos del cliente?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.mensajeBusca('Guardando los datos del cliente.');
+        //GUARDAR
+        this.arccmcService.guardarCliente(this.getArccmc()).subscribe( data => {
+            Swal.close();
+            this.cerrarModalArccmc();
+            this.snackBar.open(`Se guardo correctamente`, 'Salir',
+            {
+              duration: 1000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center'
+            });
+        }, error => {
+            Swal.fire(error);
+        }, ()=> Swal.close());
+        }
+    });
+
   }
   // fin
   // LLENANDO LOS VALORES PARA GUARDAR LOS DATOS DEL CLIENTE
@@ -348,7 +411,7 @@ export class MarccmcComponent implements OnInit {
      let idArcctda = new ArcctdaPKEntity();
      idArcctda.noCia = this.cia;
      idArcctda.codTienda = '001';
-     idArcctda.noCliente = this.fArccmc.get('id').value;
+     idArcctda.noCliente = this.fArccmc.get('codigo').value;
      arcctda.arcctdaPKEntity = idArcctda;
      arcctda.nombre ='LEGAL';
      arcctda.direccion = this.fArccmc.get('direccionD').value;

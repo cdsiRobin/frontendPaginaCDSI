@@ -8,7 +8,7 @@ import { Arpfol } from './../../../models/Arpfol';
 import Swal from 'sweetalert2';
 import { DatosClienteDTO } from './../../../DTO/DatosClienteDTO';
 import { ArccmcService } from './../../../services/arccmc.service';
-import { map, switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
 import { PedidoService } from './../../../services/pedido.service';
@@ -783,7 +783,7 @@ export class PedidoEdicionComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
+      confirmButtonText: 'SI'
     }).then((result) => {
       if (result.isConfirmed) {
           if (this.totalGeneral <= 700){
@@ -791,18 +791,24 @@ export class PedidoEdicionComponent implements OnInit {
                  this.crear_pedido('S', 'N');
               }else{
                 if(this.arccmc.dni.length > 8 || this.arccmc.dni === null ) {
-                  this.snackBar.open(`El Cliente tiene DNI no valido o lo tiene nulo. Verifique el cliente`, 'Salir',
-                  {
-                    duration: 5000,
-                    verticalPosition: 'top',
-                    horizontalPosition: 'center'
+                  Swal.fire({
+                    title: 'DNI no valido. ¿Quiere verificar el DNI del cliente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'SI'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.ajusteCliente();
+                    }
                   });
                 }
               }
 
           }else{
               const codC: string = this.groupEmpresa.get('codCli').value;
-              if ( codC === '99999999998' || codC === '99999999999'){
+              if ( codC === '99999999998' || codC === '99999999999' || codC.length <= 8){
                 this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
                 {
                   duration: 5000,
@@ -813,11 +819,17 @@ export class PedidoEdicionComponent implements OnInit {
                 if (this.arccmc.ruc !== null) {
                   this.crear_pedido('S', 'N');
                 }else{
-                  this.snackBar.open(`El cliente ${this.arccmc.nombre} no tiene RUC. Verifique`, 'Salir',
-                  {
-                    duration: 5000,
-                    verticalPosition: 'top',
-                    horizontalPosition: 'center'
+                  Swal.fire({
+                    title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'SI'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.ajusteCliente();
+                    }
                   });
                 }
 
@@ -840,11 +852,17 @@ export class PedidoEdicionComponent implements OnInit {
       if (result.isConfirmed) {
         const ruc: string = this.groupEmpresa.get('codCli').value;
         if ( ruc === '99999999998' || ruc === '99999999999' || this.arccmc.ruc === null ){
-          this.snackBar.open(`El cliente ${this.arccmc.nombre} no tiene RUC`, 'Salir',
-          {
-            duration: 5000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center'
+          Swal.fire({
+            title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'SI'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                this.ajusteCliente();
+            }
           });
         }else{
           if (this.arccmc.ruc !== null && this.arccmc.ruc.length === 11) {

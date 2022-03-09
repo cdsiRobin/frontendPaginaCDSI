@@ -66,7 +66,7 @@
                         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
                             <mat-option *ngFor="let option of factuOptions | async" [value]="option">
                                 <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.nombre}}</span>
+                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.objIdArc.id}}-{{option.nombre}}</span>
                                 </div>
                             </mat-option>
                         </mat-autocomplete>
@@ -90,7 +90,7 @@
                    <!--routerLink="/pedido/arccmc/new"-->
                     <div class="col-sm-1">
                         <button mat-raised-button color="primary" (click)="ajusteCliente()" style="cursor: pointer">
-                          <mat-icon>manage_accounts</mat-icon>
+                          <mat-icon>person_add</mat-icon>
                         </button>
                     </div>
                 </div>

@@ -292,6 +292,7 @@ export class ArccmcComponent implements OnInit {
       id : new FormControl(a.objIdArc.id),
       nombre : new FormControl(a.nombre),
       direccion : new FormControl(a.direccion),
+      dni : new FormControl(a.dni),
       ruc : new FormControl(a.ruc),
       telefono : new FormControl(a.telefono),
       celular : new FormControl(a.celular),
@@ -321,6 +322,7 @@ export class ArccmcComponent implements OnInit {
       estabSunat : new FormControl('0000')
     });
   }
+  // fin
 
   //BUSCANDO DEPARTAMENTO,PROVINCIA Y DISTRITO
  public buscandoDeparProvDistrito(d: ArcctdaEntity){
