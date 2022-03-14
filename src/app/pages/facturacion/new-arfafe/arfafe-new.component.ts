@@ -184,10 +184,23 @@ export class NewArfafeComponent implements OnInit {
 
       this.arfaccService.getSerieAndCorrelativoPedido(corre).subscribe(d => {
         // this.arfaccList = d;
-        for(const l of d){
-            if(l.arfaccPK.serie.slice(0,1) === this.tipoDoc){
-                this.arfaccList.push(l);
+        if(d.length > 0){
+            for(const l of d){
+                if(l.arfaccPK.serie.slice(0,1) === this.tipoDoc){
+                    this.arfaccList.push(l);
+                }
             }
+        } else{
+            this.arfacc = d[0];
+            //this.selecc = this.arfacc.arfaccPK.serie;
+            let cortar = this.arfacc.consDesde.toString().length  * -1;
+                this.correlativo = this.correlativo.slice(0,cortar)+this.arfacc.consDesde;
+                this.detalle.arfafePK.noFactu = this.arfacc.arfaccPK.serie+this.correlativo;
+                this.detalle.arfaflList.forEach(
+                    list => {
+                        list.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
+                    }
+                );
         }
         //this.arfacc = d[0];
         //this.arfacc.consDesde;
@@ -262,6 +275,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.ind_GUIA_TEXTO = 'N';
         this.detalle.no_GUIA = this.noGuia;
         this.detalle.tipo = 'N';
+        this.detalle.estado_SUNAT = '0';
         this.listaPrecio(arfoe.tipoPrecio);
         // this.TCambio();
         this.formaPago(arfoe.codFpago);
