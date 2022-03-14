@@ -49,6 +49,7 @@ import { ArcgtcModule } from './arcgtc/arcgtc.module';
 import { ArccmcComponent } from './arccmc/arccmc.component';
 import { ItemModule } from './items/item.module';
 import { ArccvcComponent } from './arccvc/arccvc.component';
+import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import { ArccvcComponent } from './arccvc/arccvc.component';
     MenuPventaComponent,
     ItemsDialogoComponent,
     ArccmcComponent,
-    ArccvcComponent
+    ArccvcComponent,
+    MarccmcComponent
   ],
   exports: [
     ProgressComponent,

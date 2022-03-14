@@ -57,44 +57,46 @@
                 <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
                     <!--RUC DE CLIENTE-->
                     <mat-form-field class="col-sm-3" appearance="outline" floatLabel="always">
-                        <mat-label>RUC</mat-label>
+                        <mat-label>CODIGO</mat-label>
                         <input matInput
-                        formControlName="ruc"
+                        formControlName="codCli"
+                        placeholder="Buscar RUC/DNI"
                         [matAutocomplete]="auto"
                         [matAutocompleteConnectedTo]="origin">
                         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
                             <mat-option *ngFor="let option of factuOptions | async" [value]="option">
                                 <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
+                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.objIdArc.id}}-{{option.nombre}}</span>
                                 </div>
                             </mat-option>
                         </mat-autocomplete>
                     </mat-form-field>
                     <!--RAZON SOCIAL DE CLIENTE-->
-                    <mat-form-field class="col-sm-6" appearance="outline" floatLabel="always" >
+                    <mat-form-field class="col-sm-7" appearance="outline" floatLabel="always" >
                       <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
                       <input matInput
                              formControlName="racSoc"
+                             placeholder="Buscar Razón Social o Nombre y Apellidos"
                              [matAutocompleteConnectedTo]="origin"
                              [matAutocomplete]="auto">
                       <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
                         <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
                           <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                            <span style="flex-grow: 1;flex: 1 1 33%;">{{option.ruc}}-{{option.nombre}}</span>
+                            <span style="flex-grow: 1;flex: 1 1 33%;">{{option.nombre}}</span>
                           </div>
                         </mat-option>
                       </mat-autocomplete>
                     </mat-form-field>
-
-                    <div class="col-sm-2">
-                        <a mat-raised-button routerLink="/pedido/arccmc/new" style="cursor: pointer">Nuevo Cliente</a>
+                   <!--routerLink="/pedido/arccmc/new"-->
+                    <div class="col-sm-1">
+                        <button mat-raised-button color="primary" (click)="ajusteCliente()" style="cursor: pointer">
+                          <mat-icon>person_add</mat-icon>
+                        </button>
                     </div>
-
-
                 </div>
                 <div class="row">
                     <!--DIRECCIONES DEL CLIENTE-->
-                    <div class="col-sm">
+                    <div class="col-sm-10">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Direcciónes</mat-label>
                         <mat-select name="direccion" (selectionChange)="getDirecciones($event)">
@@ -105,7 +107,7 @@
                       </mat-form-field>
                     </div>
                     <!--UBIGEO-->
-                    <div class="col-sm-4">
+                    <div class="col-sm-2">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Ubigeo</mat-label>
                             <input disabled="true" matInput placeholder="Ubigeo" [value]="ubigeo">
@@ -330,7 +332,7 @@
 
                   <!-- total Column -->
                   <ng-container matColumnDef="total">
-                    <th mat-header-cell *matHeaderCellDef> Total </th>
+                    <th class="text-right" mat-header-cell *matHeaderCellDef> Total </th>
                     <td class="derechoTexto" mat-cell *matCellDef="let d"> {{d.total | number : '1.2-2'}} </td>
                   </ng-container>
 

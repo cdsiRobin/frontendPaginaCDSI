@@ -8,7 +8,7 @@ import { Arpfol } from './../../../models/Arpfol';
 import Swal from 'sweetalert2';
 import { DatosClienteDTO } from './../../../DTO/DatosClienteDTO';
 import { ArccmcService } from './../../../services/arccmc.service';
-import { map, switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 
 import { PedidoService } from './../../../services/pedido.service';
@@ -65,6 +65,7 @@ import {Arinml1pk} from '../../../models/arinml1pk';
 import {Arinme1Service} from '../../../services/arinme1.service';
 import { Arinum } from '../../../models/arinum';
 import { ArinumService } from '../../../services/arinum.service';
+import { MarccmcComponent } from '../../arccmc/marccmc/marccmc.component';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -199,7 +200,8 @@ export class PedidoEdicionComponent implements OnInit {
               private dialogItems: MatDialog,
               private router: Router,
               private route: ActivatedRoute,
-              public datepipe: DatePipe
+              public datepipe: DatePipe,
+              private modalArccmc: MatDialog
               ) { }
 
   ngOnInit(): void {
@@ -231,7 +233,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.listarFormaPago();
 
     this.groupEmpresa = new FormGroup({
-      ruc: new FormControl(),
+      codCli: new FormControl(),
       racSoc: new FormControl()
     });
 
@@ -245,9 +247,8 @@ export class PedidoEdicionComponent implements OnInit {
 
     this.getCliente('99999999998');
     // BUSCAR POR RUC
-    this.groupEmpresa.get('ruc').valueChanges.subscribe(valueChange => {
-      if (valueChange.length > 3) {
-         // this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia,valueChange);
+    this.groupEmpresa.get('codCli').valueChanges.subscribe(valueChange => {
+      if (valueChange.length > 2) {
          this.factuOptions = this.clienteServices.listaClientesRucLike(this.cia, valueChange).pipe(
            map( value => value.resultado)
          );
@@ -311,19 +312,17 @@ export class PedidoEdicionComponent implements OnInit {
   // SELECCIONAMOS UN CLIENTE POR SU NOMBRE O RAZON SOCIA
   public seleccionarClienteXdescrip($event: MatAutocompleteSelectedEvent): void{
     this.arccmc = $event.option.value;
-    this.groupEmpresa.controls.ruc.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
+    this.groupEmpresa.controls.codCli.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
     this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
     this.arcctdas = this.arccmc.arcctdaEntity;
   }
 
   // NUEVO CAMBIOS
-  setFormData($event: MatAutocompleteSelectedEvent): void {
-    const factuOptions = $event.option.value;
-    if (factuOptions){
-      this.groupEmpresa.controls.ruc.setValue(factuOptions.ruc, {emitEvent: false});
-      this.groupEmpresa.controls.racSoc.setValue(factuOptions.nombre, {emitEvent: false});
-      this.arcctdas = factuOptions.arcctdaEntity;
-    }
+  public setFormData($event: MatAutocompleteSelectedEvent): void {
+    this.arccmc = $event.option.value;
+    this.groupEmpresa.controls.codCli.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
+    this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
+    this.arcctdas = this.arccmc.arcctdaEntity;
   }
 
    // NUEVO CAMBIOS
@@ -785,14 +784,32 @@ export class PedidoEdicionComponent implements OnInit {
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
+      confirmButtonText: 'SI'
     }).then((result) => {
       if (result.isConfirmed) {
           if (this.totalGeneral <= 700){
-              this.crear_pedido('S', 'N');
+              if(this.arccmc.dni.length === 8) {
+                 this.crear_pedido('S', 'N');
+              }else{
+                if(this.arccmc.dni.length > 8 || this.arccmc.dni === null ) {
+                  Swal.fire({
+                    title: 'DNI no valido. ¿Quiere verificar el DNI del cliente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'SI'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.ajusteCliente();
+                    }
+                  });
+                }
+              }
+
           }else{
-              const ruc: string = this.groupEmpresa.get('ruc').value;
-              if ( ruc === '99999999998' || ruc === '99999999999' ){
+              const codC: string = this.groupEmpresa.get('codCli').value;
+              if ( codC === '99999999998' || codC === '99999999999' || codC.length <= 8){
                 this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
                 {
                   duration: 5000,
@@ -800,7 +817,23 @@ export class PedidoEdicionComponent implements OnInit {
                   horizontalPosition: 'center'
                 });
               }else{
-                this.crear_pedido('S', 'N');
+                if (this.arccmc.ruc !== null) {
+                  this.crear_pedido('S', 'N');
+                }else{
+                  Swal.fire({
+                    title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'SI'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.ajusteCliente();
+                    }
+                  });
+                }
+
               }
           }
       }
@@ -818,16 +851,25 @@ export class PedidoEdicionComponent implements OnInit {
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.isConfirmed) {
-        const ruc: string = this.groupEmpresa.get('ruc').value;
-        if ( ruc === '99999999998' || ruc === '99999999999' ){
-          this.snackBar.open(`Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
-          {
-            duration: 5000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center'
+        const ruc: string = this.groupEmpresa.get('codCli').value;
+        if ( ruc === '99999999998' || ruc === '99999999999' || this.arccmc.ruc === null ){
+          Swal.fire({
+            title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'SI'
+          }).then((result) => {
+            if (result.isConfirmed) {
+                this.ajusteCliente();
+            }
           });
         }else{
-          this.crear_pedido('N', 'S');
+          if (this.arccmc.ruc !== null && this.arccmc.ruc.length === 11) {
+              this.crear_pedido('N', 'S');
+          }
+
         }
 
       }
@@ -877,8 +919,8 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.motivoTraslado = '1';
     pedido.indBoleta1 = indBoleta;
     pedido.indFactura1 = indFactura;
-    pedido.noCliente = this.groupEmpresa.get('ruc').value;
-    pedido.ruc = this.groupEmpresa.get('ruc').value;
+    pedido.noCliente = this.groupEmpresa.get('codCli').value;
+    pedido.ruc = this.groupEmpresa.get('codCli').value;
     pedido.division = '003';
     pedido.noVendedor = sessionStorage.getItem('cod');
     pedido.codTPed = this.transaccion.codTPed;
@@ -934,7 +976,7 @@ export class PedidoEdicionComponent implements OnInit {
 
         const dPedido = new Arpfol();
         dPedido.arpfolPK = dPedidoPK;
-        dPedido.noCliente = this.groupEmpresa.get('ruc').value;
+        dPedido.noCliente = this.groupEmpresa.get('codCli').value;
         dPedido.tipoArti = 'C';
         dPedido.artiNuevo = 'N';
         dPedido.bodega = '1A001';
@@ -1277,5 +1319,16 @@ export class PedidoEdicionComponent implements OnInit {
   public saberItem(tipo: string): void{
     this.tipoItem = tipo;
   }
+  // AJUSTE DE CLIENTE
+  public ajusteCliente(): void{
+    this.modalArccmc.open(MarccmcComponent, {
+          width: '500px',
+          height: '80%',
+          data: this.arccmc
+    });
+    this.groupEmpresa.controls['codCli'].setValue('');
+    this.groupEmpresa.controls['racSoc'].setValue('');
+  }
+  // FIN
 
 }

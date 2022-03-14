@@ -5,6 +5,7 @@ export class Arccmc {
   objIdArc: IdArccmc;
   nombre: string;
   direccion: string;
+  dni: string;
   ruc: string;
   telefono: string;
   celular: string;
