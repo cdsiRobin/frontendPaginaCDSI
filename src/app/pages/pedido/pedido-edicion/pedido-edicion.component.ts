@@ -74,6 +74,7 @@ import { MarccmcComponent } from '../../arccmc/marccmc/marccmc.component';
 export class PedidoEdicionComponent implements OnInit {
   d: Detpedido;
   anularBF = 'N';
+  emailCliente = '';
   arinse: Arinse;
   tipoItem = 'L';
   form: FormGroup;
@@ -313,6 +314,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.arccmc = $event.option.value;
     this.groupEmpresa.controls.codCli.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
     this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
+    this.emailCliente = this.arccmc.email;
     this.arcctdas = this.arccmc.arcctdaEntity;
   }
 
@@ -321,6 +323,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.arccmc = $event.option.value;
     this.groupEmpresa.controls.codCli.setValue(this.arccmc.objIdArc.id , {emitEvent: false});
     this.groupEmpresa.controls.racSoc.setValue(this.arccmc.nombre, {emitEvent: false});
+    this.emailCliente = this.arccmc.email;
     this.arcctdas = this.arccmc.arcctdaEntity;
   }
 
