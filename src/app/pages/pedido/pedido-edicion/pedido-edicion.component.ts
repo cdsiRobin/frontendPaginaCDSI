@@ -787,12 +787,13 @@ export class PedidoEdicionComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
           if (this.totalGeneral <= 700){
-              if(this.arccmc.dni.length === 8) {
+            const codC2: string = this.groupEmpresa.get('codCli').value;
+              if(this.arccmc.dni.length === 8 || codC2 === '99999999998' || codC2 === '99999999999' ) {
                  this.crear_pedido('S', 'N');
               }else{
                 if(this.arccmc.dni.length > 8 || this.arccmc.dni === null ) {
                   Swal.fire({
-                    title: 'DNI no valido. ¿Quiere verificar el DNI del cliente?',
+                    title: 'Cliente varios o DNI del cliente no valido. ¿Quiere verificar el DNI del cliente?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -808,19 +809,19 @@ export class PedidoEdicionComponent implements OnInit {
 
           }else{
               const codC: string = this.groupEmpresa.get('codCli').value;
-              if ( codC === '99999999998' || codC === '99999999999' || codC.length <= 8){
-                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su RUC del cliente y el cliente es nuevo registralo.`, 'Salir',
+              if ( codC === '99999999998' || codC === '99999999999'){
+                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su DNI(${codC}) del cliente.`, 'Salir',
                 {
                   duration: 5000,
                   verticalPosition: 'top',
                   horizontalPosition: 'center'
                 });
               }else{
-                if (this.arccmc.ruc !== null) {
+                if (this.arccmc.dni !== null) {
                   this.crear_pedido('S', 'N');
                 }else{
                   Swal.fire({
-                    title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+                    title: `DNI(${this.arccmc.dni}) no valido. ¿Quiere verificar el DNI del cliente ?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -1310,8 +1311,6 @@ export class PedidoEdicionComponent implements OnInit {
   // EVENTO SELECCIONAR DE TRANSACCION
   public findTransaccion($event): void{
     this.transaccion = $event.value;
-    /*console.log('TRANSACCION :::::::');
-    console.log(this.transaccion);*/
     this.getTrasaccion(this.cia, this.transaccion.codTPed);
   }
   // SABER QUE TIPO DE ITEM ESTAMOS TRABAJANDO
@@ -1327,6 +1326,7 @@ export class PedidoEdicionComponent implements OnInit {
     });
     this.groupEmpresa.controls['codCli'].setValue('');
     this.groupEmpresa.controls['racSoc'].setValue('');
+    this.arccmc = null;
   }
   // FIN
 
