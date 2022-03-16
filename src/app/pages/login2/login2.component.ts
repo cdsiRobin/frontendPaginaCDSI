@@ -11,6 +11,7 @@ import { ArccvcService } from './../../services/arccvc.service';
 import { CompanyService } from './../../services/company.service';
 import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
+import { TapusupvenService } from '../../services/tapusupven.service';
 
 @Component({
   selector: 'app-login2',
@@ -20,85 +21,97 @@ import Swal from 'sweetalert2';
 export class Login2Component implements OnInit {
 
   id: number;
-  companys: Company[] = [];
+  company: Company;
   companySeleccionada: Company;
   vendedor: Arccvc;
   idVende: IdArccvc;
   usuario: TapUsuPven[] = [];
   form: FormGroup;
   codEmpleado: string;
+  empleadoSeleccionado: TapUsuPven;
 
   constructor(
     private route: ActivatedRoute,
     private ciaServ: CompanyService,
+    public usuService: TapusupvenService,
     private venServ: ArccvcService,
     private router: Router,
     public dialog: MatDialog) { }
 
   ngOnInit() {
-    this.listarCias();
+    //this.listarCias();
     this.idVende = new IdArccvc();
     this.vendedor = new Arccvc();
     this.form = new FormGroup({
-      'cia': new FormControl(''),
+      // 'cia': new FormControl(''),
       'codigo': new FormControl(''),
       'pass': new FormControl('')
     });
 
   }
-  listarCias() {
-    this.ciaServ.getListaCias().subscribe(data => {
-      this.companys = data;
+
+  private getCia() {
+    this.ciaServ.getCompany(this.vendedor.idArc.cia).subscribe(data => {
+      this.company = data;
+    }, err => {
+        console.warn(err)
+    }, () => {
+      this.guardarCampos();
+      this.traerUsuarioAndCentro();
+      Swal.close();
+      this.router.navigateByUrl('/pedido');
     });
   }
+
   obtenerVendedor() {
 
-    this.companySeleccionada = this.form.value['cia'];
+    Swal.fire({
+      allowOutsideClick: false, // CLICK FUERA
+      icon: 'info',
+      text: 'Espere por favor...'
+    });
+    Swal.showLoading();
+
+    //this.companySeleccionada = this.form.value['cia'];
     this.idVende.codigo = this.form.value['codigo'];
     this.vendedor.pass = this.form.value['pass'];
 
-    let vende = new VendedorDTO(this.companySeleccionada.cia, this.form.value['codigo'], this.form.value['pass']);
+    let vende = new VendedorDTO(this.form.value['codigo'], this.form.value['pass']);
     this.venServ.getVendedor(vende).subscribe(data => {
-      this.vendedor = data; // SE
-      // console.log(this.vendedor);
-      this.venServ.vendeCaja(vende).subscribe(x => {
-        this.codEmpleado = x.codEmp;
-        Swal.close();
-        this.guardarCampos();
-        this.abrirDialogo();
-      }, err => {
-        if (err.status == 404) {
-          Swal.close();
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'info',
-            title: 'Vendedor Sin usuario'
-          });
-        }
-      });
+      this.vendedor = data;
     }, err => {
       if (err.status == 404) {
-        Swal.close();
         Swal.fire({
           allowOutsideClick: false,
           icon: 'info',
           title: 'Usuario o Clave incorrecta !!'
         });
       }
+    }, () => {
+      this.getCia();
+
     });
   }
   guardarCampos() {
-    if (this.companySeleccionada != null && this.idVende != null && this.vendedor != null) {
-      sessionStorage.setItem('cia', this.companySeleccionada.cia);
-      sessionStorage.setItem('nomCia', this.companySeleccionada.nombre);
-      sessionStorage.setItem('cod', this.idVende.codigo);
-      sessionStorage.setItem('nombre', this.vendedor.descripcion);
-      sessionStorage.setItem('codEmp', this.codEmpleado);
-    }
+      sessionStorage.setItem('cia', this.vendedor.idArc.cia);
+      sessionStorage.setItem('nomCia', this.company.nombre);
+      sessionStorage.setItem('cod', this.vendedor.idArc.codigo);
+      sessionStorage.setItem('nombre',  this.vendedor.descripcion);
+      sessionStorage.setItem('codEmp', this.vendedor.idArc.codigo);
   }
   abrirDialogo() {
     this.dialog.open(MenuPventaComponent, {
       width: '250px'
     });
   }
+  // VAMOS A TRAER EL USUARIO Y CENTRO EMISOR
+  public traerUsuarioAndCentro(): void{
+      this.usuService.traerUsuario(this.vendedor.idArc.cia, this.vendedor.idArc.codigo).subscribe(data => {
+        this.empleadoSeleccionado = data
+        sessionStorage.setItem('centro', this.empleadoSeleccionado.centro);
+        sessionStorage.setItem('usuario', this.empleadoSeleccionado.idUsuario.usuario);
+      });
+
+  }
+  //FIN
 }

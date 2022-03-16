@@ -12,7 +12,7 @@ export class TapusupvenService {
   constructor(private http:HttpClient, private url:OtherService) { }
 
   traerUsuario(cia:string,emp:string){
-    return this.http.get<TapUsuPven[]>(this.url.getUrl()+`/usuarios/usuario/${cia}/${emp}`);
+    return this.http.get<TapUsuPven>(this.url.getUrl()+`/usuarios/usuario/${cia}/${emp}`);
   }
   cajeros(cia:string,centro:string){
     return this.http.get<TapUsuPven[]>(this.url.getUrl()+`/usuarios/cajeros/${cia}/${centro}`);

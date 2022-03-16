@@ -1,4 +1,3 @@
-
 import { Arpffe } from './../../../models/arpffe';
 import { ArintdService } from './../../../services/arintd.service';
 import { Arinda } from './../../../models/Arinda';
@@ -152,7 +151,7 @@ export class PedidoEdicionComponent implements OnInit {
 
   public detPedidos: Detpedido[] = [];
   // NUEVO CAMBIOS
-  displayedColumns: string[] = ['tipo', 'codigo', 'medida', 'descripcion', 'cantidad', 'precio', 'igv', 'total', 'eliminar'];
+  displayedColumns: string[] = ['tipo', 'codigo', 'medida', 'descripcion', 'cantidad', 'precio','dcto' ,'igv', 'total', 'eliminar'];
   // FIN
   dataSource: MatTableDataSource<Detpedido>;
   @ViewChild(MatSort) sort: MatSort;
@@ -452,11 +451,14 @@ export class PedidoEdicionComponent implements OnInit {
   public transaccionXCia(): void{
       this.transaccionService.listarTransacconPorUsuario(this.cia, this.usuario).subscribe(json => {
         this.transacciones = json.resultado;
-        this.buscarTransaccion('1315');
-        this.getTrasaccion(this.cia, this.transaccion.codTPed);
       },
         error => {
-          console.error(error);
+          console.warn('TRANSACCION');
+          console.warn(error);
+      }, () => {
+        this.buscarTransaccion('1315');
+        console.log(this.transaccion);
+        this.getTrasaccion(this.cia, this.transaccion.codTPed);
       });
   }
   // METODO QUE NOS PERMITE A BUSCAR TRANSACCION
@@ -1291,6 +1293,8 @@ export class PedidoEdicionComponent implements OnInit {
             horizontalPosition: 'center'
           });
         }
+      }, err => {
+        console.warn(err);
       });
   }
 
