@@ -13,7 +13,7 @@
           <div class="col-sm-8">
             <mat-form-field appearance="fill">
               <mat-label>BUSCAR POR RUC O DNI</mat-label>
-              <input formControlName="rucDni" matInput type="text" placeholder="Buscar por RUC o DNI" minlength="8" maxlength="11">
+              <input type="text" formControlName="rucDni" matInput placeholder="Buscar por RUC o DNI" minlength="8" maxlength="11">
               <mat-error *ngIf="fbs.rucDni.errors?.minlength">Minimo es 8 digitos</mat-error>
               <mat-error *ngIf="fbs.rucDni.errors?.pattern">Solo numeros</mat-error>
             </mat-form-field>
@@ -39,7 +39,7 @@
                 <div class="col-sm-6">
                     <!--CODIGO-->
                     <mat-form-field class="example-full-width">
-                      <input matInput required type="number" placeholder="CODIGO" required formControlName="codigo">
+                      <input matInput required type="text" placeholder="CODIGO" required formControlName="codigo">
                     </mat-form-field>
                 </div>
               </div>
@@ -57,13 +57,15 @@
                       <input matInput type="number" minlength="11" maxlength="11" placeholder="RUC" formControlName="ruc">
                       <!-- <small *ngIf="f.ruc.errors?.required && f.ruc.touched" class="invalido">RUC es requerido</small> -->
                       <small *ngIf="f.ruc.errors?.minlength" class="invalido">El campo debe ser de 11 caracteres</small>
+                      <small *ngIf="f.ruc.errors?.pattern" class="invalido">Solo numero</small>
                     </mat-form-field>
                 </div>
                 <div class="col-sm-6">
                     <!--DNI-->
                     <mat-form-field class="example-full-width">
-                      <input matInput type="number" minlength="8" maxlength="8" placeholder="DNI" formControlName="dni">
-                      <!-- <small *ngIf="f.ruc.errors?.required && f.ruc.touched" class="invalido">DNI es requerido</small> -->
+                      <input matInput type="text" minlength="8" maxlength="8" placeholder="DNI" formControlName="dni">
+                      <small *ngIf="f.dni.errors?.minlength" class="invalido">El campo debe ser de 8 caracteres</small>
+                      <small *ngIf="f.dni.errors?.pattern" class="invalido">Solo numero</small>
                     </mat-form-field>
                 </div>
               </div>

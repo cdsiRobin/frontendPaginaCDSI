@@ -18,8 +18,8 @@ export class CabezeraComponent implements OnInit {
   nombre: string;
   apellido: string;
   email: string;
-  
-  constructor(public other: OtherService, public serviGelo: GelocationService, public serviCompa: CompanyService) { 
+
+  constructor(public other: OtherService, public serviGelo: GelocationService, public serviCompa: CompanyService) {
     this.getGeloByCiaAndUser();
     this.getCompany();
    }
@@ -43,7 +43,7 @@ export class CabezeraComponent implements OnInit {
     // this.usuario = new Usuario();
     this.usuario = JSON.parse(sessionStorage.getItem('usuario'));
     // console.log(this.usuario);
-    this.serviCompa.getCompany(this.usuario).subscribe(
+    this.serviCompa.getCompany(this.usuario.cia).subscribe(
       rest => {
         // console.warn(rest);
         // this.company = new Company();

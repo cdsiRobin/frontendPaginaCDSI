@@ -75,7 +75,7 @@ export class MarccmcComponent implements OnInit {
   private iniciarFormularioBusquedaSunat(): void{
     this.fBuscarSunat = new FormGroup({
       rucDni: new FormControl({value: '', disabled: false }, [Validators.required ,Validators.minLength(8),
-        Validators.pattern(/^-?(0|[1-9]\d*)?$/)])
+        Validators.pattern(/^-?(0|[0-9]\d*)?$/)])
     });
   }
   // FIN
@@ -83,13 +83,13 @@ export class MarccmcComponent implements OnInit {
   private iniciarFormularioArccmc(): void{
     this.fArccmc = new FormGroup({
       codigo: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(8),
-        Validators.pattern(/^-?(0|[1-9]\d*)?$/)]),
-      nombre : new FormControl(''),
+        Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+      nombre : new FormControl({value: '', disabled: false },[Validators.required ,Validators.minLength(3)]),
       direccion : new FormControl(''),
       dni: new FormControl({value: '', disabled: false },
-        [Validators.minLength(8), Validators.pattern(/^-?(0|[1-9]\d*)?$/)]),
+        [Validators.minLength(8), Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
       ruc: new FormControl({value: '', disabled: false },
-        [Validators.minLength(11), Validators.pattern(/^-?(0|[1-9]\d*)?$/)]),
+        [Validators.minLength(11), Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
       telefono : new FormControl(''),
       celular : new FormControl(''),
       extranjero : new FormControl('N'), // N
@@ -139,7 +139,7 @@ export class MarccmcComponent implements OnInit {
           this.persona = value;
           this.iniciarFormularioPersona(this.persona);
         }, error => {
-           Swal.fire('No se pudo obtener los datos del DNI. SUNAT tiene problemas con sus servidores.');
+           Swal.fire('No se pudo obtener los datos del DNI. SUNAT no tiene el DNI registrado.');
            console.warn(error);
         }, () => {
           Swal.close();
@@ -150,7 +150,7 @@ export class MarccmcComponent implements OnInit {
           this.empresa = value;
           this.iniciarFormularioEmpresa(this.empresa);
        }, error => {
-          Swal.fire('No se pudo obtener los datos del RUC. SUNAT tiene problemas con sus servidores.');
+          Swal.fire('No se pudo obtener los datos del RUC.SUNAT no tiene el RUC registrado.');
           console.warn(error);
        }, () => {
          Swal.close();
@@ -193,11 +193,14 @@ export class MarccmcComponent implements OnInit {
         this.distr = a.arcctdaEntity[0].codiDist;
 
       this.fArccmc = new FormGroup({
-        codigo : new FormControl({value: a.objIdArc.id, disabled: true }),
-        nombre : new FormControl(a.nombre),
+        codigo : new FormControl({value: a.objIdArc.id, disabled: true },[Validators.required ,Validators.minLength(8),
+          Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+        nombre : new FormControl({value: a.nombre, disabled: false },[Validators.required ,Validators.minLength(3)]),
         direccion : new FormControl(a.direccion),
-        dni : new FormControl(a.dni),
-        ruc : new FormControl(a.ruc),
+        dni : new FormControl({value: a.dni, disabled: false },[Validators.minLength(8),
+          Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+        ruc : new FormControl({value: a.ruc, disabled: false },[Validators.minLength(8),
+          Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
         telefono : new FormControl(a.telefono),
         celular : new FormControl(a.celular),
         extranjero : new FormControl(a.extranjero), // N
@@ -276,11 +279,14 @@ export class MarccmcComponent implements OnInit {
       this.listarDistrito();
 
       this.fArccmc = new FormGroup({
-        codigo : new FormControl(e.numeroDocumento),
-        nombre : new FormControl(e.nombre),
+        codigo : new FormControl({value: e.numeroDocumento, disabled: false },[Validators.required ,Validators.minLength(8),
+          Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+        nombre : new FormControl({value: e.nombre, disabled: false },[Validators.required ,Validators.minLength(3)]),
         direccion : new FormControl(e.direccion),
-        dni : new FormControl(e.numeroDocumento),
-        ruc : new FormControl(''),
+        dni :  new FormControl({value: e.numeroDocumento, disabled: false },[Validators.minLength(8),
+          Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+        ruc :  new FormControl({value: '', disabled: false },[Validators.minLength(11),
+          Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
         telefono : new FormControl(''),
         celular : new FormControl(''),
         extranjero : new FormControl('N'), // N
@@ -319,11 +325,13 @@ export class MarccmcComponent implements OnInit {
         this.listarDistrito();
 
         this.fArccmc = new FormGroup({
-          codigo : new FormControl(e.numeroDocumento),
-          nombre : new FormControl(e.nombre),
+          codigo :  new FormControl({value: e.numeroDocumento, disabled: false },[Validators.required ,Validators.minLength(8),
+            Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+          nombre : new FormControl({value: e.nombre, disabled: false },[Validators.required ,Validators.minLength(3)]),
           direccion : new FormControl(e.direccion),
-          dni : new FormControl(''),
-          ruc : new FormControl(e.numeroDocumento),
+          dni :  new FormControl({value: '', disabled: false },[Validators.minLength(8), Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+          ruc :  new FormControl({value: e.numeroDocumento, disabled: false },[Validators.minLength(11),
+            Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
           telefono : new FormControl(''),
           celular : new FormControl(''),
           extranjero : new FormControl('N'), // N
@@ -387,11 +395,9 @@ export class MarccmcComponent implements OnInit {
   private getArccmc(): Arccmc {
     let rznombre: string =  this.fArccmc.get('nombre').value;
     let arccmc = new Arccmc();
-
      let idArccmc = new IdArccmc();
      idArccmc.cia = this.cia;
      idArccmc.id = this.fArccmc.get('codigo').value;
-
      arccmc.objIdArc = idArccmc;
      arccmc.nombre = rznombre.substring(0,199).toUpperCase();
      arccmc.dni = this.fArccmc.get('dni').value;
@@ -428,10 +434,8 @@ export class MarccmcComponent implements OnInit {
      arcctda.codSuc ='001';
      arcctda.noCliente1 ='';
      arcctda.estabSunat ='0000';
-
      const arcctdas: Array<ArcctdaEntity> = [];
      arcctdas.push(arcctda);
-
      arccmc.arcctdaEntity = arcctdas;
      this.arccmc = arccmc;
      return arccmc;

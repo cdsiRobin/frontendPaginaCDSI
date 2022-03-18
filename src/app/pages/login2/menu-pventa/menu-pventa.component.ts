@@ -39,13 +39,13 @@ export class MenuPventaComponent implements OnInit {
     this.maxFecha.setMinutes(0);
     this.maxFecha.setSeconds(0);
     this.maxFecha.setMilliseconds(0);
-    this.listaUsuarios();
+    // this.listaUsuarios();
   }
-  listaUsuarios() {
+ /* listaUsuarios() {
     this.usuService.traerUsuario(this.cia, this.codEmp).subscribe(data => {
-      this.empleados = data;
+      console.log(data;
     })
-  }
+  }*/
   cajasAbiertasCajero() {
     if (this.empleadoSeleccionado != null) {
       sessionStorage.setItem('centro', this.empleadoSeleccionado.centro);
@@ -85,11 +85,7 @@ export class MenuPventaComponent implements OnInit {
           }
         } else {
           Swal.close();
-          /*Swal.fire({
-            allowOutsideClick: false,
-            icon: 'info',
-            title: `Usuario: ${this.empleadoSeleccionado.nombre} no tiene una caja abierta activa`
-          }); */
+
           this.cajaService.totalCajas(datos).subscribe(data => {
             this.cajaService.cajasCreadas.next(data);
           })
