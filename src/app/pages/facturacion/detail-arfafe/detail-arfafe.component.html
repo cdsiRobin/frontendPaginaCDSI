@@ -137,9 +137,25 @@
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
                         <td class="text-right">{{ data.precio_UNIT }}</td>
                         <td class="text-right">{{ data.p_DSCTO3 }}%</td>
-                        <td class="text-right">{{ data.cantidad_FACT }}</td>
+                        <td class="text-right">0</td>
                         <td class="text-right">{{ data.imp_IGV }}</td>
-                        <td class="text-right">{{ data.total }}</td>
+                        <td class="text-right">{{ data.total | number : '1.2-2' }}</td>
+                    </tr>
+                </tbody>
+                
+                <tbody>
+                    <tr>
+                        <td class="text-right"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                        <td class="text-right"></td>
+                        <td class="text-right">{{ detalle.total | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -153,7 +169,7 @@
         <div class="col-sm d-flex justify-content-center">
         </div>
         <div class="col-sm d-flex justify-content-center">
-            <!-- <button mat-raised-button color="primary" (click)="ticketDesing()">ticket</button> -->
+            <!-- <button mat-raised-button color="primary" (click)="envioDataFE()">ticket</button> -->
         </div>
         <div class="col-sm d-flex justify-content-center">
             <button mat-raised-button color="primary" (click)="ProperDesing()">imprimir</button>

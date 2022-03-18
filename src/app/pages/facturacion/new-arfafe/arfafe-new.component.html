@@ -127,7 +127,7 @@
                         <th class="text-center" scope="col">Descripcion</th>
                         <th class="text-center" scope="col">tipoAfec</th>
                         <th class="text-center" scope="col">cant</th>
-                        <th class="text-center" scope="col">P.U.</th>
+                        <th class="text-center" scope="col">P.U. S/IGV</th>
                         <th class="text-center" scope="col">desc</th>
                         <th class="text-center" scope="col">icbCop</th>
                         <th class="text-center" scope="col">IGV</th>
@@ -144,9 +144,9 @@
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
                         <td class="text-right">{{ data.precio_UNIT }}</td>
                         <td class="text-right">{{ data.p_DSCTO3 }}%</td>
-                        <td class="text-right">{{ data.cantidad_FACT }}</td>
+                        <td class="text-right">0</td>
                         <td class="text-right">{{ data.imp_IGV }}</td>
-                        <td class="text-right">{{ data.total }}</td>
+                        <td class="text-right">{{ data.total | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
                 <!-- <hr class="mb-3"> -->
@@ -162,7 +162,7 @@
                         <td class="text-right"></td>
                         <td class="text-right"></td>
                         <td class="text-right"></td>
-                        <td class="text-right">{{ totalFactu }}</td>
+                        <td class="text-right">{{ totalFactu | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -174,7 +174,7 @@
                 <!-- <button mat-raised-button color="primary" (click)="updateGuia()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
-                <!-- <button mat-raised-button color="primary" (click)="pruebaCorre()">btn3</button> -->
+                <!-- <button mat-raised-button color="primary" (click)="envioDataFE()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
                 <button mat-raised-button color="primary" (click)="addArfafe()">Caja</button>

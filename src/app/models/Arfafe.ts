@@ -96,7 +96,7 @@ export class Arfafe {
     ano_DOC: string;
     valor_VENTA: number;
     m_DSCTO_GLOBAL: number;
-    fecha_VENCE: string;
+    fecha_VENCE: Date;
     codi_DEPA: string;
     codi_PROV: string;
     codi_DIST: string;

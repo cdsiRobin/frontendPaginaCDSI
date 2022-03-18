@@ -22,6 +22,7 @@ import { IdArpfoe } from "src/app/models/IdArpfoe";
 import { Infor } from "src/app/interfaces/infor";
 import { Arpfoe } from "src/app/models/Arpfoe";
 import { map } from "rxjs/operators";
+import { ArfafePK } from "src/app/models/ArfafePK";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -79,6 +80,7 @@ export class DetailArfafeComponent implements OnInit {
             idArpfoe.noCia = a.resultado.arfafePK.noCia;
             idArpfoe.noOrden = a.resultado.no_ORDEN;
             console.log(idArpfoe);
+            this.detalle.arfafePK = new ArfafePK();
             this.detalle = a.resultado;
             this.traeCliente();
             this.formaPago(a.resultado.cod_FPAGO);
@@ -146,6 +148,13 @@ export class DetailArfafeComponent implements OnInit {
         a => this.totalIGV += a.imp_IGV
     );
   }
+
+  envioDataFE(){
+    this.arfafeService.envioParaFE(this.detalle.arfafePK.noCia,
+      '001',
+      this.detalle.arfafePK.tipoDoc,
+      this.detalle.arfafePK.noFactu).subscribe(data => console.log(data), error => console.log(error));
+}
 
   public centroEmisor(){
     //this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))

@@ -27,5 +27,10 @@ export class ArfafeService extends GenericoService {
     listaArfafe(cia: string, pven: string, doc: string, f1: string, f2: string, fac: string){
         return this.http.get<Arfafe[]>(this.url+`/arfafe/listas/${cia}/${pven}/${doc}?f1=${f1}&f2=${f2}&fac=${fac}`);
     }
+    
+    envioParaFE(cia: string, suc: string, tip: string, docu: string){
+        return this.http.get<Arfafe[]>(this.url+`/fe?cia=${cia}&suc=${suc}&tip=${tip}&docu=${docu}`);
+    }
+    
 
 }

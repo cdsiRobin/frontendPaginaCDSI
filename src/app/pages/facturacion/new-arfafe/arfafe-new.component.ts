@@ -95,7 +95,7 @@ export class NewArfafeComponent implements OnInit {
         this.noCia = p['noCia'];
         this.noOrden = p['noOrden'];
         this.noGuia = p['guia'];
-        this.pedidoService.pedidoParaFactura1(this.noCia, this.noOrden).
+        this.pedidoService.pedidoParaFactura(this.noCia, this.noOrden).
           subscribe(d => {
               this.setArfafe(d);
               this.traerGuia(d.bodega);
@@ -122,6 +122,13 @@ export class NewArfafeComponent implements OnInit {
     );
   }
 
+  envioDataFE(){
+      this.arfafeService.envioParaFE(this.detalle.arfafePK.noCia,
+        '001',
+        this.detalle.arfafePK.tipoDoc,
+        this.detalle.arfafePK.noFactu).subscribe(data => console.log(data), error => console.log(error));
+  }
+
   addArfafe(){
     // console.log(this.selecc);
     if(this.selecc === undefined) {
@@ -135,7 +142,6 @@ export class NewArfafeComponent implements OnInit {
         // this.detalle.fecha = new Date();
         // console.log(this.detalle);
         this.detalle.fecha = new Date();
-
         this.arfafeService.addArfafe(this.detalle)
         .subscribe(data => console.log(data), error => console.log(error));
 
@@ -145,6 +151,7 @@ export class NewArfafeComponent implements OnInit {
         .subscribe(data => console.log(data), error => console.log(error));
 
         setTimeout(() => {this.ProperDesing();
+        this.envioDataFE();
         this.router.navigate(['pedido/arfafe/list'])},1000
         );
         }
@@ -175,6 +182,7 @@ export class NewArfafeComponent implements OnInit {
       if (arfoe.indBoleta1 == 'S') this.tipoDoc = 'B';
       else this.tipoDoc = 'F';
 
+      this.detalle.fecha_VENCE = new Date();
       let corre: Arfacc = new Arfacc();
       corre.arfaccPK = new ArfaccPK();
       corre.arfaccPK.noCia = sessionStorage.getItem('cia');
@@ -300,13 +308,17 @@ export class NewArfafeComponent implements OnInit {
             arfafl.imp_IGV = parseFloat(this.trunc(list.impIgv,2));
             arfafl.igv = list.igv;
             this.uniMed.push(list.medida);
-            arfafl.total = parseFloat(this.trunc(list.totalLin,2));
+            
             arfafl.precio_UNIT = parseFloat(this.trunc(list.precio,5));
+
+            //arfafl.total = parseFloat(this.trunc((arfafl.precio_UNIT*list.cantEntreg),2));
+            arfafl.total = parseFloat(this.trunc(list.totalLin,2));
+            arfafl.precio_UNIT_ORIG = parseFloat(this.trunc(list.precio,5));
             arfafl.tipo_AFECTACION = list.tipoAfectacion;
             arfafl.tipo_ARTI = list.tipoArti;
             arfafl.total_LIN = list.totalLin;
-            this.detalle.oper_GRAVADAS += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
-            this.detalle.sub_TOTAL += (arfafl.cantidad_FACT*parseFloat(this.trunc(arfafl.precio_UNIT,2)));
+            this.detalle.oper_GRAVADAS += parseFloat(this.trunc(arfafl.precio_UNIT*arfafl.cantidad_FACT,2));
+            this.detalle.sub_TOTAL += parseFloat(this.trunc((arfafl.cantidad_FACT*arfafl.precio_UNIT),5));
             this.totalFactu += list.totalLin;
             this.totalIGV += arfafl.imp_IGV;
             this.detalle.impuesto += arfafl.imp_IGV;
@@ -320,6 +332,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.valor_VENTA = this.detalle.sub_TOTAL;
         this.detalle.m_DSCTO_GLOBAL = 0;
         this.detalle.descuento = 0;
+        this.detalle.t_DESCUENTO = 0;
         // this.detalle.total_b
         console.log(this.detalle);
       });
