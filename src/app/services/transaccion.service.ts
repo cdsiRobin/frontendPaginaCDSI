@@ -5,7 +5,6 @@ import {ITransaccion} from '../interfaces/ITransaccion';
 import {Observable, throwError} from 'rxjs';
 import {Informacion} from '../interfaces/informacion';
 import {catchError} from 'rxjs/operators';
-import {Arfacc} from '../models/arfacc';
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +19,11 @@ export class TransaccionService extends GenericoService{
     return this.http.get<Informacion<ITransaccion>>(this.url + `/trans/${cia}/${user}`, this.options).pipe(
       catchError(err => {
         if (err.status === 400 || err.status === 500){
-          console.error(err);
+          console.warn(err);
           return throwError(err);
         }
         if (err.error.mensaje) {
-          console.error(err.error.mensaje);
+          console.warn(err.error.mensaje);
         }
         return  throwError(err);
       })

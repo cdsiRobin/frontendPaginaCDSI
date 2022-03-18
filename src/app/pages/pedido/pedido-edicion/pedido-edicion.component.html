@@ -314,7 +314,7 @@
                   <ng-container matColumnDef="cantidad">
                     <th mat-header-cell *matHeaderCellDef> Cantidad </th>
                     <td mat-cell *matCellDef="let d">
-                      <input type="number" style="width: 60%;" (keyup)="calcularSuma($event,d)" minlength="1" min="1" value={{d.cantidad}} />
+                      <input type="text" style="width: 100px;" (keyup)="calcularSuma($event,d)" minlength="1" min="1" value={{d.cantidad}}/>
                     </td>
                   </ng-container>
 
@@ -326,8 +326,10 @@
 
                   <!-- descuento Column -->
                   <ng-container class="text-center" matColumnDef="dcto">
-                    <th class="text-center" mat-header-cell *matHeaderCellDef> %Dcto </th>
-                    <td class="text-center" mat-cell *matCellDef="let d"> 0.00 </td>
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>%Dcto</th>
+                    <td class="text-center" mat-cell *matCellDef="let d">
+                      <input type="text" style="width: 50px;" (keyup)="calcularDescuento($event,d)" minlength="1" min="1" value={{d.dcto}} />
+                    </td>
                   </ng-container>
 
                   <!-- igv Column -->

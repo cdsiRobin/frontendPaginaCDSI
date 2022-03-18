@@ -6,7 +6,7 @@ export class Detpedido {
   descripcion: string;
   cantidad: number;
   precio: number;
-  dcto: number;
+  dcto: number = 0;
   igv: number;
   total:number;
 

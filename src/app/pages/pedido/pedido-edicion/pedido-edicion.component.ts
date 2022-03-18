@@ -457,7 +457,6 @@ export class PedidoEdicionComponent implements OnInit {
           console.warn(error);
       }, () => {
         this.buscarTransaccion('1315');
-        console.log(this.transaccion);
         this.getTrasaccion(this.cia, this.transaccion.codTPed);
       });
   }
@@ -706,8 +705,25 @@ export class PedidoEdicionComponent implements OnInit {
 
       // total de general
       this.totalGeneral = this.getTotalPedido();
-
   }
+   // CALCULAR SUMA
+   public calcularDescuento(event: any, dp: Detpedido): void{
+    const codigo = dp.codigo;
+    const descuto: number = event.target.value;
+
+    this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+         if (codigo === item.codigo){
+             // can = item.total - ((item.precio * item.cantidad) * (descuto/100));
+             item.dcto = descuto;
+             item.igv = ((dp.precio * 0.18 ) * item.cantidad) - (((dp.precio * 0.18 ) * item.cantidad) * (descuto/100) );
+             item.total = ((dp.precio * 1.18 ) * item.cantidad) - (((dp.precio * 1.18 ) * item.cantidad) * (descuto/100) );
+         }
+         return item;
+    } );
+    // total de general
+    this.totalGeneral = this.getTotalPedido();
+
+}
 
   // ELIMINAR ARTICULO
   public eliminarArticulo(dp: Detpedido): void{
@@ -1005,7 +1021,8 @@ export class PedidoEdicionComponent implements OnInit {
         dPedido.tipoAfectacion = '10';
         dPedido.medida = x.medida;
         dPedido.icbper = 0;
-        dPedido.precioUni = 0;
+        dPedido.precioUni = x.precio;
+        dPedido.dscto = x.dcto;
         dps.push(dPedido);
     }
     pedido.arpfolList = dps;

@@ -29,4 +29,5 @@ export class Arpfol {
   icbper: number;
   precioUni: number;
   totLinea: number;
+  dscto: number;
 }
