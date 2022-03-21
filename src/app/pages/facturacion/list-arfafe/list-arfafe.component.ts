@@ -13,7 +13,7 @@ const ELEMENT_DATA: Arfafe[] = [];
 @Component({
   selector: 'app-list-arfafe',
   templateUrl: './list-arfafe.component.html',
-  styleUrls: []
+  styleUrls: ['./list-arfafe.component.scss']
 })
 
 export class ListArfafeComponent implements OnInit {
@@ -24,6 +24,8 @@ export class ListArfafeComponent implements OnInit {
   public ConEstado = 'All';
   public ConCosto = 'Central';
   tipoDoc = 'B';
+  docChange = () => { if (this.tipoDoc === 'B') return 'Boleta'; else return 'Factura' };
+  docL = this.docChange();
   factu= '';
   pven= true;
   spin= false;
@@ -31,12 +33,13 @@ export class ListArfafeComponent implements OnInit {
   fecHasta = new Date;
   // fecDesde = new Date((new Date().getMonth())+'/'+new Date().getDate()+'/'+new Date().getFullYear());
   fecDesde = new Date;
+  totalD = 0;
 
   fec1: string;
   fec2: string;
 
   arfafe: Arfafe[];
-  displayedColumns: string[] = ['detalle','arfafePK.tipoDoc','arfafePK.noFactu',
+  displayedColumns: string[] = ['detalle','arfafePK.noFactu',
   'fecha','no_GUIA','no_ORDEN','no_CLIENTE','moneda','total'];
   dataSource = new MatTableDataSource<Arfafe>(ELEMENT_DATA);
 
@@ -61,8 +64,10 @@ export class ListArfafeComponent implements OnInit {
     this.arfafeService.listaArfafe(this.cia,this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
     .subscribe(list => {
       this.arfafe = list;
+      this.totalD = 0;
       for(var i = 0; i<list.length; i++){
         this.dataSource.data.push(list[i]);
+        this.totalD = this.totalD += list[i].total;
         }
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -79,16 +84,19 @@ export class ListArfafeComponent implements OnInit {
     this.arfafeService.listaArfafe(this.cia,this.pv,this.tipoDoc,this.fec1,this.fec2,this.factu)
     .subscribe(list => {
       this.arfafe = list;
+      this.totalD = 0;
       for(var i = 0; i<list.length; i++){
         this.dataSource.data.push(list[i]);
+        this.totalD = this.totalD += list[i].total;
         }
       this.spin = false;
       this.dataSource.paginator = this.paginator;
     });
-    console.log(this.dataSource.data);
-    console.log(this.tipoDoc);
-    console.log(this.factu);
-    console.log(this.fec1 + '  --  '+this.fec2);
+    this.docL = this.docChange();
+    // console.log(this.dataSource.data);
+    // console.log(this.tipoDoc);
+    // console.log(this.factu);
+    // console.log(this.fec1 + '  --  '+this.fec2);
   }
 
   getArfafeDetalle(cia: string, doc: string, factu: string){

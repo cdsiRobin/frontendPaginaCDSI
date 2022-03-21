@@ -23,7 +23,7 @@
   <!-- ============================================================== -->
 
   <!-- NUEVO INTERFAZ -->
-  <div class="container mt-5 mb-5 border rounded p-5">
+  <div class="container-md container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
     <form class="w-100">
         <div class="row">
             <div class="col-sm p-3" style="border-right: 1px solid lightgray;">
@@ -191,13 +191,13 @@
         </div>
         <!--TIPO DE ITEM-->
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-md-12">
               <mat-tab-group animationDuration="0ms">
 
                 <mat-tab label="Libre" (click)="saberItem('L')">
                   <!--AÑADIR ITEMS LIBRE-->
-                    <div class="row">
-                      <div class="col-sm-12">
+                    <div class="row mt-2 w-100">
+                      <div class="col-md-12">
                           <form [formGroup]="groupArticulo" #frmItemLibre="ngForm" (ngSubmit)="addItem()">
                             <div class="row">
                               <!--CODIGO DE ITEM-->
@@ -208,7 +208,7 @@
                                 </mat-form-field>
                               </div>
                               <!--UM DEL ITEM-->
-                              <div class="col-sm-2">
+                              <div class="col-sm-3 col-md-2">
                                 <mat-form-field appearance="outline" class="w-100">
                                   <mat-label>U.M</mat-label>
                                   <mat-select required formControlName="umProd" name="moneda">
@@ -220,14 +220,14 @@
 
                               </div>
                               <!--DESCRIPCION DEL ITEM-->
-                              <div class="col-sm-4">
+                              <div class="col-sm-7 col-md-4">
                                 <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
                                   <mat-label>Descripción</mat-label>
                                   <input matInput placeholder="Ingrese descripción" required formControlName="desProd" name="desProd">
                                 </mat-form-field>
                               </div>
                               <!--CANTIDAD DEL ITEM-->
-                              <div class="col-sm-1">
+                              <div class="col-sm-2 col-md-1">
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                                   <mat-label>Cant</mat-label>
                                   <input matInput type="number" required formControlName="cantProd" name="cantProd">
