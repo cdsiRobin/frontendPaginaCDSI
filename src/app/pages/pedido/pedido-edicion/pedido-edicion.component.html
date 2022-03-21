@@ -54,7 +54,8 @@
                 </div>
                 <!--FIN-->
                 <!--CLIENTE-->
-                <div class="row" [formGroup]="groupEmpresa" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                <div class="row" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                  <form [formGroup]="groupEmpresa" style="width: 100%;" (ngSubmit)="ajusteCliente()">
                     <!--RUC DE CLIENTE-->
                     <mat-form-field class="col-sm-3" appearance="outline" floatLabel="always">
                         <mat-label>CODIGO</mat-label>
@@ -87,12 +88,10 @@
                         </mat-option>
                       </mat-autocomplete>
                     </mat-form-field>
-                   <!--routerLink="/pedido/arccmc/new"-->
-                    <div class="col-sm-1">
-                        <button mat-raised-button color="primary" (click)="ajusteCliente()" style="cursor: pointer">
-                          <mat-icon>person_add</mat-icon>
-                        </button>
-                    </div>
+                    <button type="submit" [disabled]="groupEmpresa.invalid" mat-raised-button color="primary" style="cursor: pointer">
+                      <mat-icon>person_add</mat-icon>
+                    </button>
+                  </form>
                 </div>
                 <div class="row">
                     <!--DIRECCIONES DEL CLIENTE-->
@@ -286,62 +285,62 @@
               <div class="mat-elevation-z8">
                 <table mat-table [dataSource]="dataSource">
                    <!-- codigo Column -->
-                   <ng-container matColumnDef="tipo">
-                    <th mat-header-cell *matHeaderCellDef> Tipo </th>
-                    <td mat-cell *matCellDef="let d"> {{d.tipo}} </td>
+                   <ng-container class="text-center" matColumnDef="tipo">
+                    <th class="text-center" mat-header-cell *matHeaderCellDef></th>
+                    <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">{{d.tipo}}</td>
                   </ng-container>
 
                   <!-- codigo Column -->
                   <ng-container matColumnDef="codigo">
-                    <th mat-header-cell *matHeaderCellDef> Codigo </th>
-                    <td mat-cell *matCellDef="let d"> {{d.codigo}} </td>
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>Codigo</th>
+                    <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">{{d.codigo}}</td>
                   </ng-container>
 
                    <!-- medida Column -->
                    <ng-container matColumnDef="medida">
-                    <th mat-header-cell *matHeaderCellDef> UM </th>
-                    <td mat-cell *matCellDef="let d"> {{d.medida}} </td>
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>UM</th>
+                    <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">{{d.medida}}</td>
 
                   </ng-container>
 
                   <!-- descripcion Column -->
                   <ng-container matColumnDef="descripcion">
-                    <th mat-header-cell *matHeaderCellDef> Descripción </th>
-                    <td mat-cell *matCellDef="let d"> {{d.descripcion}} </td>
+                    <th class="text-justify" mat-header-cell *matHeaderCellDef>Descripción</th>
+                    <td style="padding: 5px;" class="text-justify" mat-cell *matCellDef="let d"> {{d.descripcion}} </td>
                   </ng-container>
 
                   <!-- cantidad Column -->
                   <ng-container matColumnDef="cantidad">
-                    <th mat-header-cell *matHeaderCellDef> Cantidad </th>
-                    <td mat-cell *matCellDef="let d">
-                      <input type="text" style="width: 100px;" (keyup)="calcularSuma($event,d)" minlength="1" min="1" value={{d.cantidad}}/>
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>Cantidad</th>
+                    <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">
+                      <input type="text" style="width: 70px;" (keyup)="calcularSuma($event,d)" minlength="1" min="1" value={{d.cantidad}}/>
                     </td>
                   </ng-container>
 
                   <!-- precio Column -->
-                  <ng-container matColumnDef="precio">
-                    <th mat-header-cell *matHeaderCellDef>P.U</th>
-                    <td mat-cell *matCellDef="let d"> {{d.precio | number : '1.4-4'}} </td>
+                  <ng-container  class="text-center"matColumnDef="precio">
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}PU / Sin IGV</th>
+                    <td style="padding: 5px;" mat-cell *matCellDef="let d"> {{d.precio | number : '1.4-4'}} </td>
                   </ng-container>
 
                   <!-- descuento Column -->
                   <ng-container class="text-center" matColumnDef="dcto">
                     <th class="text-center" mat-header-cell *matHeaderCellDef>%Dcto</th>
-                    <td class="text-center" mat-cell *matCellDef="let d">
+                    <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">
                       <input type="text" style="width: 50px;" (keyup)="calcularDescuento($event,d)" minlength="1" min="1" value={{d.dcto}} />
                     </td>
                   </ng-container>
 
                   <!-- igv Column -->
-                  <ng-container matColumnDef="igv">
-                    <th mat-header-cell *matHeaderCellDef> IGV </th>
-                    <td mat-cell *matCellDef="let d"> {{d.igv | number : '1.4-4'}} </td>
+                  <ng-container class="text-center" matColumnDef="igv">
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}IGV</th>
+                    <td class="text-center" style="padding: 5px;" mat-cell *matCellDef="let d"> {{d.igv | number : '1.4-4'}} </td>
                   </ng-container>
 
                   <!-- total Column -->
-                  <ng-container class="text-right" matColumnDef="total">
-                    <th class="text-right" mat-header-cell *matHeaderCellDef> Total </th>
-                    <td class="text-right" mat-cell *matCellDef="let d"> {{d.total | number : '1.2-2'}} </td>
+                  <ng-container class="text-center" matColumnDef="total">
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}Total</th>
+                    <td style="padding: 5px;" class="text-center"mat-cell *matCellDef="let d"> {{d.total | number : '1.2-2'}} </td>
                   </ng-container>
 
                   <!-- eliminar Column -->
@@ -364,9 +363,9 @@
         <br>
         <!--TOTALES-->
         <mat-card>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{totalGeneral | number : '1.2-2'}}</button>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{totalGeneral | number : '1.2-2'}}</button>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearCotizacion()">COTIZACIÓN {{totalGeneral | number : '1.2-2'}}</button>
+            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
+            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
+            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearCotizacion()">COTIZACIÓN {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
         </mat-card>
         <!--FIN DE TOTALES-->
     </form>
