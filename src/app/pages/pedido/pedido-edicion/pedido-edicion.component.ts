@@ -232,8 +232,9 @@ export class PedidoEdicionComponent implements OnInit {
     this.listarFormaPago();
 
     this.groupEmpresa = new FormGroup({
-      codCli: new FormControl(),
-      racSoc: new FormControl()
+      codCli: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),
+        Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+      racSoc: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(2)])
     });
 
     this.groupArticulo = new FormGroup({
@@ -798,104 +799,120 @@ export class PedidoEdicionComponent implements OnInit {
   // FIN
   // CREACION DE UNA BOLETA
   public crearBoleta(): void{
-    Swal.fire({
-      title: '¿Está seguro de crear una BOLETA?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'SI'
-    }).then((result) => {
-      if (result.isConfirmed) {
-          if (this.totalGeneral <= 700){
-            const codC2: string = this.groupEmpresa.get('codCli').value;
-              if(this.arccmc.dni.length === 8 || codC2 === '99999999998' || codC2 === '99999999999' ) {
-                 this.crear_pedido('S', 'N');
-              }else{
-                if(this.arccmc.dni.length > 8 || this.arccmc.dni === null ) {
-                  Swal.fire({
-                    title: 'Cliente varios o DNI del cliente no valido. ¿Quiere verificar el DNI del cliente?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'SI'
-                  }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.ajusteCliente();
-                    }
-                  });
-                }
-              }
+    if (this.arccmc !== undefined){
+        if (this.arcctda !== undefined){
+            Swal.fire({
+              title: '¿Está seguro de crear una BOLETA?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'SI'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                  if (this.totalGeneral <= 700){
+                      const codC2: string = this.groupEmpresa.get('codCli').value;
+                      if(this.arccmc.dni.length === 8 || codC2 === '99999999998' || codC2 === '99999999999' ) {
+                          this.crear_pedido('S', 'N');
+                      }else{
+                        if(this.arccmc.dni.length > 8 || this.arccmc.dni === null ) {
+                          Swal.fire({
+                            title: 'Cliente varios o DNI del cliente no valido. ¿Quiere verificar el DNI del cliente?',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'SI'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.ajusteCliente();
+                            }
+                          });
+                        }
+                      }
 
-          }else{
-              const codC: string = this.groupEmpresa.get('codCli').value;
-              if ( codC === '99999999998' || codC === '99999999999'){
-                this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su DNI(${codC}) del cliente.`, 'Salir',
-                {
-                  duration: 5000,
-                  verticalPosition: 'top',
-                  horizontalPosition: 'center'
-                });
-              }else{
-                if (this.arccmc.dni !== null) {
-                  this.crear_pedido('S', 'N');
-                }else{
-                  Swal.fire({
-                    title: `DNI(${this.arccmc.dni}) no valido. ¿Quiere verificar el DNI del cliente ?`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'SI'
-                  }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.ajusteCliente();
-                    }
-                  });
-                }
+                  }else{
+                      const codC: string = this.groupEmpresa.get('codCli').value;
+                      if ( codC === '99999999998' || codC === '99999999999'){
+                        this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su DNI(${codC}) del cliente.`, 'Salir',
+                        {
+                          duration: 5000,
+                          verticalPosition: 'top',
+                          horizontalPosition: 'center'
+                        });
+                      }else{
+                        if (this.arccmc.dni !== null) {
+                          this.crear_pedido('S', 'N');
+                        }else{
+                          Swal.fire({
+                            title: `DNI(${this.arccmc.dni}) no valido. ¿Quiere verificar el DNI del cliente ?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'SI'
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.ajusteCliente();
+                            }
+                          });
+                        }
 
+                      }
+                  }
               }
-          }
-      }
-    });
+            });
+        }else {
+            Swal.fire('Dirección del cliente es invalido.');
+        }
+    }else {
+      Swal.fire('El codigo o nombre del cliente es invalido.');
+    }
   }
   // FIN
   // CREACION DE UNA FACTURA
   public crearFactura(): void{
-    Swal.fire({
-      title: '¿Está seguro de crear una FACTURA?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const ruc: string = this.groupEmpresa.get('codCli').value;
-        if ( ruc === '99999999998' || ruc === '99999999999' || this.arccmc.ruc === null ){
-          Swal.fire({
-            title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'SI'
-          }).then((result) => {
-            if (result.isConfirmed) {
-                this.ajusteCliente();
-            }
-          });
-        }else{
-          if (this.arccmc.ruc !== null && this.arccmc.ruc.length === 11) {
-              this.crear_pedido('N', 'S');
-          }
+    if (this.arccmc !== undefined){
+        if (this.arcctda !== undefined){
+            Swal.fire({
+              title: '¿Está seguro de crear una FACTURA?',
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                const ruc: string = this.groupEmpresa.get('codCli').value;
+                if ( ruc === '99999999998' || ruc === '99999999999' || this.arccmc.ruc === null ){
+                  Swal.fire({
+                    title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'SI'
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.ajusteCliente();
+                    }
+                  });
+                }else{
+                  if (this.arccmc.ruc !== null && this.arccmc.ruc.length === 11) {
+                      this.crear_pedido('N', 'S');
+                  }
 
+                }
+
+              }
+
+            });
+        }else {
+            Swal.fire('Dirección del cliente es invalido.');
         }
-
-      }
-
-    });
+    }else {
+      Swal.fire('El codigo o nombre del cliente es invalido.');
+    }
   }
   // FIN
   // CREACION DE UNA BOLETA
@@ -934,7 +951,7 @@ export class PedidoEdicionComponent implements OnInit {
 
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
-    pedido.codiDepa = this.ubigeo.substring(0, 2); // 150137
+    pedido.codiDepa = this.ubigeo.substring(0, 2);
     pedido.codiProv = this.ubigeo.substring(2, 3);
     pedido.codiDist = this.ubigeo.substring(3, 2);
     pedido.motivoTraslado = '1';
