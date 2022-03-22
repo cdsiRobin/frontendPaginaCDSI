@@ -50,6 +50,7 @@ import { ArccmcComponent } from './arccmc/arccmc.component';
 import { ItemModule } from './items/item.module';
 import { ArccvcComponent } from './arccvc/arccvc.component';
 import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
+import { ArfamcComponent } from './arfamc/arfamc.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +90,8 @@ import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
     ItemsDialogoComponent,
     ArccmcComponent,
     ArccvcComponent,
-    MarccmcComponent
+    MarccmcComponent,
+    ArfamcComponent
   ],
   exports: [
     ProgressComponent,

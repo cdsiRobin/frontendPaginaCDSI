@@ -13,7 +13,7 @@
     </button>
 
     <mat-menu #menu="matMenu">
-      <button mat-menu-item >
+      <button mat-menu-item routerLink="empresa">
         <mat-icon>location_city</mat-icon>
         <span>{{nomCia}}</span>
       </button>
@@ -38,6 +38,11 @@
   <mat-sidenav-container class="example-sidenav-container">
     <mat-sidenav #sidenav style="width: 200px" mode="push">
       <app-vendedor></app-vendedor>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="sidenav.toggle()" routerLink="empresa" style="cursor: pointer">
+        <mat-icon>domain</mat-icon>
+        <span>Empresa</span>
+      </button>
       <mat-divider></mat-divider>
       <button mat-menu-item (click)="sidenav.toggle()" routerLink="perfil" style="cursor: pointer">
         <mat-icon>account_box</mat-icon>

@@ -59,7 +59,8 @@ export class Login2Component implements OnInit {
       this.guardarCampos();
       this.traerUsuarioAndCentro();
       Swal.close();
-      this.router.navigateByUrl('/pedido');
+      // this.router.navigateByUrl('/pedido');
+      this.router.navigateByUrl('/pedido/empresa');
     });
   }
 

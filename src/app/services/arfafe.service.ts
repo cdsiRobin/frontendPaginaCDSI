@@ -1,9 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { ArfafeDTO } from '../DTO/arfafeDTO';
 import { arfafeInterface } from '../interfaces/arfafeInterface';
-import { Informacion } from '../interfaces/informacion';
 import { Arfafe } from '../models/Arfafe';
 import {GenericoService} from './generico/generico.service';
 

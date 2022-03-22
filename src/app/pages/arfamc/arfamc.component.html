@@ -1,0 +1,149 @@
+<div class="row">
+  <div class="col-12">
+      <div class="card">
+          <div class="card-body">
+            <div class="row">
+              <!-- USUARIO -->
+              <div class="col-lg-4 col-xlg-3 col-md-5">
+                  <div class="card">
+                    <div class="align-self-center">
+                      <br><br>
+                      <h2>INFORMACIÓN DEL USUARIO</h2>
+                      <!-- <h4 class="card-title">{{nombre}}</h4>
+                      <h5 class="card-title">Usuario: {{usuario}}</h5>
+                      <h5 class="card-title">Codigo: {{codEmp}}</h5>
+                      <h5 class="card-title">Centro Emisor: {{centro}}</h5>
+                      <br>
+                       -->
+                      <small class="text-muted">Nombre del Usuario</small>
+                      <h6> <mat-icon aria-hidden="false" aria-label="Example home icon">face</mat-icon> {{nombre}}</h6>
+                                          <small class="text-muted">Usuario</small>
+                                          <h6>{{usuario}}</h6>
+                                          <small class="text-muted">Codigo</small>
+                                          <h6>{{codEmp}}</h6>
+                                          <small class="text-muted">Centro Emisor</small>
+                                          <h6>{{centro}}</h6>
+                    </div>
+                  </div>
+              </div>
+              <!-- Column -->
+              <!-- Column -->
+              <div class="col-lg-8 col-xlg-9 col-md-7">
+                  <div class="card">
+                      <!-- Nav tabs -->
+                      <ul class="nav nav-tabs profile-tab" role="tablist">
+                          <li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#home" role="tab" aria-expanded="false">Información</a> </li>
+                          <li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#settings" role="tab" aria-expanded="true">Actualizar</a> </li>
+                      </ul>
+                      <!-- Tab panes -->
+                      <div class="tab-content">
+                          <!-- INFORMACION -->
+                          <div class="tab-pane active" id="home" role="tabpanel" aria-expanded="false">
+                              <div class="card-body">
+                                  <div class="profiletimeline">
+                                    <div class="card">
+                                          <small class="text-muted">Razón Social</small>
+                                          <h6>{{arfamc.nombre}}</h6>
+                                          <small class="text-muted">RUC</small>
+                                          <h6>{{arfamc.ruc}}</h6>
+                                          <small class="text-muted">Nombre del Año</small>
+                                          <h6>{{arfamc.nombreAno}}</h6>
+                                          <small class="text-muted">Email</small>
+                                          <h6>{{arfamc.email}}</h6>
+                                          <small class="text-muted">Banco</small>
+                                          <h6>{{arfamc.banco}}</h6>
+                                          <small class="text-muted">Cuenta Soles</small>
+                                          <h6>{{arfamc.cuentaSol}}</h6>
+                                          <small class="text-muted">Cuenta Dolares</small>
+                                          <h6>{{arfamc.cuentaDol}}</h6>
+                                          <small class="text-muted">Descripción</small>
+                                          <h6>{{arfamc.descripcion}}</h6>
+                                          <div class="card">
+                                            <div class="card-body">
+                                                <button class="btn btn-circle btn-secondary"><i class="fa fa-facebook"></i></button>
+                                                <button class="btn btn-circle btn-secondary"><i class="fa fa-twitter"></i></button>
+                                                <button class="btn btn-circle btn-secondary"><i class="fa fa-youtube"></i></button>
+                                            </div>
+                                          </div>
+                                  </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- FIN -->
+                          <!--ACTUALIZAR-->
+                          <div class="tab-pane" id="settings" role="tabpanel" aria-expanded="true">
+                              <div class="card-body">
+                                  <form [formGroup]="fArfamc" #frmArfamc="ngForm" (ngSubmit)="actualizar()" class="form-horizontal form-material">
+                                      <div class="form-group">
+                                          <label class="col-md-12">Razón Social</label>
+                                          <div class="col-md-12">
+                                              <input type="text" formControlName="nombre" placeholder="Ingrese Razón Social" class="form-control form-control-line">
+                                              <small *ngIf="f.nombre.errors?.required && f.nombre.touched" class="invalido">Razón Social es requerido</small>
+                                              <small *ngIf="f.nombre.errors?.pattern" class="invalido">Solo numero</small>
+                                              <small *ngIf="f.nombre.errors?.minlength" class="invalido">El campo debe ser mayor a 5 caracteres</small>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label class="col-md-12">RUC</label>
+                                        <div class="col-md-12">
+                                            <input type="text" formControlName="ruc" placeholder="Ingrese RUC" class="form-control form-control-line">
+                                            <small *ngIf="f.ruc.errors?.required && f.ruc.touched" class="invalido">RUC es requerido</small>
+                                            <small *ngIf="f.ruc.errors?.minlength" class="invalido">El campo debe ser mayor a 11 caracteres</small>
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label class="col-md-12">Nombre del Año</label>
+                                        <div class="col-md-12">
+                                            <input type="text" formControlName="nombreAno" placeholder="Ingrese Nombre del Año" class="form-control form-control-line">
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                          <label for="example-email" class="col-md-12">Email</label>
+                                          <div class="col-md-12">
+                                              <input type="email" formControlName="email" placeholder="Ingrese Email" class="form-control form-control-line" name="example-email" id="example-email">
+                                              <small *ngIf="f.email.errors?.email" class="invalido">No es un email</small>
+                                          </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label class="col-md-12">Banco</label>
+                                        <div class="col-md-12">
+                                            <input type="text" formControlName="banco" placeholder="Ingrese el Banco" class="form-control form-control-line">
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label class="col-md-12">Cuenta en Soles</label>
+                                        <div class="col-md-12">
+                                            <input type="text" formControlName="cuentaSol" placeholder="Ingrese el cuenta en soles" class="form-control form-control-line">
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label class="col-md-12">Cuenta en Dolares</label>
+                                        <div class="col-md-12">
+                                            <input type="text" formControlName="cuentaDol" placeholder="Ingrese el cuenta en Dolares" class="form-control form-control-line">
+                                        </div>
+                                      </div>
+                                      <div class="form-group">
+                                        <label class="col-md-12">Descripción</label>
+                                        <div class="col-md-12">
+                                            <input type="text" formControlName="descripcion" placeholder="Ingrese Descripción" class="form-control form-control-line">
+                                        </div>
+                                      </div>
+
+                                      <div class="form-group">
+                                          <div class="col-sm-12">
+                                              <button type="submit" [disabled]="fArfamc.invalid" style="width: 100%;" class="btn btn-success">Actualizar</button>
+                                          </div>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                          <!--FIN-->
+                      </div>
+                  </div>
+              </div>
+              <!-- Column -->
+          </div>
+          </div>
+      </div>
+  </div>
+</div>
