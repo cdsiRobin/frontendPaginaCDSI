@@ -95,7 +95,7 @@
                 <th class="text-center" mat-header-cell *matHeaderCellDef> FECHA </th>
                 <td class="text-center" mat-cell *matCellDef="let element"> {{element.fecha | date:'dd-MM-yyyy'}} </td>
               </ng-container>
-              <ng-container [fxHide.md]="true" matColumnDef="no_GUIA">
+              <ng-container matColumnDef="no_GUIA">
                 <th class="text-center" mat-header-cell *matHeaderCellDef> GUIA </th>
                 <td class="text-center" mat-cell *matCellDef="let element"> {{element.no_GUIA}} </td>
               </ng-container>

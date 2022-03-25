@@ -23,12 +23,18 @@ import { Infor } from "src/app/interfaces/infor";
 import { Arpfoe } from "src/app/models/Arpfoe";
 import { map } from "rxjs/operators";
 import { ArfafePK } from "src/app/models/ArfafePK";
+import { MatSnackBar } from "@angular/material/snack-bar";
+import { ArfcreeService } from "src/app/services/arfcree.service";
+import { Arfcree } from "src/app/models/Arfcree";
+import { Arfcred } from "src/app/models/Arfcred";
+import { ArfcredPK } from "src/app/models/ArfcredPK";
+import { ArfcreePK } from "src/app/models/ArfcreePK";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
   selector: 'app-detail-arfafe',
   templateUrl: './detail-arfafe.component.html',
-  styleUrls: []
+  styleUrls: ['./detail-arfafe.component.scss']
 })
 
 export class DetailArfafeComponent implements OnInit {
@@ -38,6 +44,10 @@ export class DetailArfafeComponent implements OnInit {
     arfacc:Arfacc = new Arfacc();
     arfafp: Arfafp = new Arfafp();
     arfatp: Arfatp = new Arfatp();
+
+    arfcree: Arfcree = new Arfcree();
+    arfcred: Arfcred = new Arfcred();
+
     cia: string;
     doc: string;
     fact: string;
@@ -47,6 +57,7 @@ export class DetailArfafeComponent implements OnInit {
     centro: string = sessionStorage.getItem('centro');
     totalIGV:number = 0;
 
+    btnFp: boolean = false;
     uniMed: string[] = ['Med'];
 
   constructor(private route: ActivatedRoute,
@@ -57,9 +68,12 @@ export class DetailArfafeComponent implements OnInit {
     private arfafpservice: ArfafpService,
     private arfacfservice: ArfacfService,
     public pedidoService: PedidoService,
+    public arfcreeService: ArfcreeService,
+    private sb: MatSnackBar,
     public datepipe: DatePipe) { }
 
   ngOnInit(): void {
+    this.detalle.arfafePK = new ArfafePK();
     this.cargar();
     Utils.getImageDataUrlFromLocalPath1('assets/Logo'+sessionStorage.getItem('cia')+'.jpg').then(
       result => this.logoDataUrl = result
@@ -67,7 +81,7 @@ export class DetailArfafeComponent implements OnInit {
   }
 
   cargar(){
-    console.log('assets/Logo'+sessionStorage.getItem('cia')+'.jpg');
+    // console.log('assets/Logo'+sessionStorage.getItem('cia')+'.jpg');
     this.route.queryParams.subscribe(p => {
       this.cia = p['nocia'];
       this.doc = p['docu'];
@@ -79,7 +93,7 @@ export class DetailArfafeComponent implements OnInit {
             let idArpfoe: IdArpfoe = new IdArpfoe();
             idArpfoe.noCia = a.resultado.arfafePK.noCia;
             idArpfoe.noOrden = a.resultado.no_ORDEN;
-            console.log(idArpfoe);
+            // console.log(idArpfoe);
             this.detalle.arfafePK = new ArfafePK();
             this.detalle = a.resultado;
             this.traeCliente();
@@ -117,16 +131,90 @@ export class DetailArfafeComponent implements OnInit {
     let cli = new DatosClienteDTO(sessionStorage.getItem('cia'));
     // cli.documento = this.detalle.no_CLIENTE;
     cli.id = this.detalle.no_CLIENTE;
-    console.log(cli);
+    // console.log(cli);
     this.clienteServices.traeCliente(cli).subscribe(data => {
       this.detalle.direccion = data.arcctdaEntity[0].direccion;
       this.detalle.codi_DEPA = data.arcctdaEntity[0].codiDepa;
       this.detalle.codi_PROV = data.arcctdaEntity[0].codiProv;
       this.detalle.codi_DIST = data.arcctdaEntity[0].codiDist;
       this.detalle.nbr_CLIENTE = data.nombre;
-      console.log(data);
+    //   console.log(data);
     })
   }
+
+  toogleDivCuotas(){
+        
+     if(this.arfafp.arfafpPK.tipoFpago === '20'){
+            const snackBar = this.sb.open('Forma de pago no necesita cuotas','Entendido',{ duration : 3000});
+            snackBar.onAction().subscribe(() => this.sb.dismiss());
+        } 
+        else if(this.detalle.arfafePK.tipoDoc === 'B'){
+            const snackBar = this.sb.open('Pago con Boleta no permite Cuotas','Entendido',{ duration : 3000});
+            snackBar.onAction().subscribe(() => this.sb.dismiss());
+        } 
+        else {
+            this.getCuotas();
+            this.btnFp = !this.btnFp;
+        }
+}
+
+getCuotas(){
+    let a: number = -1;
+    let b: Arfafp = new Arfafp();
+    let tempd: ArfcreePK = new ArfcreePK();
+    let e: Date = new Date();
+    let g: Arfcred[] = [];
+    tempd.noCia = this.detalle.arfafePK.noCia;
+    tempd.noOrden = this.detalle.arfafePK.noFactu;
+    tempd.noCliente = this.detalle.no_CLIENTE;
+    b = this.arfafp;
+    let c: number[] = [b.plazo,b.plazo2,b.plazo3,b.plazo4,b.plazo5,b.plazo6,b.plazo7,b.plazo8,
+    b.plazo9,b.plazo10,b.plazo11,b.plazo12];
+
+    this.arfcree = new Arfcree();
+    this.arfcree.arfcreePk = new ArfcreePK();
+    this.arfcree.arfcreePk = tempd;
+    this.arfcree.arfcredList = [];
+    
+    for(let i= 0;i<=c.length;i++){
+        if(c[i] != null) a++;
+        else break;
+    }
+    let f: number = 0;
+    for(let i= 0; i <= a; i++ ){
+        let d: Arfcred = new Arfcred();
+        d.arfcredPk = new ArfcredPK();
+        d.arfcredPk.noCia = tempd.noCia;
+        d.arfcredPk.noCliente = tempd.noCliente;
+        d.arfcredPk.noOrden = tempd.noOrden;
+        d.arfcredPk.noCredito = 'Cuota00'+(i+1);
+        d.tiempoPago = c[i];
+        if(i === a) d.monto = parseFloat(this.trunc((this.detalle.total-f),2));else 
+        {
+            d.monto = parseFloat(this.trunc(this.detalle.total/(a+1),2));
+            f += d.monto;
+        }
+        e.setDate(e.getDate()+c[i]);
+        d.fechaPago = this.datepipe.transform(e,'dd/MM/yyyy');
+        g.push(d);
+    }
+    this.arfcree.arfcredList = g;
+
+    this.arfcree.monto = this.detalle.total;
+    this.arfcree.codFP = this.arfafp.arfafpPK.codFpago;
+    this.arfcree.cuota = a+1;
+    this.arfcree.fecEmi = this.datepipe.transform(new Date(),'dd/MM/yyyy')
+    this.arfcree.detrac = 'N';
+    this.arfcree.retencion = 'N';
+    this.arfcree.percepcion = 'N';
+    this.arfcree.saldoDRP = 0;
+    this.arfcree.porcenDetrac = 0;
+    this.arfcree.porcenPercep = 0;
+    this.arfcree.porcenRetenc = 0;
+    this.arfcree.imporDRP = 0;
+    // console.log(this.arfcree);
+
+}
 
   public formaPago(cod: string){
     let list: Arfafp[] = [];
@@ -224,7 +312,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.descuento, alignment: 'right'}
+                {text: this.trunc(this.detalle.descuento,2), alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -240,7 +328,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
+                {text: this.trunc(this.detalle.oper_GRAVADAS,2), alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -252,7 +340,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: '0', alignment: 'right'}
+                {text: '0.00', alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -264,7 +352,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.totalIGV, alignment: 'right'}
+                {text: this.trunc(this.totalIGV,2), alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -276,7 +364,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.total, alignment: 'right'}
+                {text: this.trunc(this.detalle.total,2)+'', alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -288,7 +376,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: '0', alignment: 'right'}
+                {text: '0.00', alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -300,7 +388,7 @@ export class DetailArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.descuento, alignment: 'right'}
+                {text: this.trunc(this.detalle.descuento,2), alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
@@ -308,9 +396,9 @@ export class DetailArfafeComponent implements OnInit {
     ]);
 
     const documentDefinition = {
-    pageSize: 'A5',
+    pageSize: 'A4',
     //   pageOrientation: 'landscape',
-    pageMargins: [40, 20, 40, 220],
+    pageMargins: [20, 20, 235, 440],
       footer: {
         columns: [
             [
@@ -356,7 +444,7 @@ export class DetailArfafeComponent implements OnInit {
                   headerRows: 1,
                   widths: ['100%'],
                   body: [
-                      [{text: 'Sus pagos depositar al banco Credito',
+                      [{text: 'Sus pagos depositar al banco Interbank',
                       fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 8}],
                       [
                         {
@@ -395,7 +483,7 @@ export class DetailArfafeComponent implements OnInit {
             }
             ]
         ],
-        margin: [40,0]
+        margin: [40,0,215,0]
     },
 
       content: [

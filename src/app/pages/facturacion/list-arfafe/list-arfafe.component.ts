@@ -1,9 +1,11 @@
 import { DatePipe } from "@angular/common";
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { MediaChange, MediaObserver } from "@angular/flex-layout";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
 import { ActivatedRoute, Router } from "@angular/router";
+import { Subscription } from "rxjs";
 import { Arfafe } from "src/app/models/Arfafe";
 import { ArfafeService } from "src/app/services/arfafe.service";
 
@@ -16,7 +18,7 @@ const ELEMENT_DATA: Arfafe[] = [];
   styleUrls: ['./list-arfafe.component.scss']
 })
 
-export class ListArfafeComponent implements OnInit {
+export class ListArfafeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   cia: string= sessionStorage.getItem('cia');
   compania: string = 'Nombre de compañia';
@@ -47,12 +49,21 @@ export class ListArfafeComponent implements OnInit {
   @ViewChild(MatSort, {static: true}) sort: MatSort;
   arf: Arfafe;
 
+  private mediaSub: Subscription;
   constructor(private arfafeService: ArfafeService,private router: Router, public route: ActivatedRoute,
     public datepipe: DatePipe) { }
 
   ngOnInit(): void {
     this.cargarData();
+  }
 
+  ngAfterViewInit(): void { 
+  }
+
+  ngOnDestroy(): void {
+    if(this.mediaSub){
+      this.mediaSub.unsubscribe();
+    }
   }
 
   cargarData(){
