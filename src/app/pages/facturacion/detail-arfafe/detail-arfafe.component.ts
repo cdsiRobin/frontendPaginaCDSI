@@ -288,7 +288,7 @@ getCuotas(){
         {text: 'UM', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
         {text: 'Cantidad', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
         {text: 'Valor Unitario', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: '% Desc', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Desc', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
         {text: 'ICBPER', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
         {text: 'IGV', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
         {text: 'Valor Total', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
@@ -302,13 +302,13 @@ getCuotas(){
             {text: l.p_DSCTO3, bold: false, fontSize: 6, alignment: 'right'},
             {text: 0.00, bold: false, fontSize: 6, alignment: 'right'},
             {text: l.imp_IGV, bold: false, fontSize: 6, alignment: 'right'},
-            {text: l.total, bold: false, fontSize: 6, alignment: 'right'}
+            {text: this.trunc(l.total,2), bold: false, fontSize: 6, alignment: 'right'}
             ]
         );
       });
     var bodyDet = [];
     bodyDet.push([
-        {text: 'Descuento Global', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
@@ -323,7 +323,7 @@ getCuotas(){
         //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
     ]);
     bodyDet.push([
-        {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: ' Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         {
             columns: [
@@ -335,7 +335,7 @@ getCuotas(){
         }
     ]);
     bodyDet.push([
-        {text: 'ICBPER', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: ' ICBPER',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         {
             columns: [
@@ -347,7 +347,7 @@ getCuotas(){
         }
     ]);
     bodyDet.push([
-        {text: 'IGV', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: ' IGV',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         {
             columns: [
@@ -359,7 +359,7 @@ getCuotas(){
         }
     ]);
     bodyDet.push([
-        {text: 'Importe Total', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: ' Importe Total',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
         {
             columns: [
@@ -371,7 +371,7 @@ getCuotas(){
         }
     ]);
     bodyDet.push([
-        {text: 'Redondeo', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: ' Redondeo',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         {
             columns: [
@@ -383,7 +383,7 @@ getCuotas(){
         }
     ]);
     bodyDet.push([
-        {text: 'Descuentos Totales', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+        {text: ' Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
         // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         {
             columns: [
@@ -406,6 +406,7 @@ getCuotas(){
                 columns: [
                     [
                          {qr: 'pagina de FE qr. k', fit: '50' },
+                         {text: ' '},
                          {text: 'Representación Impresa de la Factura electrónica',
                         fontSize: 6}
                     ],
@@ -439,7 +440,7 @@ getCuotas(){
                         return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
                     }
                 },
-                width: 340,
+                width: 320,
                 table: {
                   headerRows: 1,
                   widths: ['100%'],
@@ -479,11 +480,12 @@ getCuotas(){
                         }
                       ]
                 ]
-                }
+                },
+                margin: [10,0,5,0]
             }
             ]
         ],
-        margin: [40,0,215,0]
+        margin: [10,0,235,0]
     },
 
       content: [
@@ -803,7 +805,7 @@ getCuotas(){
           layout: 'noBorders',
           table: {
             headerRows: 1,
-            widths: ['7%', '41%', '5%', '8%','10%', '5%', '7%', '7%','10%'],
+            widths: ['6%', '40%', '5%', '9%','11%', '4%', '8%', '7%','10%'],
 
             body: body
           }
