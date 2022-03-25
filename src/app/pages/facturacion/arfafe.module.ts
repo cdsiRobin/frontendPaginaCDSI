@@ -10,6 +10,7 @@ import { ListArfafeComponent } from "./list-arfafe/list-arfafe.component";
 import { NewArfafeComponent } from "./new-arfafe/arfafe-new.component";
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 @NgModule({
     imports: [
@@ -20,7 +21,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
         MaterialModule,
         ReactiveFormsModule,
         MatSlideToggleModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        FlexLayoutModule
     ],
     declarations: [
         ArfafeComponent,

@@ -1,7 +1,7 @@
-<div class="container pt-2 h-100">
+<div class="container-md container-lg container-xl container-xxl w-100 pt-2 h-100">
 
-    <p class="text-center mb-4 font-weight-bold">Listado de Facturas y Boletas</p>
-
+    <p class="text-center mb-2 font-weight-bold">Listado de {{ docL }}</p>
+    <p class="text-center mb-4"><b>Monto total del listado: {{ totalD }} | Moneda: SOL</b></p>
     <div class="row">
             <div class="col-sm-3">
                 <mat-form-field appearance="fill" floatLabel="always">
@@ -80,13 +80,13 @@
                     (click)="getArfafeDetalle(element.arfafePK.noCia,element.arfafePK.tipoDoc,
                     element.arfafePK.noFactu)"
                     style="font-family: Roboto, 'Helvetica Neue', sans-serif;
-                    font-size: 14px; font-weight: bold;">D</button>
+                    font-size: 14px; font-weight: bold;">{{element.arfafePK.tipoDoc}}</button>
                 </td>
               </ng-container>
-              <ng-container matColumnDef="arfafePK.tipoDoc">
+              <!-- <ng-container matColumnDef="arfafePK.tipoDoc">
                 <th class="text-center" mat-header-cell *matHeaderCellDef> TD </th>
                 <td class="text-center" mat-cell *matCellDef="let element"> {{element.arfafePK.tipoDoc}} </td>
-              </ng-container>
+              </ng-container> -->
               <ng-container matColumnDef="arfafePK.noFactu">
                 <th class="text-center" mat-header-cell *matHeaderCellDef> FACTURA </th>
                 <td class="text-center" mat-cell *matCellDef="let element"> {{element.arfafePK.noFactu}} </td>
@@ -113,7 +113,7 @@
               </ng-container>
               <ng-container matColumnDef="total">
                 <th class="text-center" mat-header-cell *matHeaderCellDef> TOTAL </th>
-                <td class="text-right" mat-cell *matCellDef="let element"> {{element.total | number:'1.2-2' }} </td>
+                <td class="text-end" mat-cell *matCellDef="let element"> {{element.total | number:'1.2-2' }} </td>
               </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
@@ -121,6 +121,6 @@
         <mat-paginator [pageSizeOptions]="[5]"
                  showFirstLastButtons
                  aria-label="Select page of arfafe">
-  </mat-paginator>
+        </mat-paginator>
     </div>
 </div>

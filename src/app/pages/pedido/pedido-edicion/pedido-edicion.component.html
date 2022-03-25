@@ -23,7 +23,7 @@
   <!-- ============================================================== -->
 
   <!-- NUEVO INTERFAZ -->
-  <div class="container mt-5 mb-5 border rounded p-5">
+  <div class="container-md container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
     <form class="w-100">
         <div class="row">
             <div class="col-sm p-3" style="border-right: 1px solid lightgray;">
@@ -57,21 +57,23 @@
                 <div class="row" matAutocompleteOrigin #origin="matAutocompleteOrigin">
                   <form [formGroup]="groupEmpresa" style="width: 100%;" (ngSubmit)="ajusteCliente()">
                     <!--RUC DE CLIENTE-->
-                    <mat-form-field class="col-sm-3" appearance="outline" floatLabel="always">
-                        <mat-label>CODIGO</mat-label>
-                        <input matInput
-                        formControlName="codCli"
-                        placeholder="Buscar RUC/DNI"
-                        [matAutocomplete]="auto"
-                        [matAutocompleteConnectedTo]="origin">
-                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
-                            <mat-option *ngFor="let option of factuOptions | async" [value]="option">
-                                <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                                    <span style="flex-grow: 1;flex: 1 1 33%;">{{option.objIdArc.id}}-{{option.nombre}}</span>
-                                </div>
-                            </mat-option>
-                        </mat-autocomplete>
-                    </mat-form-field>
+                    <div class="col-sm-3">
+                      <mat-form-field class="col-sm-3" appearance="outline" floatLabel="always">
+                          <mat-label>CODIGO</mat-label>
+                          <input matInput
+                          formControlName="codCli"
+                          placeholder="Buscar RUC/DNI"
+                          [matAutocomplete]="auto"
+                          [matAutocompleteConnectedTo]="origin">
+                          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setFormData($event)">
+                              <mat-option *ngFor="let option of factuOptions | async" [value]="option">
+                                  <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                                      <span style="flex-grow: 1;flex: 1 1 33%;">{{option.objIdArc.id}}-{{option.nombre}}</span>
+                                  </div>
+                              </mat-option>
+                          </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
                     <!--RAZON SOCIAL DE CLIENTE-->
                     <mat-form-field class="col-sm-7" appearance="outline" floatLabel="always" >
                       <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
@@ -144,7 +146,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-sm">
+                    <div class="col-sm-8">
                         <!--FORMA DE PAGO-->
                         <mat-form-field class="materialAncho"  appearance="outline">
                           <mat-label>F.Pago</mat-label>
@@ -155,7 +157,7 @@
                           </mat-select>
                         </mat-form-field>
                     </div>
-                    <div class="col-4">
+                    <div class="col-sm-4">
                       <!--TIPO DE CAMBIO-->
                       <mat-form-field appearance="outline" class="w-100">
                           <mat-label>T.C</mat-label>
@@ -190,13 +192,13 @@
         </div>
         <!--TIPO DE ITEM-->
         <div class="row">
-            <div class="col-sm-12">
+            <div class="col-md-12">
               <mat-tab-group animationDuration="0ms">
 
                 <mat-tab label="Libre" (click)="saberItem('L')">
                   <!--AÑADIR ITEMS LIBRE-->
-                    <div class="row">
-                      <div class="col-sm-12">
+                    <div class="row mt-2 w-100">
+                      <div class="col-md-12">
                           <form [formGroup]="groupArticulo" #frmItemLibre="ngForm" (ngSubmit)="addItem()">
                             <div class="row">
                               <!--CODIGO DE ITEM-->
@@ -207,7 +209,7 @@
                                 </mat-form-field>
                               </div>
                               <!--UM DEL ITEM-->
-                              <div class="col-sm-2">
+                              <div class="col-sm-3 col-md-2">
                                 <mat-form-field appearance="outline" class="w-100">
                                   <mat-label>U.M</mat-label>
                                   <mat-select required formControlName="umProd" name="moneda">
@@ -219,14 +221,14 @@
 
                               </div>
                               <!--DESCRIPCION DEL ITEM-->
-                              <div class="col-sm-4">
+                              <div class="col-sm-7 col-md-4">
                                 <mat-form-field appearance="outline" floatLabel="always" class="col-sm-12">
                                   <mat-label>Descripción</mat-label>
                                   <input matInput placeholder="Ingrese descripción" required formControlName="desProd" name="desProd">
                                 </mat-form-field>
                               </div>
                               <!--CANTIDAD DEL ITEM-->
-                              <div class="col-sm-1">
+                              <div class="col-sm-2 col-md-1">
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                                   <mat-label>Cant</mat-label>
                                   <input matInput type="number" required formControlName="cantProd" name="cantProd">
@@ -296,11 +298,10 @@
                     <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">{{d.codigo}}</td>
                   </ng-container>
 
-                   <!-- medida Column -->
-                   <ng-container matColumnDef="medida">
+                  <!-- medida Column -->
+                  <ng-container matColumnDef="medida">
                     <th class="text-center" mat-header-cell *matHeaderCellDef>UM</th>
                     <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">{{d.medida}}</td>
-
                   </ng-container>
 
                   <!-- descripcion Column -->

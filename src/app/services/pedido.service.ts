@@ -20,13 +20,20 @@ export class PedidoService extends GenericoService {
   mensajeCambio = new Subject<string>();
   constructor(public http: HttpClient) { super(); }
 
-  /*pedidoParaFactura(datos: IdArpfoe){
+  pedidoParaFactura1(cia: string, cod: string){
+    let datos: IdArpfoe = new IdArpfoe();
+    datos.noCia = cia;
+    datos.noOrden = cod;
     const body = JSON.stringify(datos);
-    return this.http.post<Infor<Arpfoe>>(this.url+`/arpfoe/id`,body, this.options);
-  }*/
+    return this.http.post<Infor<Arpfoe>>(this.url+`/arpfoe/id`,body, this.options).pipe(
+      map( (r: ConsultaExitosa<Arpfoe>) => {
+        return r.resultado;
+      })
+    );
+  }
 
   public pedidoParaFactura(cia: string, cod: string): Observable<Arpfoe>{
-    return this.http.get<ConsultaExitosa<Arpfoe>>(this.url + `/arpfoe/id?cia=${cia}&cod=${cod}`, this.options).pipe(
+    return this.http.post<ConsultaExitosa<Arpfoe>>(this.url + `/arpfoe/id?cia=${cia}&cod=${cod}`, this.options).pipe(
       map( (reponse: ConsultaExitosa<Arpfoe>) => {
         return reponse.resultado;
       } )

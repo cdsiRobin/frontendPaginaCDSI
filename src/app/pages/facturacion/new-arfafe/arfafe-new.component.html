@@ -1,5 +1,6 @@
 <!-- html new factura -->
-<div class="container mt-5 mb-5 border rounded">
+
+<div class="container-md container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
     <!-- <mat-label>fecha: </mat-label>
     <span> {{ detalle.fecha | date }} </span> -->
     <!-- <span> {{idArfoe.cia}} | {{idArfoe.noOrden}} </span> -->
@@ -9,28 +10,27 @@
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="row">
-                            <!-- <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
-                                <mat-label>Serie</mat-label>
-                                <input [readonly]="true" matInput placeholder="Placeholder" name="SerieDoc"
-                                [(ngModel)]="arfacc.arfaccPK.serie">
-                            </mat-form-field> -->
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-6">
-                                <mat-label>Serie</mat-label>
-                                <mat-select name="serieD" (selectionChange)="cambioSerie(selecc)" 
-                                [(ngModel)]="selecc">
-                                  <mat-option [value]="corre.arfaccPK.serie" *ngFor="let corre of arfaccList">
-                                      {{ corre.arfaccPK.serie}}
-                                  </mat-option>
-                                </mat-select>
-                              </mat-form-field>
-                            <mat-form-field appearance="outline" floatLabel="always" class="col-sm-6">
-                                <mat-label>Correlativo</mat-label>
-                                <input [readonly]="true" matInput placeholder="Placeholder" name="CorrelDoc"
-                                [(ngModel)]="correlativo">
-                            </mat-form-field>
+                            <div class="col-sm-6">
+                                <mat-form-field appearance="outline" floatLabel="always">
+                                    <mat-label>Serie</mat-label>
+                                    <mat-select name="serieD" (selectionChange)="cambioSerie(selecc)" 
+                                    [(ngModel)]="selecc">
+                                      <mat-option [value]="corre.arfaccPK.serie" *ngFor="let corre of arfaccList">
+                                          {{ corre.arfaccPK.serie }}
+                                      </mat-option>
+                                    </mat-select>
+                                  </mat-form-field>
+                            </div>
+                            <div class="col-sm-6">
+                                <mat-form-field appearance="outline" floatLabel="always">
+                                    <mat-label>Correlativo</mat-label>
+                                    <input [readonly]="true" matInput placeholder="Placeholder" name="CorrelDoc"
+                                    [(ngModel)]="correlativo">
+                                </mat-form-field>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm">
+                    <div class="col-sm-6">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Vendedor</mat-label>
                             <input [readonly]="true" matInput placeholder="Placeholder" name="vendor"
@@ -39,14 +39,18 @@
                     </div>
                 </div>
                 <div class="row">
-                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm-4">
-                        <mat-label>RUC</mat-label>
-                        <input [readonly]="true" matInput name="ruc" [(ngModel)]="detalle.no_CLIENTE">
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" floatLabel="always" class="col-sm">
-                        <mat-label>Razón Social</mat-label>
-                        <input [readonly]="true" matInput name="racsoc" [(ngModel)]="detalle.nbr_CLIENTE">
-                    </mat-form-field>
+                    <div class="col-sm-4">
+                        <mat-form-field appearance="outline" floatLabel="always">
+                            <mat-label>RUC</mat-label>
+                            <input [readonly]="true" matInput name="ruc" [(ngModel)]="detalle.no_CLIENTE">
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm">
+                        <mat-form-field appearance="outline" floatLabel="always">
+                            <mat-label>Razón Social</mat-label>
+                            <input [readonly]="true" matInput name="racsoc" [(ngModel)]="detalle.nbr_CLIENTE">
+                        </mat-form-field>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm">
@@ -65,15 +69,15 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4 m-3">
+            <div class="col-sm-4 m-3 position-relative">
                 <div class="row">
-                    <div class="col-sm">
+                    <div class="col-sm-8">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>L.Precios</mat-label>
                             <input [readonly]="true" matInput name="Nom_precio" [(ngModel)]="arfatp.descripcion">
                         </mat-form-field>
                     </div>
-                    <div class="col-4">
+                    <div class="col-sm-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>T.C.</mat-label>
                             <input [readonly]="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="detalle.tipo_CAMBIO">
@@ -81,11 +85,28 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm">
+                    <div class="col-sm-8 col-lg-9">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>F.Pago</mat-label>
-                            <input [readonly]="true" matInput name="Forma_pago" [(ngModel)]="arfafp.descripcion">
+                            <!-- <input [readonly]="true" matInput name="Forma_pago" [(ngModel)]="arfafp.descripcion"> -->
+                            <mat-select name="listAfp"
+                                    [(ngModel)]="tempFp"
+                                    (selectionChange)="onChangeFP()">
+                                      <mat-option [value]="fp.arfafpPK.codFpago" 
+                                      *ngFor="let fp of arfafpList">
+                                          {{ fp.descripcion }}
+                                      </mat-option>
+                                    </mat-select>
                         </mat-form-field>
+                    </div>
+                    <div class="col-sm-4 col-lg-3">
+                            <!-- <button type="button" class="btn btn-primary" data-bs-toggle="collapse" 
+                            data-bs-target="#formCuotas" aria-expanded="false" aria-controls="formCuotas"> -->
+                            <button type="button" class="btn btn-primary" (click)="toogleDivCuotas()">
+                                <abbr title="Cuotas">
+                                    <mat-icon aria-hidden="false" aria-label="Example home icon">payment</mat-icon>
+                                </abbr>
+                            </button>
                     </div>
                 </div>
                 <div class="row">
@@ -102,16 +123,40 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-4">
-                        <mat-form-field appearance="outline" class="w-100">
+                        <mat-form-field appearance="outline">
                             <mat-label>Centro</mat-label>
                             <input [readonly]="true" matInput name="centroEmi" [(ngModel)]="detalle.centro">
                         </mat-form-field>
                     </div>
-                    <div class="col-sm">
-                        <mat-form-field appearance="outline" class="w-100">
+                    <div class="col-sm-8">
+                        <mat-form-field appearance="outline">
                             <mat-label>Nombre Centro</mat-label>
                             <input [readonly]="true" matInput name="nomCentroEmi" [(ngModel)]="nomCentro">
                         </mat-form-field>
+                    </div>
+                </div>
+                <div *ngIf="btnFp" id="formCuotas" class="position-absolute top-0 start-0 pt-2">
+                    <p class="text-center fw-bold">Cuotas</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th class="text-center p-fp">Cuota</th>
+                                <th class="text-center p-fp">Fecha Vto</th>
+                                <th class="text-center p-fp">Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let n of arfcree.arfcredList">
+                                <td class="text-center p-fp">{{ n.arfcredPk.noCredito }}</td>
+                                <td class="text-center p-fp">{{ n.fechaPago }}</td>
+                                <td class="text-center p-fp">{{ n.monto | number : '1.2-2' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-light btn-toggle p-fp" (click)="toogleDivCuotas()">
+                            Cerrar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -121,48 +166,53 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th class="text-center" scope="col">Item</th>
+                        <th class="text-center d-sm-none d-xl-table-cell" scope="col">Item</th>
                         <th class="text-center" scope="col">Codigo</th>
                         <th class="text-center" scope="col">Medida</th>
                         <th class="text-center" scope="col">Descripcion</th>
-                        <th class="text-center" scope="col">tipoAfec</th>
+                        <th class="text-center d-sm-none d-lg-table-cell" scope="col">tipoAfec</th>
                         <th class="text-center" scope="col">cant</th>
-                        <th class="text-center" scope="col">P.U.</th>
+                        <th class="text-center d-sm-none d-lg-table-cell" scope="col">P.U. S/IGV</th>
+                        <th class="text-center d-sm-table-cell d-lg-none" scope="col">P.U.</th>
                         <th class="text-center" scope="col">desc</th>
-                        <th class="text-center" scope="col">icbCop</th>
-                        <th class="text-center" scope="col">IGV</th>
+                        <th class="text-center d-sm-none d-lg-table-cell" scope="col">icbCop</th>
+                        <th class="text-center d-sm-none d-lg-table-cell" scope="col">IGV</th>
                         <th class="text-center" scope="col">Total</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor ="let data of detalle.arfaflList">
-                        <td class="text-right">{{ data.arfaflPK.consecutivo }}</td>
+                        <td class="text-right d-sm-none d-xl-table-cell">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
                         <td>{{ uniMed[data.arfaflPK.consecutivo] }}</td>
                         <td>{{ data.descripcion }}</td>
-                        <td class="text-right">{{ data.tipo_AFECTACION }}</td>
+                        <td class="text-right d-sm-none d-lg-table-cell">{{ data.tipo_AFECTACION }}</td>
                         <td class="text-right">{{ data.cantidad_FACT }}</td>
-                        <td class="text-right">{{ data.precio_UNIT }}</td>
+                        <td class="text-right d-sm-none d-lg-table-cell">{{ data.precio_UNIT }}</td>
+                        <td class="text-right d-sm-table-cell d-lg-none">
+                            {{ data.precio_UNIT + (data.imp_IGV / data.cantidad_FACT) | number : '1.2-2' }}
+                        </td>
                         <td class="text-right">{{ data.p_DSCTO3 }}%</td>
-                        <td class="text-right">{{ data.cantidad_FACT }}</td>
-                        <td class="text-right">{{ data.imp_IGV }}</td>
-                        <td class="text-right">{{ data.total }}</td>
+                        <td class="text-right d-sm-none d-lg-table-cell">0</td>
+                        <td class="text-right d-sm-none d-lg-table-cell">{{ data.imp_IGV }}</td>
+                        <td class="text-right">{{ data.total | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
                 <!-- <hr class="mb-3"> -->
                 <tbody>
                     <tr>
-                        <td class="text-right"></td>
+                        <td class="text-right d-sm-none d-xl-table-cell"></td>
                         <td></td>
                         <td></td>
                         <td></td>
+                        <td class="text-right d-sm-none d-lg-table-cell"></td>
                         <td class="text-right"></td>
+                        <td class="text-right d-sm-none d-lg-table-cell"></td>
+                        <td class="text-right d-sm-table-cell d-lg-none"></td>
                         <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right">{{ totalFactu }}</td>
+                        <td class="text-right d-sm-none d-lg-table-cell"></td>
+                        <td class="text-right d-sm-none d-lg-table-cell"></td>
+                        <td class="text-right">{{ totalFactu | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -174,7 +224,7 @@
                 <!-- <button mat-raised-button color="primary" (click)="updateGuia()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
-                <!-- <button mat-raised-button color="primary" (click)="pruebaCorre()">btn3</button> -->
+                <!-- <button mat-raised-button color="primary" (click)="envioDataFE()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
                 <button mat-raised-button color="primary" (click)="addArfafe()">Caja</button>
