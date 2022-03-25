@@ -205,6 +205,7 @@ export class PedidoEdicionComponent implements OnInit {
               ) { }
 
   ngOnInit(): void {
+    this.arcgmo = new Arcgmo();
     this.cia = sessionStorage.getItem('cia');
     this.centro = sessionStorage.getItem('centro');
     this.usuario = sessionStorage.getItem('usuario');
@@ -813,12 +814,12 @@ export class PedidoEdicionComponent implements OnInit {
               if (result.isConfirmed) {
                   if (this.totalGeneral <= 700){
                       const codC2: string = this.groupEmpresa.get('codCli').value;
-                      if(this.arccmc.dni.length === 8 || codC2 === '99999999998' || codC2 === '99999999999' ) {
+                      if(codC2 === '99999999998' || codC2 === '99999999999') {
                           this.crear_pedido('S', 'N');
                       }else{
-                        if(this.arccmc.dni.length > 8 || this.arccmc.dni === null ) {
+                        if(this.arccmc.dni === null ) {
                           Swal.fire({
-                            title: 'Cliente varios o DNI del cliente no valido. ¿Quiere verificar el DNI del cliente?',
+                            title: 'El cliente no tiene DNI. ¿Quiere actualizar el DNI del cliente?',
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
@@ -829,24 +830,43 @@ export class PedidoEdicionComponent implements OnInit {
                                 this.ajusteCliente();
                             }
                           });
+                        }else {
+                          if(this.arccmc.dni.length === 8) {
+                             this.crear_pedido('S', 'N');
+                          }else{
+                            Swal.fire({
+                              title: 'DNI no valido. ¿Quiere verificar el DNI del cliente?',
+                              icon: 'warning',
+                              showCancelButton: true,
+                              confirmButtonColor: '#3085d6',
+                              cancelButtonColor: '#d33',
+                              confirmButtonText: 'SI'
+                            }).then((result) => {
+                              if (result.isConfirmed) {
+                                  this.ajusteCliente();
+                              }
+                            });
+                          }
+
                         }
                       }
 
                   }else{
                       const codC: string = this.groupEmpresa.get('codCli').value;
                       if ( codC === '99999999998' || codC === '99999999999'){
-                        this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. Ingrese su DNI(${codC}) del cliente.`, 'Salir',
-                        {
-                          duration: 5000,
-                          verticalPosition: 'top',
-                          horizontalPosition: 'center'
-                        });
+                          this.snackBar.open(`El valor de la media UIT S/700.00 fue superado. No puede hacer una boleta con Clientes Varios`, 'Salir',
+                          {
+                            duration: 7000,
+                            verticalPosition: 'top',
+                            horizontalPosition: 'center'
+                          });
+
                       }else{
                         if (this.arccmc.dni !== null) {
                           this.crear_pedido('S', 'N');
                         }else{
                           Swal.fire({
-                            title: `DNI(${this.arccmc.dni}) no valido. ¿Quiere verificar el DNI del cliente ?`,
+                            title: `DNI no valido. ¿Quiere verificar el DNI del cliente?`,
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#3085d6',
@@ -885,22 +905,39 @@ export class PedidoEdicionComponent implements OnInit {
             }).then((result) => {
               if (result.isConfirmed) {
                 const ruc: string = this.groupEmpresa.get('codCli').value;
-                if ( ruc === '99999999998' || ruc === '99999999999' || this.arccmc.ruc === null ){
-                  Swal.fire({
-                    title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'SI'
-                  }).then((result) => {
-                    if (result.isConfirmed) {
-                        this.ajusteCliente();
-                    }
-                  });
+                if ( ruc === '99999999998' || ruc === '99999999999'){
+                     Swal.fire('No puede hacer una FACTURA con Clientes Varios');
                 }else{
-                  if (this.arccmc.ruc !== null && this.arccmc.ruc.length === 11) {
-                      this.crear_pedido('N', 'S');
+                  if (this.arccmc.ruc === null ) {
+                      Swal.fire({
+                        title: 'El cliente no tiene RUC. ¿Quiere actualizar el RUC del cliente?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'SI'
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.ajusteCliente();
+                        }
+                      });
+                  }else {
+                    if (this.arccmc.ruc.length === 11) {
+                        this.crear_pedido('N', 'S');
+                    }else{
+                        Swal.fire({
+                          title: 'RUC no valido. ¿Quiere verificar el RUC del cliente?',
+                          icon: 'warning',
+                          showCancelButton: true,
+                          confirmButtonColor: '#3085d6',
+                          cancelButtonColor: '#d33',
+                          confirmButtonText: 'SI'
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                              this.ajusteCliente();
+                          }
+                        });
+                    }
                   }
 
                 }

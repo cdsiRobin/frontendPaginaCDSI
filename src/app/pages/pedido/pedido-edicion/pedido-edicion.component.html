@@ -1,27 +1,6 @@
 <!-- Container fluid  -->
 <!-- ============================================================== -->
-<div class="container-fluid">
-  <!-- ============================================================== -->
-  <!-- Bread crumb and right sidebar toggle -->
-  <!-- ============================================================== -->
-  <div class="row page-titles">
-    <div class="col-md-5 align-self-center">
-      <h3 class="text-themecolor font-weight-bold">Pedido</h3>
-    </div>
-    <div class="col-md-7 align-self-center">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a routerLink="/pedido">Home</a></li>
-        <li class="breadcrumb-item active">Nuevo Pedido</li>
-      </ol>
-    </div>
-    <div>
-      <button class="right-side-toggle waves-effect waves-light btn-inverse btn btn-circle btn-sm pull-right m-l-10"><i class="ti-settings text-white"></i></button>
-    </div>
-  </div>
-  <!-- ============================================================== -->
-  <!-- End Bread crumb and right sidebar toggle -->
-  <!-- ============================================================== -->
-
+<div >
   <!-- NUEVO INTERFAZ -->
   <div class="container-md container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
     <form class="w-100">
@@ -30,7 +9,7 @@
                 <!--TRANSACCION Y SERIE - CORRELATIVO DE PEDIDO-->
                 <div class="row">
                     <!--TRANSACCION-->
-                    <div class="col-sm">
+                    <div class="col-sm-8">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Transacción</mat-label>
                         <mat-select [(ngModel)]="transaccion" name="transacion"  (selectionChange)="findTransaccion($event)">
@@ -54,8 +33,8 @@
                 </div>
                 <!--FIN-->
                 <!--CLIENTE-->
-                <div class="row" matAutocompleteOrigin #origin="matAutocompleteOrigin">
-                  <form [formGroup]="groupEmpresa" style="width: 100%;" (ngSubmit)="ajusteCliente()">
+                <div >
+                  <form class="row" matAutocompleteOrigin #origin="matAutocompleteOrigin" [formGroup]="groupEmpresa" (ngSubmit)="ajusteCliente()">
                     <!--RUC DE CLIENTE-->
                     <div class="col-sm-3">
                       <mat-form-field class="col-sm-3" appearance="outline" floatLabel="always">
@@ -75,24 +54,28 @@
                       </mat-form-field>
                     </div>
                     <!--RAZON SOCIAL DE CLIENTE-->
-                    <mat-form-field class="col-sm-7" appearance="outline" floatLabel="always" >
-                      <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
-                      <input matInput
-                             formControlName="racSoc"
-                             placeholder="Buscar Razón Social o Nombre y Apellidos"
-                             [matAutocompleteConnectedTo]="origin"
-                             [matAutocomplete]="auto">
-                      <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
-                        <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
-                          <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
-                            <span style="flex-grow: 1;flex: 1 1 33%;">{{option.nombre}}</span>
-                          </div>
-                        </mat-option>
-                      </mat-autocomplete>
-                    </mat-form-field>
-                    <button type="submit" [disabled]="groupEmpresa.invalid" mat-raised-button color="primary" style="cursor: pointer">
-                      <mat-icon>person_add</mat-icon>
-                    </button>
+                    <div class="col-sm-7">
+                      <mat-form-field class="col-sm-7" appearance="outline" floatLabel="always" >
+                        <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
+                        <input matInput
+                              formControlName="racSoc"
+                              placeholder="Buscar Razón Social o Nombre y Apellidos"
+                              [matAutocompleteConnectedTo]="origin"
+                              [matAutocomplete]="auto">
+                        <mat-autocomplete #auto2="matAutocomplete" (optionSelected)="seleccionarClienteXdescrip($event)">
+                          <mat-option *ngFor="let option of arccmcObservable | async" [value]="option">
+                            <div style="display:flex;flex-wrap: nowrap;align-items:center;justify-content:center;margin: auto;">
+                              <span style="flex-grow: 1;flex: 1 1 33%;">{{option.nombre}}</span>
+                            </div>
+                          </mat-option>
+                        </mat-autocomplete>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-sm-1">
+                      <button type="submit" [disabled]="groupEmpresa.invalid" mat-raised-button color="primary" style="cursor: pointer">
+                        <mat-icon>person_add</mat-icon>
+                      </button>
+                    </div>
                   </form>
                 </div>
                 <div class="row">
@@ -187,6 +170,16 @@
                       </mat-form-field>
                     </div>
                 </div>
+                <!-- TOTALES -->
+                <div class="row" style="border: 1px solid #CCC; border-radius: 10px;">
+                  <div class="col-sm-12">
+                      <div class="align-self-center">
+                        <h6 class="text-muted m-t-10 m-b-0">Total</h6>
+                        <h1 class="m-t-0">{{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</h1>
+                      </div>
+                  </div>
+                </div>
+                <!-- FIN -->
 
             </div>
         </div>
@@ -237,7 +230,7 @@
                               <!--PRECIO DEL ITEM-->
                               <div class="col-sm-2">
                                 <mat-form-field appearance="outline" floatLabel="always" class="w-100">
-                                  <mat-label>Precio</mat-label>
+                                  <mat-label>Precio con IGV</mat-label>
                                   <input matInput type="number" required formControlName="precProd" name="precProd">
                                 </mat-form-field>
                               </div>
@@ -320,7 +313,7 @@
 
                   <!-- precio Column -->
                   <ng-container  class="text-center"matColumnDef="precio">
-                    <th class="text-center" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}PU / Sin IGV</th>
+                    <th class="text-center" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}PU sin IGV</th>
                     <td style="padding: 5px;" mat-cell *matCellDef="let d"> {{d.precio | number : '1.4-4'}} </td>
                   </ng-container>
 
@@ -363,11 +356,15 @@
         <!--FIN DE DETALLE DE PEDIDO-->
         <br>
         <!--TOTALES-->
-        <mat-card>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
-            <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearCotizacion()">COTIZACIÓN {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
-        </mat-card>
+        <div class="row">
+              <div class="col-sm-6">
+                <button style ="width:  100%;" class="btn btn-outline-primary btn-lg btn-block" (click)="crearBoleta()">BOLETA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
+              </div>
+              <div class="col-sm-6">
+                <button style ="width:  100%;" class="btn btn-outline-primary btn-lg btn-block" (click)="crearFactura()">FACTURA {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button>
+              </div>
+              <!--  <button class="btn btn-outline-primary btn-lg btn-block" (click)="crearCotizacion()">COTIZACIÓN {{arcgmo.simbolo}} {{totalGeneral | number : '1.2-2'}}</button> -->
+        </div>
         <!--FIN DE TOTALES-->
     </form>
 
