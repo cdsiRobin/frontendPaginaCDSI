@@ -19,24 +19,22 @@
                     -->
                     <div class="form-group col-xs-12">
                         <label for="exampleInputuname">Usuario</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-user"></i></div>
-                            <input class="form-control" type="text" required placeholder="Ingresar Usuario"
-                                formControlName="codigo">
+                        <div class="input-group mb-3">
+                          <span class="input-group-text" id="basic-addon1"><i class="ti-user"></i></span>
+                          <input class="form-control" type="text" required placeholder="Ingresar Usuario" formControlName="codigo"/>
                         </div>
                     </div>
 
                     <div class="form-group col-xs-12">
                         <label>Contraseña</label>
-                        <div class="input-group">
-                            <div class="input-group-addon"><i class="ti-lock"></i></div>
-                            <input class="form-control" type="password" required placeholder="Ingresar Contraseña"
-                                formControlName="pass">
+                        <div class="input-group mb-3">
+                          <span class="input-group-text" id="basic-addon1"><i class="ti-lock"></i></span>
+                          <input class="form-control" type="password" required placeholder="Ingresar Contraseña"formControlName="pass"/>
                         </div>
                     </div>
 
                     <div class="container">
-                        <button class="btn btn-block btn-lg btn-info btn-rounded" type="submit" [disabled]="frmLog.invalid">INGRESAR</button>
+                        <button type="submit" style="width: 100%;" [disabled]="frmLog.invalid" class="btn btn-outline-dark btn-lg">INGRESAR</button>
                     </div>
                 </form>
             </div>
