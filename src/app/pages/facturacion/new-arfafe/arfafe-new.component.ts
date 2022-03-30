@@ -52,8 +52,11 @@ export class NewArfafeComponent implements OnInit {
     tipoFp: boolean = true;
     tempFp: string;
     btnFp: boolean = false;
-
+    edtCuote: boolean = true;
     arfcree: Arfcree= new Arfcree();
+    xCuota: boolean = true;
+    arfcredCuota: string = '';
+    arfcredDate: string = '';
 
     arfatp: Arfatp = new Arfatp();
     arpffe: Arpffe = new Arpffe();
@@ -111,6 +114,7 @@ export class NewArfafeComponent implements OnInit {
         this.noGuia = p['guia'];
         this.pedidoService.pedidoParaFactura(this.noCia, this.noOrden).
           subscribe(d => {
+            //   console.log(d);
               this.setArfafe(d);
               this.traerGuia(d.bodega);
             });
@@ -140,7 +144,8 @@ export class NewArfafeComponent implements OnInit {
       this.arfafeService.envioParaFE(this.detalle.arfafePK.noCia,
         '001',
         this.detalle.arfafePK.tipoDoc,
-        this.detalle.arfafePK.noFactu).subscribe(data => console.log(data), error => console.log(error));
+        // this.detalle.arfafePK.noFactu).subscribe(data => console.log(data), error => console.log(error));
+        this.detalle.arfafePK.noFactu).subscribe();
   }
 
   addArfafe(){
@@ -161,16 +166,19 @@ export class NewArfafeComponent implements OnInit {
             
             this.detalle.fecha = new Date();
             this.arfafeService.addArfafe(this.detalle)
-            .subscribe(data => console.log(data), error => console.log(error));
+            // .subscribe(data => console.log(data), error => console.log(error));
+            .subscribe();
 
             this.updateGuia();
 
             this.arfaccService.saveArfacc(this.arfacc)
-            .subscribe(data => console.log(data), error => console.log(error));
+            //.subscribe(data => console.log(data), error => console.log(error));
+            .subscribe();
 
             if(this.arfafp.arfafpPK.tipoFpago != '20'){
                 this.arfcreeService.createArfcree(this.arfcree)
-                .subscribe(data => console.log(data), error => console.log(error));
+                // .subscribe(data => console.log(data), error => console.log(error));
+                .subscribe();
             }
 
             setTimeout(() => {this.ProperDesing();
@@ -327,13 +335,13 @@ export class NewArfafeComponent implements OnInit {
             arfafl.cantidad_FACT = list.cantEntreg;
             arfafl.cantidad_ENTR = list.cantEntreg;
             arfafl.descripcion = list.descripcion;
-            arfafl.p_DSCTO3 = 0;
+            arfafl.p_DSCTO3 = list.dscto;
             arfafl.tipo_BS = list.tipoBs;
             arfafl.imp_IGV = parseFloat(this.trunc(list.impIgv,2));
             arfafl.igv = list.igv;
             this.uniMed.push(list.medida);
             
-            arfafl.precio_UNIT = parseFloat(this.trunc(list.precio,5));
+            arfafl.precio_UNIT = parseFloat(this.trunc(list.precio-(list.precio*(list.dscto/100)),5));
 
             //arfafl.total = parseFloat(this.trunc((arfafl.precio_UNIT*list.cantEntreg),2));
             arfafl.total = parseFloat(this.trunc(list.totalLin,2));
@@ -403,6 +411,20 @@ export class NewArfafeComponent implements OnInit {
         }
     }
 
+    editCuota(){
+        // console.log('Entro editCuota - cuota '+c);
+        
+        let s = 0;
+        for(let a of this.arfcree.arfcredList){
+            s += a.monto;
+        }
+        if(this.detalle.total === s) this.edtCuote = !this.edtCuote;
+        else {console.log(s+' - '+this.detalle.total);this.sb.open('Sumatoria de cuotas no coincide con total de factura'
+        ,'Cerrar',{ duration : 3000})
+        .onAction().subscribe(() => this.sb.dismiss());}
+        // console.log(this.arfcree.arfcredList);
+    }
+
     getCuotas(){
         let a: number = -1;
         let b: Arfafp = new Arfafp();
@@ -442,6 +464,10 @@ export class NewArfafeComponent implements OnInit {
             e.setDate(e.getDate()+c[i]);
             d.fechaPago = this.datepipe.transform(e,'dd/MM/yyyy');
             g.push(d);
+        }
+        if(g.length === 0){
+            this.xCuota = !this.xCuota;
+            this.arfcredCuota = 'Cuota00'+(g.length+1);
         }
         this.arfcree.arfcredList = g;
 

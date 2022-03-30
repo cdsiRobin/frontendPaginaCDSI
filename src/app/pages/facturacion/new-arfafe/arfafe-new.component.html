@@ -6,7 +6,7 @@
     <!-- <span> {{idArfoe.cia}} | {{idArfoe.noOrden}} </span> -->
     <form class="w-100">
         <div class="row">
-            <div class="col-sm m-3" style="border-right: 1px solid lightgray;">
+            <div class="col-sm m-sm-1 m-md-3" style="border-right: 1px solid lightgray;">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="row">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4 m-3 position-relative">
+            <div class="col-sm-4 m-sm-1 m-md-3 position-relative">
                 <div class="row">
                     <div class="col-sm-8">
                         <mat-form-field appearance="outline" class="w-100">
@@ -137,6 +137,24 @@
                 </div>
                 <div *ngIf="btnFp" id="formCuotas" class="position-absolute top-0 start-0 pt-2">
                     <p class="text-center fw-bold">Cuotas</p>
+                    <div *ngIf="!xCuota" class="row">
+                        <div class="col-sm">
+                            <p class="text-center p-fp">{{ arfcredCuota }}</p>
+                        </div>
+                        <div class="col-sm">
+                            <input class="edtCouteClass text-center form-control form-control-sm" 
+                            type="text" placeholder="dd/mm/yyyy" name="cuoteDate" [(ngModel)]="arfcredDate">
+                        </div>
+                        <div class="col-sm">
+                            <input class="edtCouteClass text-end form-control form-control-sm" 
+                            type="number" placeholder="0.00" name="cuotePrice" [(ngModel)]="arfcredPrice">
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" class="btn btn-outline-dark btn-sm" style="padding: 0;">
+                                <mat-icon aria-hidden="true">arrow_right_alt</mat-icon>
+                            </button>
+                        </div>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -147,16 +165,20 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let n of arfcree.arfcredList">
-                                <td class="text-center p-fp">{{ n.arfcredPk.noCredito }}</td>
-                                <td class="text-center p-fp">{{ n.fechaPago }}</td>
-                                <td class="text-center p-fp">{{ n.monto | number : '1.2-2' }}</td>
+                                <td class="text-center p-fp col-sm-4">{{ n.arfcredPk.noCredito }}</td>
+                                <td class="text-center p-fp col-sm-4">{{ n.fechaPago }}</td>
+                                <td class="text-center p-fp col-sm-4">
+                                    <p *ngIf="edtCuote" (click)="editCuota()">{{ n.monto | number : '1.2-2' }}</p>
+                                    <input *ngIf="!edtCuote" class="edtCouteClass text-end form-control form-control-sm" type="number" name="cuotetx" [(ngModel)]="n.monto">
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn btn-light btn-toggle p-fp" (click)="toogleDivCuotas()">
+                        <button type="button" *ngIf="edtCuote" class="btn btn-light btn-toggle p-fp" (click)="toogleDivCuotas()">
                             Cerrar
                         </button>
+                        <button type="button" *ngIf="!edtCuote" class="btn btn-success p-fp" (click)="editCuota()">Listo</button>
                     </div>
                 </div>
             </div>
@@ -182,20 +204,20 @@
                 </thead>
                 <tbody>
                     <tr *ngFor ="let data of detalle.arfaflList">
-                        <td class="text-right d-sm-none d-xl-table-cell">{{ data.arfaflPK.consecutivo }}</td>
+                        <td class="text-end d-sm-none d-xl-table-cell">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
                         <td>{{ uniMed[data.arfaflPK.consecutivo] }}</td>
                         <td>{{ data.descripcion }}</td>
-                        <td class="text-right d-sm-none d-lg-table-cell">{{ data.tipo_AFECTACION }}</td>
-                        <td class="text-right">{{ data.cantidad_FACT }}</td>
-                        <td class="text-right d-sm-none d-lg-table-cell">{{ data.precio_UNIT }}</td>
-                        <td class="text-right d-sm-table-cell d-lg-none">
+                        <td class="text-end d-sm-none d-lg-table-cell">{{ data.tipo_AFECTACION }}</td>
+                        <td class="text-end">{{ data.cantidad_FACT }}</td>
+                        <td class="text-end d-sm-none d-lg-table-cell">{{ data.precio_UNIT }}</td>
+                        <td class="text-end d-sm-table-cell d-lg-none">
                             {{ data.precio_UNIT + (data.imp_IGV / data.cantidad_FACT) | number : '1.2-2' }}
                         </td>
-                        <td class="text-right">{{ data.p_DSCTO3 }}%</td>
-                        <td class="text-right d-sm-none d-lg-table-cell">0</td>
-                        <td class="text-right d-sm-none d-lg-table-cell">{{ data.imp_IGV }}</td>
-                        <td class="text-right">{{ data.total | number : '1.2-2' }}</td>
+                        <td class="text-end">{{ data.p_DSCTO3 }}%</td>
+                        <td class="text-end d-sm-none d-lg-table-cell">0</td>
+                        <td class="text-end d-sm-none d-lg-table-cell">{{ data.imp_IGV }}</td>
+                        <td class="text-end">{{ data.total | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
                 <!-- <hr class="mb-3"> -->
@@ -212,7 +234,7 @@
                         <td class="text-right"></td>
                         <td class="text-right d-sm-none d-lg-table-cell"></td>
                         <td class="text-right d-sm-none d-lg-table-cell"></td>
-                        <td class="text-right">{{ totalFactu | number : '1.2-2' }}</td>
+                        <td class="text-end">{{ totalFactu | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
             </table>
