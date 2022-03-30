@@ -57,6 +57,7 @@ export class NewArfafeComponent implements OnInit {
     xCuota: boolean = true;
     arfcredCuota: string = '';
     arfcredDate: string = '';
+    arfcredPrice: number = 0;
 
     arfatp: Arfatp = new Arfatp();
     arpffe: Arpffe = new Arpffe();
@@ -423,6 +424,29 @@ export class NewArfafeComponent implements OnInit {
         ,'Cerrar',{ duration : 3000})
         .onAction().subscribe(() => this.sb.dismiss());}
         // console.log(this.arfcree.arfcredList);
+    }
+
+    createCuota(){
+    console.log(this.arfcredCuota+' - '+ this.arfcredDate+' - '+this.arfcredPrice);
+    // this.arfcree.arfcredList = [];
+    
+    let d: Arfcred = new Arfcred();
+    d.arfcredPk = new ArfcredPK();
+    d.arfcredPk.noCia = this.detalle.arfafePK.noCia;
+    d.arfcredPk.noCliente = this.detalle.no_CLIENTE;
+    d.arfcredPk.noOrden = this.detalle.arfafePK.noFactu;
+    d.arfcredPk.noCredito = this.arfcredCuota;
+    // d.tiempoPago = c[i];
+    d.monto = this.arfcredPrice
+    // e.setDate(e.getDate()+c[i]);
+    // d.fechaPago = this.datepipe.transform(e,'dd/MM/yyyy');
+    d.fechaPago = this.arfcredDate;
+    // g.push(d);
+    this.arfcree.arfcredList.push(d);
+
+    this.arfcredCuota = 'Cuota00'+(this.arfcree.arfcredList.length+1);
+    this.arfcredDate = '';
+    this.arfcredPrice = 0;
     }
 
     getCuotas(){
