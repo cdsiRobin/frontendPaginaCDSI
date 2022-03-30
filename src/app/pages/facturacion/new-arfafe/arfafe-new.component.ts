@@ -35,6 +35,8 @@ import { Arfcred } from 'src/app/models/Arfcred';
 import { ArfcredPK } from 'src/app/models/ArfcredPK';
 import { ArfcreePK } from 'src/app/models/ArfcreePK';
 import { ArfcreeService } from 'src/app/services/arfcree.service';
+import { ConfirmArfafeComponent } from '../confirm-arfafe/confirm-arfafe.component';
+import { MatDialog } from '@angular/material/dialog';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -57,7 +59,7 @@ export class NewArfafeComponent implements OnInit {
     xCuota: boolean = true;
     arfcredCuota: string = '';
     arfcredDate: string = '';
-    arfcredPrice: number = 0;
+    arfcredPrice: number = null;
 
     arfatp: Arfatp = new Arfatp();
     arpffe: Arpffe = new Arpffe();
@@ -94,7 +96,8 @@ export class NewArfafeComponent implements OnInit {
     private arfcreeService: ArfcreeService,
     public datepipe: DatePipe,
     private router: Router,
-    private sb: MatSnackBar) { }
+    private sb: MatSnackBar,
+    private dialog: MatDialog) { }
 
 
   ngOnInit(): void {
@@ -147,6 +150,22 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.arfafePK.tipoDoc,
         // this.detalle.arfafePK.noFactu).subscribe(data => console.log(data), error => console.log(error));
         this.detalle.arfafePK.noFactu).subscribe();
+  }
+
+  confirm(){
+      let t: string = '';
+      if(this.detalle.arfafePK.tipoDoc === 'F') t = 'Factura';
+      else t = 'Boleta';
+    this.dialog
+    .open(ConfirmArfafeComponent, {
+      data: `¿Desea crear `+t+`?`
+    })
+    .afterClosed()
+    .subscribe((confirm: Boolean) => {
+      if (confirm) {
+        this.addArfafe();
+      }
+    });
   }
 
   addArfafe(){
@@ -336,7 +355,8 @@ export class NewArfafeComponent implements OnInit {
             arfafl.cantidad_FACT = list.cantEntreg;
             arfafl.cantidad_ENTR = list.cantEntreg;
             arfafl.descripcion = list.descripcion;
-            arfafl.p_DSCTO3 = list.dscto;
+            if(list.dscto != null) arfafl.p_DSCTO3 = list.dscto;
+            else arfafl.p_DSCTO3 = 0;
             arfafl.tipo_BS = list.tipoBs;
             arfafl.imp_IGV = parseFloat(this.trunc(list.impIgv,2));
             arfafl.igv = list.igv;
@@ -412,17 +432,22 @@ export class NewArfafeComponent implements OnInit {
         }
     }
 
-    editCuota(){
-        // console.log('Entro editCuota - cuota '+c);
-        
+    cerrarDivCuote(){
         let s = 0;
         for(let a of this.arfcree.arfcredList){
             s += a.monto;
         }
-        if(this.detalle.total === s) this.edtCuote = !this.edtCuote;
+        if(this.detalle.total === s) this.btnFp = !this.btnFp;
         else {console.log(s+' - '+this.detalle.total);this.sb.open('Sumatoria de cuotas no coincide con total de factura'
         ,'Cerrar',{ duration : 3000})
         .onAction().subscribe(() => this.sb.dismiss());}
+        
+    }
+
+    editCuota(){
+        // console.log('Entro editCuota - cuota '+c);
+        this.edtCuote = !this.edtCuote;
+        
         // console.log(this.arfcree.arfcredList);
     }
 
@@ -442,11 +467,13 @@ export class NewArfafeComponent implements OnInit {
     // d.fechaPago = this.datepipe.transform(e,'dd/MM/yyyy');
     d.fechaPago = this.arfcredDate;
     // g.push(d);
+    console.log(d);
+    console.log(this.arfcree.arfcredList);
     this.arfcree.arfcredList.push(d);
 
     this.arfcredCuota = 'Cuota00'+(this.arfcree.arfcredList.length+1);
     this.arfcredDate = '';
-    this.arfcredPrice = 0;
+    this.arfcredPrice = null;
     }
 
     getCuotas(){
@@ -454,6 +481,7 @@ export class NewArfafeComponent implements OnInit {
         let b: Arfafp = new Arfafp();
         let tempd: ArfcreePK = new ArfcreePK();
         let e: Date = new Date();
+        this.xCuota = true;
         let g: Arfcred[] = [];
         tempd.noCia = this.detalle.arfafePK.noCia;
         tempd.noOrden = this.detalle.arfafePK.noFactu;
@@ -462,10 +490,10 @@ export class NewArfafeComponent implements OnInit {
         let c: number[] = [b.plazo,b.plazo2,b.plazo3,b.plazo4,b.plazo5,b.plazo6,b.plazo7,b.plazo8,
         b.plazo9,b.plazo10,b.plazo11,b.plazo12];
 
-        this.arfcree = new Arfcree();
-        this.arfcree.arfcreePk = new ArfcreePK();
         this.arfcree.arfcreePk = tempd;
-        this.arfcree.arfcredList = [];
+        
+         if (c[0] != null) this.arfcree.arfcredList = [];
+        // console.log(c[0]);
         
         for(let i= 0;i<=c.length;i++){
             if(c[i] != null) a++;
@@ -491,9 +519,9 @@ export class NewArfafeComponent implements OnInit {
         }
         if(g.length === 0){
             this.xCuota = !this.xCuota;
-            this.arfcredCuota = 'Cuota00'+(g.length+1);
+            this.arfcredCuota = 'Cuota00'+(this.arfcree.arfcredList.length+1);
         }
-        this.arfcree.arfcredList = g;
+        if (g.length > 0) this.arfcree.arfcredList = g;
 
         this.arfcree.monto = this.detalle.total;
         this.arfcree.codFP = this.arfafp.arfafpPK.codFpago;
@@ -508,7 +536,7 @@ export class NewArfafeComponent implements OnInit {
         this.arfcree.porcenRetenc = 0;
         this.arfcree.imporDRP = 0;
         // console.log(this.arfcree);
-    
+        
     }
 
     onChangeFP(){
@@ -519,6 +547,11 @@ export class NewArfafeComponent implements OnInit {
                 this.arfafp = l;
                 this.detalle.tipo_FPAGO =l.arfafpPK.tipoFpago;
                 this.detalle.cod_FPAGO = l.arfafpPK.codFpago;
+                
+                this.arfcree = new Arfcree();
+                this.arfcree.arfcreePk = new ArfcreePK();
+                this.arfcree.arfcredList = [];
+                
             }
         }
     }
@@ -1152,7 +1185,7 @@ export class NewArfafeComponent implements OnInit {
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc(this.detalle.oper_GRAVADAS,2), alignment: 'right'}
+                {text: this.trunc((this.detalle.oper_GRAVADAS+this.totalIGV),2), alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]

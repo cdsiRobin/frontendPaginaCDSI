@@ -1,12 +1,12 @@
 <!-- html new factura -->
 
-<div class="container-md container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
+<div class="container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
     <!-- <mat-label>fecha: </mat-label>
     <span> {{ detalle.fecha | date }} </span> -->
     <!-- <span> {{idArfoe.cia}} | {{idArfoe.noOrden}} </span> -->
     <form class="w-100">
         <div class="row">
-            <div class="col-sm m-sm-1 m-md-3" style="border-right: 1px solid lightgray;">
+            <div class="col-md m-sm-1 m-lg-3" style="border-right: 1px solid lightgray;">
                 <div class="row">
                     <div class="col-sm-6">
                         <div class="row">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-4 m-sm-1 m-md-3 position-relative">
+            <div class="col-md-4 m-sm-1 m-lg-3 position-relative">
                 <div class="row">
                     <div class="col-sm-8">
                         <mat-form-field appearance="outline" class="w-100">
@@ -147,7 +147,7 @@
                         </div>
                         <div class="col-sm">
                             <input class="edtCouteClass text-end form-control form-control-sm" 
-                            type="number" placeholder="0.00" name="cuotePrice" [(ngModel)]="arfcredPrice">
+                            type="number" placeholder="0.00" name="cuotePrice" [(ngModel)]="arfcredPrice" (keyup.enter)="createCuota()">
                         </div>
                         <div class="col-sm-2">
                             <button type="button" class="btn btn-outline-dark btn-sm" style="padding: 0;" (click)="createCuota()">
@@ -165,17 +165,17 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let n of arfcree.arfcredList">
-                                <td class="text-center p-fp col-sm-4">{{ n.arfcredPk.noCredito }}</td>
+                                <td class="text-start p-fp col-sm-4">{{ n.arfcredPk.noCredito }}</td>
                                 <td class="text-center p-fp col-sm-4">{{ n.fechaPago }}</td>
-                                <td class="text-center p-fp col-sm-4">
-                                    <p *ngIf="edtCuote" (click)="editCuota()">{{ n.monto | number : '1.2-2' }}</p>
+                                <td class="p-fp col-sm-4">
+                                    <p class="text-end" *ngIf="edtCuote" (click)="editCuota()">{{ n.monto | number : '1.2-2' }}</p>
                                     <input *ngIf="!edtCuote" class="edtCouteClass text-end form-control form-control-sm" type="number" name="cuotetx" [(ngModel)]="n.monto">
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="d-flex justify-content-center">
-                        <button type="button" *ngIf="edtCuote" class="btn btn-light btn-toggle p-fp" (click)="toogleDivCuotas()">
+                        <button type="button" *ngIf="edtCuote" class="btn btn-light btn-toggle p-fp" (click)="cerrarDivCuote()">
                             Cerrar
                         </button>
                         <button type="button" *ngIf="!edtCuote" class="btn btn-success p-fp" (click)="editCuota()">Listo</button>
@@ -249,7 +249,7 @@
                 <!-- <button mat-raised-button color="primary" (click)="envioDataFE()">btn3</button> -->
             </div>
             <div class="col-sm d-flex justify-content-center">
-                <button mat-raised-button color="primary" (click)="addArfafe()">Caja</button>
+                <button mat-raised-button color="primary" (click)="confirm()">Caja</button>
             </div>
         </div>
     </form>

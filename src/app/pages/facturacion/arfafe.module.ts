@@ -11,6 +11,7 @@ import { NewArfafeComponent } from "./new-arfafe/arfafe-new.component";
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FlexLayoutModule } from "@angular/flex-layout";
+import { ConfirmArfafeComponent } from "./confirm-arfafe/confirm-arfafe.component";
 
 @NgModule({
     imports: [
@@ -28,7 +29,8 @@ import { FlexLayoutModule } from "@angular/flex-layout";
         ArfafeComponent,
         NewArfafeComponent,
         ListArfafeComponent,
-        DetailArfafeComponent
+        DetailArfafeComponent,
+        ConfirmArfafeComponent
     ],
     exports: [],
     providers: [DatePipe]

@@ -101,7 +101,7 @@ export class DetailArfafeComponent implements OnInit {
             this.listaPrecio(a.resultado.tipo_PRECIO);
             this.TCambio();
             this.cargarExtras();
-            //console.log(a.resultado);
+            // console.log(a.resultado);
             //console.log(a.resultado.arfaflList);
           this.pedidoService.pedidoParaFactura(idArpfoe.noCia, idArpfoe.noOrden).
             subscribe(d => {
@@ -328,7 +328,7 @@ getCuotas(){
         {
             columns: [
                 {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc(this.detalle.oper_GRAVADAS,2), alignment: 'right'}
+                {text: this.trunc((this.detalle.oper_GRAVADAS+this.totalIGV),2), alignment: 'right'}
             ],
             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
             margin: [0,0,2,0]
