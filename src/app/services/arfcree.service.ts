@@ -21,7 +21,7 @@ export class ArfcreeService extends GenericoService {
 
     findArfcree(data: ArfcreePK){
         const body = JSON.stringify(data);
-        return this.http.post<Infor<Arfcree>>(this.url+`/arfcree/id`,this.options);
+        return this.http.post<Infor<Arfcree>>(this.url+`/arfcree/id`,body,this.options);
     }
 
 }

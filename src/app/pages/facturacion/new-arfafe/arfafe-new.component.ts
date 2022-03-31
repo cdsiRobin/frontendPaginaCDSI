@@ -21,6 +21,7 @@ import { ArfafeService } from 'src/app/services/arfafe.service';
 import { ArfatpService } from 'src/app/services/arfatp.service';
 import { ArticuloService } from 'src/app/services/articulo.service';
 import { PedidoService } from 'src/app/services/pedido.service';
+import { ArfamcService } from 'src/app/services/arfamc.service';
 import { Utils } from "../utils";
 import { ArfacfService } from 'src/app/services/arfacf.service';
 import { ArfafpService } from 'src/app/services/arfafp.service';
@@ -37,6 +38,10 @@ import { ArfcreePK } from 'src/app/models/ArfcreePK';
 import { ArfcreeService } from 'src/app/services/arfcree.service';
 import { ConfirmArfafeComponent } from '../confirm-arfafe/confirm-arfafe.component';
 import { MatDialog } from '@angular/material/dialog';
+import * as moment from 'moment';
+import { ArcgmoService } from 'src/app/services/arcgmo.service';
+import { UtilsArfafe } from '../utils-arfafe/utils-arfafe';
+import { PdfArfafe } from '../utils-arfafe/pdf-arfafe';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -94,6 +99,8 @@ export class NewArfafeComponent implements OnInit {
     private arfacfservice: ArfacfService,
     public arpffeService: ArpffeService,
     private arfcreeService: ArfcreeService,
+    private arcgmoService: ArcgmoService,
+    private arfamcService: ArfamcService,
     public datepipe: DatePipe,
     private router: Router,
     private sb: MatSnackBar,
@@ -201,7 +208,7 @@ export class NewArfafeComponent implements OnInit {
                 .subscribe();
             }
 
-            setTimeout(() => {this.ProperDesing();
+            setTimeout(() => {this.report();
             this.envioDataFE();
             this.router.navigate(['pedido/arfafe/list'])},1000
             );
@@ -387,7 +394,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.descuento = 0;
         this.detalle.t_DESCUENTO = 0;
         // this.detalle.total_b
-        // console.log(this.detalle);
+        console.log(this.detalle);
       });
 
     }
@@ -438,7 +445,7 @@ export class NewArfafeComponent implements OnInit {
             s += a.monto;
         }
         if(this.detalle.total === s) this.btnFp = !this.btnFp;
-        else {console.log(s+' - '+this.detalle.total);this.sb.open('Sumatoria de cuotas no coincide con total de factura'
+        else {this.sb.open('Sumatoria de cuotas no coincide con total de factura'
         ,'Cerrar',{ duration : 3000})
         .onAction().subscribe(() => this.sb.dismiss());}
         
@@ -452,9 +459,15 @@ export class NewArfafeComponent implements OnInit {
     }
 
     createCuota(){
-    console.log(this.arfcredCuota+' - '+ this.arfcredDate+' - '+this.arfcredPrice);
+    // console.log(this.arfcredCuota+' - '+ this.arfcredDate+' - '+this.arfcredPrice);
     // this.arfcree.arfcredList = [];
+    let rs = moment(this.arfcredDate, 'DD/MM/YYYY',true).isValid();
     
+    if(this.arfcredCuota === '' || this.arfcredDate === '' || this.arfcredPrice === null) {
+        this.sb.open('Llenar todos los datos'
+        ,'Cerrar',{ duration : 3000})
+        .onAction().subscribe(() => this.sb.dismiss());
+    } else {
     let d: Arfcred = new Arfcred();
     d.arfcredPk = new ArfcredPK();
     d.arfcredPk.noCia = this.detalle.arfafePK.noCia;
@@ -475,6 +488,7 @@ export class NewArfafeComponent implements OnInit {
     this.arfcredDate = '';
     this.arfcredPrice = null;
     }
+    }
 
     getCuotas(){
         let a: number = -1;
@@ -491,8 +505,8 @@ export class NewArfafeComponent implements OnInit {
         b.plazo9,b.plazo10,b.plazo11,b.plazo12];
 
         this.arfcree.arfcreePk = tempd;
-        
-         if (c[0] != null) this.arfcree.arfcredList = [];
+        // console.log(this.arfcree.arfcredList.length);
+         if (c[0] != null && this.arfcree.arfcredList.length === 0) this.arfcree.arfcredList = [];
         // console.log(c[0]);
         
         for(let i= 0;i<=c.length;i++){
@@ -521,7 +535,8 @@ export class NewArfafeComponent implements OnInit {
             this.xCuota = !this.xCuota;
             this.arfcredCuota = 'Cuota00'+(this.arfcree.arfcredList.length+1);
         }
-        if (g.length > 0) this.arfcree.arfcredList = g;
+        // console.log(this.arfcree.arfcredList.length);
+        if (g.length > 0 && this.arfcree.arfcredList.length === 0) this.arfcree.arfcredList = g;
 
         this.arfcree.monto = this.detalle.total;
         this.arfcree.codFP = this.arfafp.arfafpPK.codFpago;
@@ -595,6 +610,27 @@ export class NewArfafeComponent implements OnInit {
     .subscribe(data => {
         this.nomCentro = data.descripcion;
     })
+  }
+
+  report(){
+      
+    this.arcgmoService.listarArcgmo().subscribe( b => {
+        b.resultado.forEach( obj => {
+            if(obj.moneda === this.detalle.moneda){
+                let txt = new UtilsArfafe().NumeroALetras(this.detalle.total,obj.descripcion);
+                
+            this.arfamcService.buscarId(sessionStorage.getItem('cia')).subscribe(rs => {
+                
+                if(this.arfafp.arfafpPK.tipoFpago === "20")
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,false,new Arfcree());    
+                else
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,true, this.arfcree); 
+                                
+            });
+            }
+        })
+    });
+      
   }
 
   ProperDesingA5() {
@@ -1137,7 +1173,7 @@ export class NewArfafeComponent implements OnInit {
     pdfMake.createPdf(documentDefinition).open();
   }
 
-  ProperDesing() {
+  ProperDesingBack() {
     var body = [];
     body.push([
         {text: 'Código', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
@@ -1679,6 +1715,544 @@ export class NewArfafeComponent implements OnInit {
     pdfMake.createPdf(documentDefinition).open();
   }
 
+  ProperDesing() {
+    var body = [];
+    body.push([
+        {text: 'Código', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Descripción', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        {text: 'UM', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Valor Unitario', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: '% Desc', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'ICBPER', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'IGV', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+        {text: 'Valor Total', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
+    this.detalle.arfaflList.forEach(l => {
+        body.push(
+            [{text: l.no_ARTI, bold: false, fontSize: 8},
+            {text: l.descripcion, bold: false, fontSize: 8},
+            {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
+            {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
+            {text: 0.00, bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 8, alignment: 'right'},
+            {text: l.total.toFixed(2), bold: false, fontSize: 8, alignment: 'right'}
+            ]
+        );
+      });
+    var bodyDet = [];
+    bodyDet.push([
+        {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.descuento, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+        // {text: [
+        //     {text: 'S/ ', alignment: 'left'},
+        //     {text: this.detalle.descuento, alignment: 'right'}],
+        //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+    ]);
+    bodyDet.push([
+        {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: '0', alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.totalIGV, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.total, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: '0', alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+    bodyDet.push([
+        {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+        // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+        {
+            columns: [
+                {text: 'S/ ', alignment: 'left'},
+                {text: this.detalle.descuento, alignment: 'right'}
+            ],
+            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+            margin: [0,0,5,0]
+        }
+    ]);
+
+    const documentDefinition = {
+    // pageSize: 'A5',
+    //   pageOrientation: 'landscape',
+    pageMargins: [40, 20, 40, 220],
+            content: [
+        //   {qr: 'text'},
+        {
+            columns: [
+                {
+                    width: 50,
+                    height: 70,
+                    image: this.logoDataUrl
+                },
+                [
+                    {
+                        width: 350,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Pag.Web : ',
+                                bold:true
+                            },
+                            {
+                                text: 'WWW.CDSI.COM.PE/RYSE',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9
+                    },
+                    {
+                        width: 350,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Email: ',
+                                bold:true
+                            },
+                            {
+                                text: 'rysesperanza@hotmail.com',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9
+                    },
+                    {
+                        width: 350,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Teléfonos : ',
+                                bold:true
+                            },
+                            {
+                                text: '01 7820798 / 965428693 / 937802577',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9
+                    },
+                    {
+                        width: 250,
+                        noWrap: false,
+                        maxHeight: 70,
+                        text: [
+                            {
+                                text: 'Domicilio Fiscal :',
+                                bold:true
+                            },
+                            {
+                                text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
+                                fontSize: 8
+                            }
+                        ],
+                        color: 'black',
+                        fontSize: 9
+                    }
+                ],
+                {
+                    // margin: [ 5, 0, 0, 0],
+                    layout: {
+                        hLineWidth: function(i, node) {
+                         return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+                        },
+                        vLineWidth: function(i, node) {
+                         return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function(i, node) {
+                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                        }
+                    },
+                    // layout: 'noBorders',
+                    width: 110,
+                    table: {
+                      headerRows: 1,
+                      widths: [100],
+                      body: [
+                          [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+                          [
+                            {
+                                text: 'RUC: '+'20213092571'+' '+this.detalle.arfafePK.noFactu,
+                                bold: true,
+                                fontSize: 10
+                            }
+                          ]
+                    ]
+                    },
+                    style: 'anotherStyle'
+                }
+            ],
+            margin: [ 0, 0, 0, 6],
+            columnGap: 15
+        },
+        {
+            stack: [
+                {
+                    canvas: [
+                        {
+                            type: 'rect',
+                            x: 0,
+                            y: 0,
+                            w: 515,
+                            h: 56,
+                            lineWidth: 0.05,
+                            lineColor: 'grey'
+                        }
+                    ]
+                },
+                {
+                    columns: [
+                        [
+                            {
+                                columns: [
+                                    {
+                                        width: 350,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Cliente            : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.nbr_CLIENTE,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    },
+                                    {
+                                        width: 165,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'RUC  :',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.no_CLIENTE,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    }
+                                ]
+                            },
+                            {
+                                width: 515,
+                                noWrap: false,
+                                maxHeight: 70,
+                                text: [
+                                    {
+                                        text: 'Dirección       : ',
+                                        bold:true
+                                    },
+                                    {
+                                        text: this.detalle.direccion,
+                                        fontSize: 8
+                                    }
+                                ],
+                                color: 'black',
+                                fontSize: 9
+                            },
+                            {
+                                columns: [
+                                    {
+                                        width: 515/2,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'F. Emisión      : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    },
+                                    {
+                                        width: 515/2,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Condición Pago : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.arfafp.descripcion,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    }
+                                ]
+                            },
+                            {
+                                columns: [
+                                    {
+                                        width: 160,
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Orden Compra : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.no_SOLIC,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    },
+                                    {
+                                        width: '*',
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Guía Remisión : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.no_GUIA,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    },
+                                    {
+                                        width: '*',
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Moneda : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.moneda,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    },
+                                    {
+                                        width: '*',
+                                        noWrap: false,
+                                        maxHeight: 70,
+                                        text: [
+                                            {
+                                                text: 'Vendedor : ',
+                                                bold:true
+                                            },
+                                            {
+                                                text: this.detalle.cuser,
+                                                fontSize: 8
+                                            }
+                                        ],
+                                        color: 'black',
+                                        fontSize: 9
+                                    }
+                                ]
+                            }
+                        ]
+                    ],
+                    margin : [5,6,5,0]
+                    ,
+                    relativePosition: {
+                    x: 0,
+                    y: -56
+                    }
+                }
+            ]
+        },
+        // 'texto antes de tabla',
+        {
+          margin: [ 0, 5, 0, 0],
+          layout: 'noBorders',
+          table: {
+            headerRows: 1,
+            widths: ['7%', '41%', '5%', '8%','10%', '5%', '7%', '7%','10%'],
+
+            body: body
+          }
+        },
+        {
+            columns: [
+                [
+                {
+                    columns: [
+                        [
+                             {qr: 'pagina de FE qr. k', fit: '60' },
+                             {text: ' '},
+                             {text: 'Representación Impresa de la Factura electrónica',
+                            fontSize: 8}
+                        ],
+                        [
+                            {
+                                margin: [ 0, 5, 0, 0],
+                                layout: 'noBorders',
+                                table: {
+                                  headerRows: 0,
+                                  widths: ['70%', '30%'],
+    
+                                  body: bodyDet
+                                }
+                              }
+                        ]
+                    ],
+                    margin: [10,20,10,15]
+                },
+                {
+                    layout: {
+                        hLineWidth: function(i, node) {
+                         return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+                        },
+                        vLineWidth: function(i, node) {
+                         return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+                        },
+                        hLineColor: function (i, node) {
+                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                        },
+                        vLineColor: function(i, node) {
+                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                        }
+                    },
+                    width: 515,
+                    table: {
+                      headerRows: 1,
+                      widths: ['100%'],
+                      body: [
+                          [{text: 'Sus pagos depositar al banco Interbank',
+                          fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
+                          [
+                            {
+                                columns: [
+                                    [{
+                                        text: [
+                                            {
+                                                text: 'Cuenta en Soles   : ',
+                                                // bold: true,
+                                                fontSize: 10
+                                            },
+                                            {   text: '191-2039372-0-16',
+                                            // bold: true,
+                                            fontSize: 10
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        text: [
+                                            {
+                                                text: 'Cuenta en Dolares  : ',
+                                                // bold: true,
+                                                fontSize: 10
+                                            },
+                                            {   text: '191-1985270-1-41',
+                                            // bold: true,
+                                            fontSize: 10
+                                            }
+                                        ]
+                                    }]
+                                ]
+                            }
+                          ]
+                    ]
+                    }
+                }
+                ]
+            ]
+        }
+      ],
+      styles: {
+        anotherStyle: {
+        //   italics: true,
+          alignment: 'center',
+          lineWidth: 0.05
+        }
+      }
+    };
+    pdfMake.createPdf(documentDefinition).open();
+  }
 
   }
 

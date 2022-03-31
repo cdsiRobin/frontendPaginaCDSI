@@ -29,6 +29,11 @@ import { Arfcree } from "src/app/models/Arfcree";
 import { Arfcred } from "src/app/models/Arfcred";
 import { ArfcredPK } from "src/app/models/ArfcredPK";
 import { ArfcreePK } from "src/app/models/ArfcreePK";
+import { ArfamcService } from "src/app/services/arfamc.service";
+import { Arfamc } from "src/app/models/arfamc";
+import { UtilsArfafe } from "../utils-arfafe/utils-arfafe";
+import { ArcgmoService } from "src/app/services/arcgmo.service";
+import { PdfArfafe } from "../utils-arfafe/pdf-arfafe";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -52,10 +57,10 @@ export class DetailArfafeComponent implements OnInit {
     doc: string;
     fact: string;
     tipoCambio: number;
-    logoDataUrl: string;
     nomCentro: string;
     centro: string = sessionStorage.getItem('centro');
     totalIGV:number = 0;
+    arfamc: Arfamc = new Arfamc();
 
     btnFp: boolean = false;
     uniMed: string[] = ['Med'];
@@ -69,15 +74,14 @@ export class DetailArfafeComponent implements OnInit {
     private arfacfservice: ArfacfService,
     public pedidoService: PedidoService,
     public arfcreeService: ArfcreeService,
+    public arfamcService: ArfamcService,
+    private arcgmoService: ArcgmoService,
     private sb: MatSnackBar,
     public datepipe: DatePipe) { }
 
   ngOnInit(): void {
     this.detalle.arfafePK = new ArfafePK();
     this.cargar();
-    Utils.getImageDataUrlFromLocalPath1('assets/Logo'+sessionStorage.getItem('cia')+'.jpg').then(
-      result => this.logoDataUrl = result
-    )
   }
 
   cargar(){
@@ -101,10 +105,21 @@ export class DetailArfafeComponent implements OnInit {
             this.listaPrecio(a.resultado.tipo_PRECIO);
             this.TCambio();
             this.cargarExtras();
+            let data: ArfcreePK = new ArfcreePK();
+            data.noCia = this.cia;
+            data.noCliente = this.detalle.no_CLIENTE;
+            data.noOrden = this.detalle.arfafePK.noFactu;
+            this.arfcreeService.findArfcree(data).subscribe( obj => {
+                    console.log(obj.resultado);
+                    this.arfcree = obj.resultado;
+            }, error => {console.log(error)});
             // console.log(a.resultado);
             //console.log(a.resultado.arfaflList);
+            
+
           this.pedidoService.pedidoParaFactura(idArpfoe.noCia, idArpfoe.noOrden).
             subscribe(d => {
+                // console.log(d);
                 d.arpfolList.forEach(
                     list => {
                       this.uniMed.push(list.medida);
@@ -280,1539 +295,2219 @@ getCuotas(){
     return Number(Math.round(parseFloat(x + 'e' + de)) + 'e-' + de).toFixed(de);
   }
 
-  ProperDesingA5() {
-    var body = [];
-    body.push([
-        {text: 'Código', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Descripción', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        {text: 'UM', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Cantidad', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Valor Unitario', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Desc', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'ICBPER', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'IGV', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Valor Total', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
-    this.detalle.arfaflList.forEach(l => {
-        body.push(
-            [{text: l.no_ARTI, bold: false, fontSize: 6},
-            {text: l.descripcion, bold: false, fontSize: 6},
-            {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 6},
-            {text: l.cantidad_ENTR, bold: false, fontSize: 6, alignment: 'right'},
-            {text: l.precio_UNIT, bold: false, fontSize: 6, alignment: 'right'},
-            {text: l.p_DSCTO3, bold: false, fontSize: 6, alignment: 'right'},
-            {text: 0.00, bold: false, fontSize: 6, alignment: 'right'},
-            {text: l.imp_IGV, bold: false, fontSize: 6, alignment: 'right'},
-            {text: this.trunc(l.total,2), bold: false, fontSize: 6, alignment: 'right'}
-            ]
-        );
-      });
-    var bodyDet = [];
-    bodyDet.push([
-        {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc(this.detalle.descuento,2), alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-        // {text: [
-        //     {text: 'S/ ', alignment: 'left'},
-        //     {text: this.detalle.descuento, alignment: 'right'}],
-        //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-    ]);
-    bodyDet.push([
-        {text: ' Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc((this.detalle.oper_GRAVADAS+this.totalIGV),2), alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: ' ICBPER',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: '0.00', alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: ' IGV',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc(this.totalIGV,2), alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: ' Importe Total',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc(this.detalle.total,2)+'', alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: ' Redondeo',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: '0.00', alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: ' Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.trunc(this.detalle.descuento,2), alignment: 'right'}
-            ],
-            bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,2,0]
-        }
-    ]);
-
-    const documentDefinition = {
-    pageSize: 'A4',
-    //   pageOrientation: 'landscape',
-    pageMargins: [20, 20, 235, 440],
-      footer: {
-        columns: [
-            [
-            {
-                columns: [
-                    [
-                         {qr: 'pagina de FE qr. k', fit: '50' },
-                         {text: ' '},
-                         {text: 'Representación Impresa de la Factura electrónica',
-                        fontSize: 6}
-                    ],
-                    [
-                        {
-                            margin: [ 0, 5, 0, 0],
-                            layout: 'noBorders',
-                            table: {
-                              headerRows: 0,
-                              widths: ['70%', '30%'],
-
-                              body: bodyDet
-                            }
-                          }
-                    ]
-                ],
-                margin: [10,20,5,15]
-            },
-            {
-                layout: {
-                    hLineWidth: function(i, node) {
-                     return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
-                    },
-                    vLineWidth: function(i, node) {
-                     return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
-                    },
-                    hLineColor: function (i, node) {
-                        return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
-                    },
-                    vLineColor: function(i, node) {
-                        return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
-                    }
-                },
-                width: 320,
-                table: {
-                  headerRows: 1,
-                  widths: ['100%'],
-                  body: [
-                      [{text: 'Sus pagos depositar al banco Interbank',
-                      fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 8}],
-                      [
-                        {
-                            columns: [
-                                [{
-                                    text: [
-                                        {
-                                            text: 'Cuenta en Soles   : ',
-                                            // bold: true,
-                                            fontSize: 8
-                                        },
-                                        {   text: '191-2039372-0-16',
-                                        // bold: true,
-                                        fontSize: 8
-                                        }
-                                    ]
-                                },
-                                {
-                                    text: [
-                                        {
-                                            text: 'Cuenta en Dolares  : ',
-                                            // bold: true,
-                                            fontSize: 8
-                                        },
-                                        {   text: '191-1985270-1-41',
-                                        // bold: true,
-                                        fontSize: 8
-                                        }
-                                    ]
-                                }]
-                            ]
-                        }
-                      ]
-                ]
-                },
-                margin: [10,0,5,0]
+  report(){
+      
+    this.arcgmoService.listarArcgmo().subscribe( b => {
+        b.resultado.forEach( obj => {
+            if(obj.moneda === this.detalle.moneda){
+                let txt = new UtilsArfafe().NumeroALetras(this.detalle.total,obj.descripcion);
+                
+            this.arfamcService.buscarId(this.cia).subscribe(rs => {
+                
+                if(this.arfafp.arfafpPK.tipoFpago === "20")
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,false,new Arfcree());    
+                else
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,true, this.arfcree); 
+                                
+            });
             }
-            ]
-        ],
-        margin: [10,0,235,0]
-    },
-
-      content: [
-        //   {qr: 'text'},
-        {
-            columns: [
-                {
-                    width: 50,
-                    height: 70,
-                    image: this.logoDataUrl
-                },
-                [
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Pag.Web : ',
-                                bold:true
-                            },
-                            {
-                                text: 'WWW.CDSI.COM.PE/RYSE',
-                                fontSize: 6
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 7
-                    },
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Email: ',
-                                bold:true
-                            },
-                            {
-                                text: 'rysesperanza@hotmail.com',
-                                fontSize: 6
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 7
-                    },
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Teléfonos : ',
-                                bold:true
-                            },
-                            {
-                                text: '01 7820798 / 965428693 / 937802577',
-                                fontSize: 6
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 7
-                    },
-                    {
-                        width: 250,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Domicilio Fiscal :',
-                                bold:true
-                            },
-                            {
-                                text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
-                                fontSize: 6
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 7
-                    }
-                ],
-                {
-                    // margin: [ 5, 0, 0, 0],
-                    layout: {
-                        hLineWidth: function(i, node) {
-                         return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
-                        },
-                        vLineWidth: function(i, node) {
-                         return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
-                        },
-                        hLineColor: function (i, node) {
-                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
-                        },
-                        vLineColor: function(i, node) {
-                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
-                        }
-                    },
-                    // layout: 'noBorders',
-                    width: 110,
-                    table: {
-                      headerRows: 1,
-                      widths: [100],
-                      body: [
-                          [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
-                          [
-                            {
-                                text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,
-                                bold: true,
-                                fontSize: 10
-                            }
-                          ]
-                    ]
-                    },
-                    style: 'anotherStyle'
-                }
-            ],
-            margin: [ 0, 0, 0, 6],
-            columnGap: 15
-        },
-        {
-            stack: [
-                {
-                    canvas: [
-                        {
-                            type: 'rect',
-                            x: 0,
-                            y: 0,
-                            w: 340,
-                            h: 46,
-                            lineWidth: 0.05,
-                            lineColor: 'grey'
-                        }
-                    ]
-                },
-                {
-                    columns: [
-                        [
-                            {
-                                columns: [
-                                    {
-                                        width: 260,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Cliente            : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.nbr_CLIENTE,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    },
-                                    {
-                                        width: 165,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'RUC  :',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_CLIENTE,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    }
-                                ]
-                            },
-                            {
-                                width: 340,
-                                noWrap: false,
-                                maxHeight: 70,
-                                text: [
-                                    {
-                                        text: 'Dirección       : ',
-                                        bold:true
-                                    },
-                                    {
-                                        text: this.detalle.direccion,
-                                        fontSize: 7
-                                    }
-                                ],
-                                color: 'black',
-                                fontSize: 8
-                            },
-                            {
-                                columns: [
-                                    {
-                                        width: 340/2,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'F. Emisión      : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    },
-                                    {
-                                        width: 340/2,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Condición Pago : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.arfafp.descripcion,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    }
-                                ]
-                            },
-                            {
-                                columns: [
-                                    {
-                                        width: 100,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Orden Compra : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_SOLIC,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    },
-                                    {
-                                        width: 105,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Guía Remisión : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_GUIA,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    },
-                                    {
-                                        width: 55,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Moneda : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.moneda,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Vendedor : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.cuser,
-                                                fontSize: 7
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 8
-                                    }
-                                ]
-                            }
-                        ]
-                    ],
-                    margin : [5,6,5,0]
-                    ,
-                    relativePosition: {
-                    x: 0,
-                    y: -46
-                    }
-                }
-            ]
-        },
-        // 'texto antes de tabla',
-        {
-          margin: [ 0, 5, 0, 0],
-          layout: 'noBorders',
-          table: {
-            headerRows: 1,
-            widths: ['6%', '40%', '5%', '9%','11%', '4%', '8%', '7%','10%'],
-
-            body: body
-          }
-        }
-      ],
-      styles: {
-        anotherStyle: {
-        //   italics: true,
-          alignment: 'center',
-          lineWidth: 0.05
-        }
-      }
-    };
-    pdfMake.createPdf(documentDefinition).open();
+        })
+    });
+      
   }
 
-  ProperDesingTicket() {
-    var body = [];
-    body.push([
-        {text: 'DESCRIPCION', bold: true, fontSize: 6},
-        {text: 'P.U.', bold: true, fontSize: 6, alignment: 'right'},
-        {text: 'TOTAL', bold: true, fontSize: 6, alignment: 'right'}
-    ]);
-    this.detalle.arfaflList.forEach(l => {
-        body.push(
-            [
-                {
-                    text: [
-                            '[',
-                            l.cantidad_ENTR.toFixed(2),
-                            '] ',
-                            l.descripcion
-                        ],
-                         bold: false, fontSize: 6
-                },
-            {text:
-                parseFloat(this.trunc((l.precio_UNIT+l.imp_IGV),2)),
-                 bold: false, fontSize: 6, alignment: 'right'},
-            {text: l.total, bold: false, fontSize: 6, alignment: 'right'}
-            ]
-        );
-      });
-    var bodyDet = [];
-    bodyDet.push([
-        {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.descuento, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-        // {text: [
-        //     {text: 'S/ ', alignment: 'left'},
-        //     {text: this.detalle.descuento, alignment: 'right'}],
-        //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-    ]);
-    bodyDet.push([
-        {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: '0', alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.totalIGV, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.total, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: '0', alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.descuento, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
+//   ProperDesingA5() {
+//     var body = [];
+//     body.push([
+//         {text: 'Código', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Descripción', bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'UM', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Cantidad', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Valor Unitario', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Desc', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'ICBPER', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'IGV', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Valor Total', bold: true, fontSize: 6, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
+//     this.detalle.arfaflList.forEach(l => {
+//         body.push(
+//             [{text: l.no_ARTI, bold: false, fontSize: 6},
+//             {text: l.descripcion, bold: false, fontSize: 6},
+//             {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 6},
+//             {text: l.cantidad_ENTR, bold: false, fontSize: 6, alignment: 'right'},
+//             {text: l.precio_UNIT, bold: false, fontSize: 6, alignment: 'right'},
+//             {text: l.p_DSCTO3, bold: false, fontSize: 6, alignment: 'right'},
+//             {text: 0.00, bold: false, fontSize: 6, alignment: 'right'},
+//             {text: l.imp_IGV, bold: false, fontSize: 6, alignment: 'right'},
+//             {text: this.trunc(l.total,2), bold: false, fontSize: 6, alignment: 'right'}
+//             ]
+//         );
+//       });
+//     var bodyDet = [];
+//     bodyDet.push([
+//         {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.trunc(this.detalle.descuento,2), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//         // {text: [
+//         //     {text: 'S/ ', alignment: 'left'},
+//         //     {text: this.detalle.descuento, alignment: 'right'}],
+//         //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//     ]);
+//     bodyDet.push([
+//         {text: ' Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.trunc((this.detalle.oper_GRAVADAS+this.totalIGV),2), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: ' ICBPER',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0.00', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: ' IGV',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.trunc(this.totalIGV,2), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: ' Importe Total',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.trunc(this.detalle.total,2)+'', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: ' Redondeo',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0.00', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: ' Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.trunc(this.detalle.descuento,2), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 6,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,2,0]
+//         }
+//     ]);
 
-    const documentDefinition = {
-        pageSize: {
-            width: 307.09,
-            height: 779.53
-        },
+//     const documentDefinition = {
+//     pageSize: 'A4',
+//     //   pageOrientation: 'landscape',
+//     pageMargins: [20, 20, 235, 440],
+//       footer: {
+//         columns: [
+//             [
+//             {
+//                 columns: [
+//                     [
+//                          {qr: 'pagina de FE qr. k', fit: '50' },
+//                          {text: ' '},
+//                          {text: 'Representación Impresa de la Factura electrónica',
+//                         fontSize: 6}
+//                     ],
+//                     [
+//                         {
+//                             margin: [ 0, 5, 0, 0],
+//                             layout: 'noBorders',
+//                             table: {
+//                               headerRows: 0,
+//                               widths: ['70%', '30%'],
 
-        pageMargins: [20, 30, 20, 30],
-      content: [
+//                               body: bodyDet
+//                             }
+//                           }
+//                     ]
+//                 ],
+//                 margin: [10,20,5,15]
+//             },
+//             {
+//                 layout: {
+//                     hLineWidth: function(i, node) {
+//                      return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                     },
+//                     vLineWidth: function(i, node) {
+//                      return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                     },
+//                     hLineColor: function (i, node) {
+//                         return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                     },
+//                     vLineColor: function(i, node) {
+//                         return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                     }
+//                 },
+//                 width: 320,
+//                 table: {
+//                   headerRows: 1,
+//                   widths: ['100%'],
+//                   body: [
+//                       [{text: 'Sus pagos depositar al banco Interbank',
+//                       fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 8}],
+//                       [
+//                         {
+//                             columns: [
+//                                 [{
+//                                     text: [
+//                                         {
+//                                             text: 'Cuenta en Soles   : ',
+//                                             // bold: true,
+//                                             fontSize: 8
+//                                         },
+//                                         {   text: '191-2039372-0-16',
+//                                         // bold: true,
+//                                         fontSize: 8
+//                                         }
+//                                     ]
+//                                 },
+//                                 {
+//                                     text: [
+//                                         {
+//                                             text: 'Cuenta en Dolares  : ',
+//                                             // bold: true,
+//                                             fontSize: 8
+//                                         },
+//                                         {   text: '191-1985270-1-41',
+//                                         // bold: true,
+//                                         fontSize: 8
+//                                         }
+//                                     ]
+//                                 }]
+//                             ]
+//                         }
+//                       ]
+//                 ]
+//                 },
+//                 margin: [10,0,5,0]
+//             }
+//             ]
+//         ],
+//         margin: [10,0,235,0]
+//     },
 
-        {
-            columns: [
-                [
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Pag.Web : ',
-                                bold:true
-                            },
-                            {
-                                text: 'WWW.HS-IMPORT.COM',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    },
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Email: ',
-                                bold:true
-                            },
-                            {
-                                text: 'VENTAS@HS-IMPORT.COM',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    },
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Teléfonos : ',
-                                bold:true
-                            },
-                            {
-                                text: '01 3545576 / 983537208',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    },
-                    {
-                        width: 250,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Domicilio Fiscal :',
-                                bold:true
-                            },
-                            {
-                                text: 'AV. SANTA ANA MZ A 33 LT:36 CULTURA PERUANA MODERNA (SANTA ANITA) - SANTA ANITA - LIMA - LIMA',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    }
-                ],
-                {
-                    // margin: [ 5, 0, 0, 0],
-                    layout: {
-                        hLineWidth: function(i, node) {
-                         return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
-                        },
-                        vLineWidth: function(i, node) {
-                         return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
-                        },
-                        hLineColor: function (i, node) {
-                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
-                        },
-                        vLineColor: function(i, node) {
-                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
-                        }
-                    },
-                    // layout: 'noBorders',
-                    width: 110,
-                    table: {
-                      headerRows: 1,
-                      widths: [100],
-                      body: [
-                          [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
-                          [
-                            {
-                                text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,
-                                bold: true,
-                                fontSize: 10
-                            }
-                          ]
-                    ]
-                    },
-                    style: 'anotherStyle'
-                }
-            ],
-            margin: [ 0, 0, 0, 6],
-            columnGap: 15
-        },
-        {
-            stack: [
-                {
-                    canvas: [
-                        {
-                            type: 'rect',
-                            x: 0,
-                            y: 0,
-                            w: 515,
-                            h: 56,
-                            lineWidth: 0.05,
-                            lineColor: 'grey'
-                        }
-                    ]
-                },
-                {
-                    columns: [
-                        [
-                            {
-                                columns: [
-                                    {
-                                        width: 350,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Cliente            : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.nbr_CLIENTE,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: 165,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'RUC  :',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_CLIENTE,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    }
-                                ]
-                            },
-                            {
-                                width: 515,
-                                noWrap: false,
-                                maxHeight: 70,
-                                text: [
-                                    {
-                                        text: 'Dirección       : ',
-                                        bold:true
-                                    },
-                                    {
-                                        text: this.detalle.direccion,
-                                        fontSize: 8
-                                    }
-                                ],
-                                color: 'black',
-                                fontSize: 9
-                            },
-                            {
-                                columns: [
-                                    {
-                                        width: 515/2,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'F. Emisión      : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: 515/2,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Condición Pago : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.arfafp.descripcion,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    }
-                                ]
-                            },
-                            {
-                                columns: [
-                                    {
-                                        width: 160,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Orden Compra : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_SOLIC,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Guía Remisión : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_GUIA,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Moneda : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.moneda,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Vendedor : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.cuser,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    }
-                                ]
-                            }
-                        ]
-                    ],
-                    margin : [5,6,5,0]
-                    ,
-                    relativePosition: {
-                    x: 0,
-                    y: -56
-                    }
-                }
-            ]
-        },
-        {
-            text: '--------------------------------------------------------------------'
-        },
-        {
-          margin: [ 0, 5, 0, 0],
-          layout: 'noBorders',
-          table: {
-            headerRows: 1,
-            widths: ['60%', '20%','20%'],
+//       content: [
+//         //   {qr: 'text'},
+//         {
+//             columns: [
+//                 {
+//                     width: 50,
+//                     height: 70,
+//                     image: this.logoDataUrl
+//                 },
+//                 [
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Pag.Web : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'WWW.CDSI.COM.PE/RYSE',
+//                                 fontSize: 6
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 7
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Email: ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'rysesperanza@hotmail.com',
+//                                 fontSize: 6
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 7
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Teléfonos : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: '01 7820798 / 965428693 / 937802577',
+//                                 fontSize: 6
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 7
+//                     },
+//                     {
+//                         width: 250,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Domicilio Fiscal :',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
+//                                 fontSize: 6
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 7
+//                     }
+//                 ],
+//                 {
+//                     // margin: [ 5, 0, 0, 0],
+//                     layout: {
+//                         hLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                         },
+//                         vLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                         },
+//                         hLineColor: function (i, node) {
+//                             return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                         },
+//                         vLineColor: function(i, node) {
+//                             return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                         }
+//                     },
+//                     // layout: 'noBorders',
+//                     width: 110,
+//                     table: {
+//                       headerRows: 1,
+//                       widths: [100],
+//                       body: [
+//                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+//                           [
+//                             {
+//                                 text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,
+//                                 bold: true,
+//                                 fontSize: 10
+//                             }
+//                           ]
+//                     ]
+//                     },
+//                     style: 'anotherStyle'
+//                 }
+//             ],
+//             margin: [ 0, 0, 0, 6],
+//             columnGap: 15
+//         },
+//         {
+//             stack: [
+//                 {
+//                     canvas: [
+//                         {
+//                             type: 'rect',
+//                             x: 0,
+//                             y: 0,
+//                             w: 340,
+//                             h: 46,
+//                             lineWidth: 0.05,
+//                             lineColor: 'grey'
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     columns: [
+//                         [
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 260,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Cliente            : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.nbr_CLIENTE,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     },
+//                                     {
+//                                         width: 165,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'RUC  :',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_CLIENTE,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 width: 340,
+//                                 noWrap: false,
+//                                 maxHeight: 70,
+//                                 text: [
+//                                     {
+//                                         text: 'Dirección       : ',
+//                                         bold:true
+//                                     },
+//                                     {
+//                                         text: this.detalle.direccion,
+//                                         fontSize: 7
+//                                     }
+//                                 ],
+//                                 color: 'black',
+//                                 fontSize: 8
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 340/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'F. Emisión      : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     },
+//                                     {
+//                                         width: 340/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Condición Pago : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.arfafp.descripcion,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 100,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Orden Compra : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_SOLIC,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     },
+//                                     {
+//                                         width: 105,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Guía Remisión : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_GUIA,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     },
+//                                     {
+//                                         width: 55,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Moneda : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.moneda,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Vendedor : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.cuser,
+//                                                 fontSize: 7
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 8
+//                                     }
+//                                 ]
+//                             }
+//                         ]
+//                     ],
+//                     margin : [5,6,5,0]
+//                     ,
+//                     relativePosition: {
+//                     x: 0,
+//                     y: -46
+//                     }
+//                 }
+//             ]
+//         },
+//         // 'texto antes de tabla',
+//         {
+//           margin: [ 0, 5, 0, 0],
+//           layout: 'noBorders',
+//           table: {
+//             headerRows: 1,
+//             widths: ['6%', '40%', '5%', '9%','11%', '4%', '8%', '7%','10%'],
 
-            body: body
-          }
-        }
-      ],
-      styles: {
-        anotherStyle: {
-        //   italics: true,
-          alignment: 'center',
-          lineWidth: 0.05
-        }
-      }
-    };
-    pdfMake.createPdf(documentDefinition).open();
-  }
+//             body: body
+//           }
+//         }
+//       ],
+//       styles: {
+//         anotherStyle: {
+//         //   italics: true,
+//           alignment: 'center',
+//           lineWidth: 0.05
+//         }
+//       }
+//     };
+//     pdfMake.createPdf(documentDefinition).open();
+//   }
 
-  ProperDesing() {
-    var body = [];
-    body.push([
-        {text: 'Código', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Descripción', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        {text: 'UM', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Valor Unitario', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: '% Desc', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'ICBPER', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'IGV', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
-        {text: 'Valor Total', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
-    this.detalle.arfaflList.forEach(l => {
-        body.push(
-            [{text: l.no_ARTI, bold: false, fontSize: 8},
-            {text: l.descripcion, bold: false, fontSize: 8},
-            {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
-            {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
-            {text: 0.00, bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 8, alignment: 'right'},
-            {text: l.total.toFixed(2), bold: false, fontSize: 8, alignment: 'right'}
-            ]
-        );
-      });
-    var bodyDet = [];
-    bodyDet.push([
-        {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.descuento, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-        // {text: [
-        //     {text: 'S/ ', alignment: 'left'},
-        //     {text: this.detalle.descuento, alignment: 'right'}],
-        //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-    ]);
-    bodyDet.push([
-        {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: '0', alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.totalIGV, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.total, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: '0', alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
-    bodyDet.push([
-        {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
-        // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
-        {
-            columns: [
-                {text: 'S/ ', alignment: 'left'},
-                {text: this.detalle.descuento, alignment: 'right'}
-            ],
-            bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-            margin: [0,0,5,0]
-        }
-    ]);
+//   ProperDesingTicket() {
+//     var body = [];
+//     body.push([
+//         {text: 'DESCRIPCION', bold: true, fontSize: 6},
+//         {text: 'P.U.', bold: true, fontSize: 6, alignment: 'right'},
+//         {text: 'TOTAL', bold: true, fontSize: 6, alignment: 'right'}
+//     ]);
+//     this.detalle.arfaflList.forEach(l => {
+//         body.push(
+//             [
+//                 {
+//                     text: [
+//                             '[',
+//                             l.cantidad_ENTR.toFixed(2),
+//                             '] ',
+//                             l.descripcion
+//                         ],
+//                          bold: false, fontSize: 6
+//                 },
+//             {text:
+//                 parseFloat(this.trunc((l.precio_UNIT+l.imp_IGV),2)),
+//                  bold: false, fontSize: 6, alignment: 'right'},
+//             {text: l.total, bold: false, fontSize: 6, alignment: 'right'}
+//             ]
+//         );
+//       });
+//     var bodyDet = [];
+//     bodyDet.push([
+//         {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.descuento, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//         // {text: [
+//         //     {text: 'S/ ', alignment: 'left'},
+//         //     {text: this.detalle.descuento, alignment: 'right'}],
+//         //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//     ]);
+//     bodyDet.push([
+//         {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.totalIGV, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.total, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.descuento, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
 
-    const documentDefinition = {
-    // pageSize: 'A5',
-    //   pageOrientation: 'landscape',
-    pageMargins: [40, 20, 40, 220],
-      footer: {
-        columns: [
-            [
-            {
-                columns: [
-                    [
-                         {qr: 'pagina de FE qr. k', fit: '60' },
-                         {text: 'Representación Impresa de la Factura electrónica',
-                        fontSize: 8}
-                    ],
-                    [
-                        {
-                            margin: [ 0, 5, 0, 0],
-                            layout: 'noBorders',
-                            table: {
-                              headerRows: 0,
-                              widths: ['70%', '30%'],
+//     const documentDefinition = {
+//         pageSize: {
+//             width: 307.09,
+//             height: 779.53
+//         },
 
-                              body: bodyDet
-                            }
-                          }
-                    ]
-                ],
-                margin: [10,20,10,15]
-            },
-            {
-                layout: {
-                    hLineWidth: function(i, node) {
-                     return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
-                    },
-                    vLineWidth: function(i, node) {
-                     return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
-                    },
-                    hLineColor: function (i, node) {
-                        return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
-                    },
-                    vLineColor: function(i, node) {
-                        return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
-                    }
-                },
-                width: 515,
-                table: {
-                  headerRows: 1,
-                  widths: ['100%'],
-                  body: [
-                      [{text: 'Sus pagos depositar al banco Credito',
-                      fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
-                      [
-                        {
-                            columns: [
-                                [{
-                                    text: [
-                                        {
-                                            text: 'Cuenta en Soles   : ',
-                                            // bold: true,
-                                            fontSize: 10
-                                        },
-                                        {   text: '191-2039372-0-16',
-                                        // bold: true,
-                                        fontSize: 10
-                                        }
-                                    ]
-                                },
-                                {
-                                    text: [
-                                        {
-                                            text: 'Cuenta en Dolares  : ',
-                                            // bold: true,
-                                            fontSize: 10
-                                        },
-                                        {   text: '191-1985270-1-41',
-                                        // bold: true,
-                                        fontSize: 10
-                                        }
-                                    ]
-                                }]
-                            ]
-                        }
-                      ]
-                ]
-                }
-            }
-            ]
-        ],
-        margin: [40,0]
-    },
+//         pageMargins: [20, 30, 20, 30],
+//       content: [
 
-      content: [
-        //   {qr: 'text'},
-        {
-            columns: [
-                {
-                    width: 50,
-                    height: 70,
-                    image: this.logoDataUrl
-                },
-                [
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Pag.Web : ',
-                                bold:true
-                            },
-                            {
-                                text: 'WWW.CDSI.COM.PE/RYSE',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    },
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Email: ',
-                                bold:true
-                            },
-                            {
-                                text: 'rysesperanza@hotmail.com',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    },
-                    {
-                        width: 350,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Teléfonos : ',
-                                bold:true
-                            },
-                            {
-                                text: '01 7820798 / 965428693 / 937802577',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    },
-                    {
-                        width: 250,
-                        noWrap: false,
-                        maxHeight: 70,
-                        text: [
-                            {
-                                text: 'Domicilio Fiscal :',
-                                bold:true
-                            },
-                            {
-                                text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
-                                fontSize: 8
-                            }
-                        ],
-                        color: 'black',
-                        fontSize: 9
-                    }
-                ],
-                {
-                    // margin: [ 5, 0, 0, 0],
-                    layout: {
-                        hLineWidth: function(i, node) {
-                         return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
-                        },
-                        vLineWidth: function(i, node) {
-                         return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
-                        },
-                        hLineColor: function (i, node) {
-                            return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
-                        },
-                        vLineColor: function(i, node) {
-                            return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
-                        }
-                    },
-                    // layout: 'noBorders',
-                    width: 110,
-                    table: {
-                      headerRows: 1,
-                      widths: [100],
-                      body: [
-                          [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
-                          [
-                            {
-                                text: 'RUC: '+'20213092571'+' '+this.detalle.arfafePK.noFactu,
-                                bold: true,
-                                fontSize: 10
-                            }
-                          ]
-                    ]
-                    },
-                    style: 'anotherStyle'
-                }
-            ],
-            margin: [ 0, 0, 0, 6],
-            columnGap: 15
-        },
-        {
-            stack: [
-                {
-                    canvas: [
-                        {
-                            type: 'rect',
-                            x: 0,
-                            y: 0,
-                            w: 515,
-                            h: 56,
-                            lineWidth: 0.05,
-                            lineColor: 'grey'
-                        }
-                    ]
-                },
-                {
-                    columns: [
-                        [
-                            {
-                                columns: [
-                                    {
-                                        width: 350,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Cliente            : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.nbr_CLIENTE,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: 165,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'RUC  :',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_CLIENTE,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    }
-                                ]
-                            },
-                            {
-                                width: 515,
-                                noWrap: false,
-                                maxHeight: 70,
-                                text: [
-                                    {
-                                        text: 'Dirección       : ',
-                                        bold:true
-                                    },
-                                    {
-                                        text: this.detalle.direccion,
-                                        fontSize: 8
-                                    }
-                                ],
-                                color: 'black',
-                                fontSize: 9
-                            },
-                            {
-                                columns: [
-                                    {
-                                        width: 515/2,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'F. Emisión      : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: 515/2,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Condición Pago : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.arfafp.descripcion,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    }
-                                ]
-                            },
-                            {
-                                columns: [
-                                    {
-                                        width: 160,
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Orden Compra : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_SOLIC,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Guía Remisión : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.no_GUIA,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Moneda : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.moneda,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    },
-                                    {
-                                        width: '*',
-                                        noWrap: false,
-                                        maxHeight: 70,
-                                        text: [
-                                            {
-                                                text: 'Vendedor : ',
-                                                bold:true
-                                            },
-                                            {
-                                                text: this.detalle.cuser,
-                                                fontSize: 8
-                                            }
-                                        ],
-                                        color: 'black',
-                                        fontSize: 9
-                                    }
-                                ]
-                            }
-                        ]
-                    ],
-                    margin : [5,6,5,0]
-                    ,
-                    relativePosition: {
-                    x: 0,
-                    y: -56
-                    }
-                }
-            ]
-        },
-        // 'texto antes de tabla',
-        {
-          margin: [ 0, 5, 0, 0],
-          layout: 'noBorders',
-          table: {
-            headerRows: 1,
-            widths: ['7%', '41%', '5%', '8%','10%', '5%', '7%', '7%','10%'],
+//         {
+//             columns: [
+//                 [
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Pag.Web : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'WWW.HS-IMPORT.COM',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Email: ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'VENTAS@HS-IMPORT.COM',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Teléfonos : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: '01 3545576 / 983537208',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 250,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Domicilio Fiscal :',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'AV. SANTA ANA MZ A 33 LT:36 CULTURA PERUANA MODERNA (SANTA ANITA) - SANTA ANITA - LIMA - LIMA',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     }
+//                 ],
+//                 {
+//                     // margin: [ 5, 0, 0, 0],
+//                     layout: {
+//                         hLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                         },
+//                         vLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                         },
+//                         hLineColor: function (i, node) {
+//                             return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                         },
+//                         vLineColor: function(i, node) {
+//                             return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                         }
+//                     },
+//                     // layout: 'noBorders',
+//                     width: 110,
+//                     table: {
+//                       headerRows: 1,
+//                       widths: [100],
+//                       body: [
+//                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+//                           [
+//                             {
+//                                 text: 'RUC: '+this.detalle.no_CLIENTE+' '+this.detalle.arfafePK.noFactu,
+//                                 bold: true,
+//                                 fontSize: 10
+//                             }
+//                           ]
+//                     ]
+//                     },
+//                     style: 'anotherStyle'
+//                 }
+//             ],
+//             margin: [ 0, 0, 0, 6],
+//             columnGap: 15
+//         },
+//         {
+//             stack: [
+//                 {
+//                     canvas: [
+//                         {
+//                             type: 'rect',
+//                             x: 0,
+//                             y: 0,
+//                             w: 515,
+//                             h: 56,
+//                             lineWidth: 0.05,
+//                             lineColor: 'grey'
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     columns: [
+//                         [
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 350,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Cliente            : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.nbr_CLIENTE,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: 165,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'RUC  :',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_CLIENTE,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 width: 515,
+//                                 noWrap: false,
+//                                 maxHeight: 70,
+//                                 text: [
+//                                     {
+//                                         text: 'Dirección       : ',
+//                                         bold:true
+//                                     },
+//                                     {
+//                                         text: this.detalle.direccion,
+//                                         fontSize: 8
+//                                     }
+//                                 ],
+//                                 color: 'black',
+//                                 fontSize: 9
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 515/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'F. Emisión      : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: 515/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Condición Pago : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.arfafp.descripcion,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 160,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Orden Compra : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_SOLIC,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Guía Remisión : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_GUIA,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Moneda : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.moneda,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Vendedor : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.cuser,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             }
+//                         ]
+//                     ],
+//                     margin : [5,6,5,0]
+//                     ,
+//                     relativePosition: {
+//                     x: 0,
+//                     y: -56
+//                     }
+//                 }
+//             ]
+//         },
+//         {
+//             text: '--------------------------------------------------------------------'
+//         },
+//         {
+//           margin: [ 0, 5, 0, 0],
+//           layout: 'noBorders',
+//           table: {
+//             headerRows: 1,
+//             widths: ['60%', '20%','20%'],
 
-            body: body
-          }
-        }
-      ],
-      styles: {
-        anotherStyle: {
-        //   italics: true,
-          alignment: 'center',
-          lineWidth: 0.05
-        }
-      }
-    };
-    pdfMake.createPdf(documentDefinition).open();
-  }
+//             body: body
+//           }
+//         }
+//       ],
+//       styles: {
+//         anotherStyle: {
+//         //   italics: true,
+//           alignment: 'center',
+//           lineWidth: 0.05
+//         }
+//       }
+//     };
+//     pdfMake.createPdf(documentDefinition).open();
+//   }
+
+//   PriceFormat = (number) => {
+//     const exp = /(\d)(?=(\d{3})+(?!\d))/g;
+//     const rep = '$1,';
+//     let arr = number.toString().split('.');
+//     arr[0] = arr[0].replace(exp,rep);
+//     return arr[1] ? arr.join('.'): arr[0];
+//   }
+
+//   ProperDesing() {
+
+//     this.arfamcService.buscarId(this.cia).subscribe( result => {
+//         this.arfamc = result;
+//         console.log(this.arfamc);
+//     var body = [];
+//     body.push([
+//         {text: 'Código', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Descripción', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'UM', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Valor Unitario', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: '% Desc', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'ICBPER', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'IGV', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Valor Total', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
+//     this.detalle.arfaflList.forEach(l => {
+//         body.push(
+//             [
+//             {text: l.no_ARTI, bold: false, fontSize: 7,lineHeight: 0.8},
+//             {text: l.descripcion, bold: false, fontSize: 7, lineHeight: 0.8},
+//             {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
+//             {text: l.cantidad_ENTR, bold: false, fontSize: 7, alignment: 'right'},
+//             {text: this.trunc(l.precio_UNIT_ORIG,5), bold: false, fontSize: 7, alignment: 'right'},
+//             {text: l.p_DSCTO3, bold: false, fontSize: 7, alignment: 'right'},
+//             {text: 0.00, bold: false, fontSize: 7, alignment: 'right'},
+//             {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 7, alignment: 'right'},
+//             {text: l.total.toFixed(2), bold: false, fontSize: 7, alignment: 'right'}
+//             ]
+//         );
+//       });
+//     var bodyDet = [];
+//     bodyDet.push([
+//         {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.PriceFormat(this.trunc(this.detalle.descuento,2)), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//         // {text: [
+//         //     {text: 'S/ ', alignment: 'left'},
+//         //     {text: this.detalle.descuento, alignment: 'right'}],
+//         //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//     ]);
+//     bodyDet.push([
+//         {text: 'Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.PriceFormat(this.trunc(this.detalle.oper_GRAVADAS,2)), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'ICBPER',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0.00', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'IGV',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.PriceFormat(this.trunc(this.totalIGV,2)), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Importe Total',margin:[2,0,0,0], bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.PriceFormat(this.trunc(this.detalle.total,2)), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Redondeo',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0.00', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.PriceFormat(this.trunc(this.detalle.descuento,2)), alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+
+//     const documentDefinition = {
+//     // pageSize: 'A5',
+//     //   pageOrientation: 'landscape',
+//     pageMargins: [40, 20, 40, 600],
+//     footer: {
+//         columns: [
+//             [
+//                 {
+//                     columns: [
+//                         [
+//                         {
+//                             columns: [
+//                                 [
+//                                      {qr: 'pagina de FE qr. k', fit: '60' },
+//                                      {text: ' '},
+//                                      {text: 'Representación Impresa de la Factura electrónica',
+//                                     fontSize: 8}
+//                                 ],
+//                                 [
+//                                     {
+//                                         margin: [ 0, 5, 0, 0],
+//                                         layout: 'noBorders',
+//                                         table: {
+//                                           headerRows: 0,
+//                                           widths: ['70%', '30%'],
+            
+//                                           body: bodyDet
+//                                         }
+//                                       }
+//                                 ]
+//                             ],
+//                             margin: [10,20,10,15]
+//                         },
+//                         {
+//                             layout: {
+//                                 hLineWidth: function(i, node) {
+//                                  return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                                 },
+//                                 vLineWidth: function(i, node) {
+//                                  return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                                 },
+//                                 hLineColor: function (i, node) {
+//                                     return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                                 },
+//                                 vLineColor: function(i, node) {
+//                                     return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                                 }
+//                             },
+//                             width: 515,
+//                             table: {
+//                               headerRows: 1,
+//                               widths: ['100%'],
+//                               body: [
+//                                   [{text: 'Sus pagos depositar al banco Interbank',
+//                                   fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
+//                                   [
+//                                     {
+//                                         columns: [
+//                                             [{
+//                                                 text: [
+//                                                     {
+//                                                         text: 'Cuenta en Soles      : ',
+//                                                         // bold: true,
+//                                                         fontSize: 10
+//                                                     },
+//                                                     {   text: result.cuentaSol,
+//                                                     // bold: true,
+//                                                     fontSize: 10
+//                                                     }
+//                                                 ]
+//                                             },
+//                                             {
+//                                                 text: [
+//                                                     {
+//                                                         text: 'Cuenta en Dolares  : ',
+//                                                         // bold: true,
+//                                                         fontSize: 10
+//                                                     },
+//                                                     {   text: result.cuentaDol,
+//                                                     // bold: true,
+//                                                     fontSize: 10
+//                                                     }
+//                                                 ]
+//                                             }]
+//                                         ]
+//                                     }
+//                                   ]
+//                             ]
+//                             }
+//                         }
+//                         ]
+//                     ]
+//                 }
+//             ]
+//         ],
+//         margin: [40, 0]
+//     },
+//             content: [
+//         //   {qr: 'text'},
+//         {
+//             columns: [
+//                 {
+//                     width: 50,
+//                     height: 70,
+//                     image: this.logoDataUrl
+//                 },
+//                 [
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: result.nombre,
+//                         color: 'black',
+//                         // fontSize: 11,
+//                         alignment: 'center',
+//                         bold: true
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: result.descripcion,
+//                         color: 'black',
+//                         fontSize: 9,
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Email: ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: result.email,
+//                                 fontSize: 8
+//                             },
+//                             {text : '               '},
+//                             {
+//                                 text: 'Pag.Web : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'WWW.CDSI.COM.PE/RYSE',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Teléfonos : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: '01 7820798 / 965428693 / 937802577',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 250,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Domicilio Fiscal :',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     }
+//                 ],
+//                 {
+//                     // margin: [ 5, 0, 0, 0],
+//                     layout: {
+//                         hLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                         },
+//                         vLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                         },
+//                         hLineColor: function (i, node) {
+//                             return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                         },
+//                         vLineColor: function(i, node) {
+//                             return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                         }
+//                     },
+//                     // layout: 'noBorders',
+//                     width: 110,
+//                     table: {
+//                       headerRows: 1,
+//                       widths: [100],
+//                       body: [
+//                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+//                           [
+//                             {
+//                                 text: 'RUC: '+result.ruc+' '+this.detalle.arfafePK.noFactu,
+//                                 bold: true,
+//                                 fontSize: 10
+//                             }
+//                           ]
+//                     ]
+//                     },
+//                     style: 'anotherStyle'
+//                 }
+//             ],
+//             margin: [ 0, 0, 0, 6],
+//             columnGap: 15
+//         },
+//         {
+//             stack: [
+//                 {
+//                     canvas: [
+//                         {
+//                             type: 'rect',
+//                             x: 0,
+//                             y: 0,
+//                             w: 515,
+//                             h: 50,
+//                             lineWidth: 0.05,
+//                             lineColor: 'grey'
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     columns: [
+//                         [
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 350,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Cliente            : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.nbr_CLIENTE,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: 165,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'RUC  :',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_CLIENTE,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 width: 515,
+//                                 noWrap: false,
+//                                 maxHeight: 70,
+//                                 text: [
+//                                     {
+//                                         text: 'Dirección       : ',
+//                                         bold:true
+//                                     },
+//                                     {
+//                                         text: this.detalle.direccion,
+//                                         fontSize: 8
+//                                     }
+//                                 ],
+//                                 color: 'black',
+//                                 fontSize: 9
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 515/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'F. Emisión      : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: 515/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Condición Pago : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.arfafp.descripcion,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 160,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Orden Compra : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_SOLIC,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Pedido : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_ORDEN,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Moneda : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.moneda,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Vendedor : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.cuser,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             }
+//                         ]
+//                     ],
+//                     margin : [5,10,5,-8]
+//                     ,
+//                     relativePosition: {
+//                     x: 0,
+//                     y: -56
+//                     }
+//                 }
+//             ]
+//         },
+//         // 'texto antes de tabla',
+//         {
+//         //   margin: [ 0, 1, 0, 0],
+//           layout: 'noBorders',
+//           table: {
+//             headerRows: 1,
+//             widths: ['7%', '41%', '5%', '8%','10%', '5%', '7%', '7%','10%'],
+
+//             body: body
+//           }
+//         }
+//       ],
+//       styles: {
+//         anotherStyle: {
+//         //   italics: true,
+//           alignment: 'center',
+//           lineWidth: 0.05
+//         }
+//       }
+//     };
+//     pdfMake.createPdf(documentDefinition).open();
+    
+// });
+//   }
+
+//   ProperDesingBack() {
+//     var body = [];
+//     body.push([
+//         {text: 'Código', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Descripción', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'UM', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Cantidad', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Valor Unitario', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: '% Desc', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'ICBPER', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'IGV', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'},
+//         {text: 'Valor Total', bold: true, fontSize: 8, alignment: 'center',fillColor: '#008CD9',color:'#FFF'}]);
+//     this.detalle.arfaflList.forEach(l => {
+//         body.push(
+//             [{text: l.no_ARTI, bold: false, fontSize: 8},
+//             {text: l.descripcion, bold: false, fontSize: 8},
+//             {text: this.uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
+//             {text: l.cantidad_ENTR, bold: false, fontSize: 8, alignment: 'right'},
+//             {text: l.precio_UNIT, bold: false, fontSize: 8, alignment: 'right'},
+//             {text: l.p_DSCTO3, bold: false, fontSize: 8, alignment: 'right'},
+//             {text: 0.00, bold: false, fontSize: 8, alignment: 'right'},
+//             {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 8, alignment: 'right'},
+//             {text: l.total.toFixed(2), bold: false, fontSize: 8, alignment: 'right'}
+//             ]
+//         );
+//       });
+//     var bodyDet = [];
+//     bodyDet.push([
+//         {text: 'Descuento Global', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.descuento, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//         // {text: [
+//         //     {text: 'S/ ', alignment: 'left'},
+//         //     {text: this.detalle.descuento, alignment: 'right'}],
+//         //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//     ]);
+//     bodyDet.push([
+//         {text: 'Total Valor Venta - Operaciones Gravadas:', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.oper_GRAVADAS, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'ICBPER', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'IGV', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.totalIGV, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Importe Total', bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ '+this.detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.total, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Redondeo', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: '0', alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+//     bodyDet.push([
+//         {text: 'Descuentos Totales', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+//         // {text: 'S/.'+this.detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
+//         {
+//             columns: [
+//                 {text: 'S/ ', alignment: 'left'},
+//                 {text: this.detalle.descuento, alignment: 'right'}
+//             ],
+//             bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+//             margin: [0,0,5,0]
+//         }
+//     ]);
+
+//     const documentDefinition = {
+//     // pageSize: 'A5',
+//     //   pageOrientation: 'landscape',
+//     pageMargins: [40, 20, 40, 220],
+//       footer: {
+//         columns: [
+//             [
+//             {
+//                 columns: [
+//                     [
+//                          {qr: 'pagina de FE qr. k', fit: '60' },
+//                          {text: ' '},
+//                          {text: 'Representación Impresa de la Factura electrónica',
+//                         fontSize: 8}
+//                     ],
+//                     [
+//                         {
+//                             margin: [ 0, 5, 0, 0],
+//                             layout: 'noBorders',
+//                             table: {
+//                               headerRows: 0,
+//                               widths: ['70%', '30%'],
+
+//                               body: bodyDet
+//                             }
+//                           }
+//                     ]
+//                 ],
+//                 margin: [10,20,10,15]
+//             },
+//             {
+//                 layout: {
+//                     hLineWidth: function(i, node) {
+//                      return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                     },
+//                     vLineWidth: function(i, node) {
+//                      return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                     },
+//                     hLineColor: function (i, node) {
+//                         return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                     },
+//                     vLineColor: function(i, node) {
+//                         return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                     }
+//                 },
+//                 width: 515,
+//                 table: {
+//                   headerRows: 1,
+//                   widths: ['100%'],
+//                   body: [
+//                       [{text: 'Sus pagos depositar al banco Interbank',
+//                       fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
+//                       [
+//                         {
+//                             columns: [
+//                                 [{
+//                                     text: [
+//                                         {
+//                                             text: 'Cuenta en Soles   : ',
+//                                             // bold: true,
+//                                             fontSize: 10
+//                                         },
+//                                         {   text: '191-2039372-0-16',
+//                                         // bold: true,
+//                                         fontSize: 10
+//                                         }
+//                                     ]
+//                                 },
+//                                 {
+//                                     text: [
+//                                         {
+//                                             text: 'Cuenta en Dolares  : ',
+//                                             // bold: true,
+//                                             fontSize: 10
+//                                         },
+//                                         {   text: '191-1985270-1-41',
+//                                         // bold: true,
+//                                         fontSize: 10
+//                                         }
+//                                     ]
+//                                 }]
+//                             ]
+//                         }
+//                       ]
+//                 ]
+//                 }
+//             }
+//             ]
+//         ],
+//         margin: [40,0]
+//     },
+
+//       content: [
+//         //   {qr: 'text'},
+//         {
+//             columns: [
+//                 {
+//                     width: 50,
+//                     height: 70,
+//                     image: this.logoDataUrl
+//                 },
+//                 [
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Pag.Web : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'WWW.CDSI.COM.PE/RYSE',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Email: ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'rysesperanza@hotmail.com',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 350,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Teléfonos : ',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: '01 7820798 / 965428693 / 937802577',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     },
+//                     {
+//                         width: 250,
+//                         noWrap: false,
+//                         maxHeight: 70,
+//                         text: [
+//                             {
+//                                 text: 'Domicilio Fiscal :',
+//                                 bold:true
+//                             },
+//                             {
+//                                 text: 'AV. AVIACION N° 1120 LA VICTORIA, LIMA, LIMA',
+//                                 fontSize: 8
+//                             }
+//                         ],
+//                         color: 'black',
+//                         fontSize: 9
+//                     }
+//                 ],
+//                 {
+//                     // margin: [ 5, 0, 0, 0],
+//                     layout: {
+//                         hLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                         },
+//                         vLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                         },
+//                         hLineColor: function (i, node) {
+//                             return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                         },
+//                         vLineColor: function(i, node) {
+//                             return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                         }
+//                     },
+//                     // layout: 'noBorders',
+//                     width: 110,
+//                     table: {
+//                       headerRows: 1,
+//                       widths: [100],
+//                       body: [
+//                           [{text: 'FACTURA ELECTRÓNICA',fillColor: '#008CD9',color:'#FFF',bold: true}],
+//                           [
+//                             {
+//                                 text: 'RUC: '+'20213092571'+' '+this.detalle.arfafePK.noFactu,
+//                                 bold: true,
+//                                 fontSize: 10
+//                             }
+//                           ]
+//                     ]
+//                     },
+//                     style: 'anotherStyle'
+//                 }
+//             ],
+//             margin: [ 0, 0, 0, 6],
+//             columnGap: 15
+//         },
+//         {
+//             stack: [
+//                 {
+//                     canvas: [
+//                         {
+//                             type: 'rect',
+//                             x: 0,
+//                             y: 0,
+//                             w: 515,
+//                             h: 56,
+//                             lineWidth: 0.05,
+//                             lineColor: 'grey'
+//                         }
+//                     ]
+//                 },
+//                 {
+//                     columns: [
+//                         [
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 350,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Cliente            : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.nbr_CLIENTE,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: 165,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'RUC  :',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_CLIENTE,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 width: 515,
+//                                 noWrap: false,
+//                                 maxHeight: 70,
+//                                 text: [
+//                                     {
+//                                         text: 'Dirección       : ',
+//                                         bold:true
+//                                     },
+//                                     {
+//                                         text: this.detalle.direccion,
+//                                         fontSize: 8
+//                                     }
+//                                 ],
+//                                 color: 'black',
+//                                 fontSize: 9
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 515/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'F. Emisión      : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.datepipe.transform(this.detalle.fecha,'dd/MM/yyyy'),
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: 515/2,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Condición Pago : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.arfafp.descripcion,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             },
+//                             {
+//                                 columns: [
+//                                     {
+//                                         width: 160,
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Orden Compra : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_SOLIC,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Guía Remisión : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.no_GUIA,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Moneda : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.moneda,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     },
+//                                     {
+//                                         width: '*',
+//                                         noWrap: false,
+//                                         maxHeight: 70,
+//                                         text: [
+//                                             {
+//                                                 text: 'Vendedor : ',
+//                                                 bold:true
+//                                             },
+//                                             {
+//                                                 text: this.detalle.cuser,
+//                                                 fontSize: 8
+//                                             }
+//                                         ],
+//                                         color: 'black',
+//                                         fontSize: 9
+//                                     }
+//                                 ]
+//                             }
+//                         ]
+//                     ],
+//                     margin : [5,6,5,0]
+//                     ,
+//                     relativePosition: {
+//                     x: 0,
+//                     y: -56
+//                     }
+//                 }
+//             ]
+//         },
+//         // 'texto antes de tabla',
+//         {
+//           margin: [ 0, 5, 0, 0],
+//           layout: 'noBorders',
+//           table: {
+//             headerRows: 1,
+//             widths: ['7%', '41%', '5%', '8%','10%', '5%', '7%', '7%','10%'],
+
+//             body: body
+//           }
+//         },
+//         {
+//             columns: [
+//                 [
+//                 {
+//                     columns: [
+//                         [
+//                              {qr: 'pagina de FE qr. k', fit: '60' },
+//                              {text: ' '},
+//                              {text: 'Representación Impresa de la Factura electrónica',
+//                             fontSize: 8}
+//                         ],
+//                         [
+//                             {
+//                                 margin: [ 0, 5, 0, 0],
+//                                 layout: 'noBorders',
+//                                 table: {
+//                                   headerRows: 0,
+//                                   widths: ['70%', '30%'],
+    
+//                                   body: bodyDet
+//                                 }
+//                               }
+//                         ]
+//                     ],
+//                     margin: [10,20,10,15]
+//                 },
+//                 {
+//                     layout: {
+//                         hLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+//                         },
+//                         vLineWidth: function(i, node) {
+//                          return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+//                         },
+//                         hLineColor: function (i, node) {
+//                             return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+//                         },
+//                         vLineColor: function(i, node) {
+//                             return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+//                         }
+//                     },
+//                     width: 515,
+//                     table: {
+//                       headerRows: 1,
+//                       widths: ['100%'],
+//                       body: [
+//                           [{text: 'Sus pagos depositar al banco Interbank',
+//                           fillColor: '#008CD9',color:'#FFF',bold: true,fontSize: 10}],
+//                           [
+//                             {
+//                                 columns: [
+//                                     [{
+//                                         text: [
+//                                             {
+//                                                 text: 'Cuenta en Soles   : ',
+//                                                 // bold: true,
+//                                                 fontSize: 10
+//                                             },
+//                                             {   text: '191-2039372-0-16',
+//                                             // bold: true,
+//                                             fontSize: 10
+//                                             }
+//                                         ]
+//                                     },
+//                                     {
+//                                         text: [
+//                                             {
+//                                                 text: 'Cuenta en Dolares  : ',
+//                                                 // bold: true,
+//                                                 fontSize: 10
+//                                             },
+//                                             {   text: '191-1985270-1-41',
+//                                             // bold: true,
+//                                             fontSize: 10
+//                                             }
+//                                         ]
+//                                     }]
+//                                 ]
+//                             }
+//                           ]
+//                     ]
+//                     }
+//                 }
+//                 ]
+//             ],
+//             margin: [40,0]
+//         }
+//       ],
+//       styles: {
+//         anotherStyle: {
+//         //   italics: true,
+//           alignment: 'center',
+//           lineWidth: 0.05
+//         }
+//       }
+//     };
+//     pdfMake.createPdf(documentDefinition).open();
+//   }
 }
 
