@@ -72,6 +72,7 @@ import { MarccmcComponent } from '../../arccmc/marccmc/marccmc.component';
   styleUrls: ['./pedido-edicion.component.scss']
 })
 export class PedidoEdicionComponent implements OnInit {
+  edtDescripDet: boolean = true;
   d: Detpedido;
   anularBF = 'N';
   emailCliente = '';
@@ -275,8 +276,12 @@ export class PedidoEdicionComponent implements OnInit {
     this.traerPedido();
 
   }
+  // EVENTO CLICK QUE NOS PERMITER EDITAR LA DESCRIPCION
+  public editDescripDet(): void {
+    this.edtDescripDet = !this.edtDescripDet;
+  }
   // VAMOS A TRAER EL PEDIDO
-  private traerPedido(){
+  private traerPedido(): void{
       this.route.queryParams.subscribe(p => {
         if (p['noOrden'] !== undefined) {
             this.pedidoService.pedidoParaFactura(this.cia, p['noOrden']).

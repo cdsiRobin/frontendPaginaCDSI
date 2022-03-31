@@ -300,28 +300,32 @@
                   <!-- descripcion Column -->
                   <ng-container matColumnDef="descripcion">
                     <th class="text-justify" mat-header-cell *matHeaderCellDef>Descripción</th>
-                    <td style="padding: 5px;" class="text-justify" mat-cell *matCellDef="let d"> {{d.descripcion}} </td>
+                    <!--<td style="padding: 5px;" class="text-justify" mat-cell *matCellDef="let d"> {{d.descripcion}} </td>-->
+                    <td style="padding: 5px;" class="text-justify" mat-cell *matCellDef="let d">
+                      <p *ngIf="edtDescripDet" (click)="editDescripDet()">{{ d.descripcion }}</p>
+                      <input *ngIf="!edtDescripDet" class="edtCouteClass form-control form-control-sm" type="text" value={{d.descripcion}}/>
+                    </td>
                   </ng-container>
 
                   <!-- cantidad Column -->
                   <ng-container matColumnDef="cantidad">
                     <th class="text-center" mat-header-cell *matHeaderCellDef>Cantidad</th>
-                    <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">
-                      <input type="text" style="width: 70px;" (keyup)="calcularSuma($event,d)" minlength="1" min="1" value={{d.cantidad}}/>
+                    <td style="padding: 2px;" class="text-center" mat-cell *matCellDef="let d">
+                      <input type="number" style="width:  80px !important;" class="text-end form-control form-control-sm" (keyup)="calcularSuma($event,d)" minlength="1" min="1" value={{d.cantidad}}/>
                     </td>
                   </ng-container>
 
                   <!-- precio Column -->
-                  <ng-container  class="text-center"matColumnDef="precio">
-                    <th class="text-center" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}PU sin IGV</th>
-                    <td style="padding: 5px;" mat-cell *matCellDef="let d"> {{d.precio | number : '1.4-4'}} </td>
+                  <ng-container  class="text-end"matColumnDef="precio">
+                    <th class="text-end" mat-header-cell *matHeaderCellDef>{{arcgmo.simbolo}}PU/S-IGV</th>
+                    <td class="text-end" style="padding: 5px;" mat-cell *matCellDef="let d"> {{d.precio | number : '1.4-4'}} </td>
                   </ng-container>
 
                   <!-- descuento Column -->
                   <ng-container class="text-center" matColumnDef="dcto">
                     <th class="text-center" mat-header-cell *matHeaderCellDef>%Dcto</th>
                     <td style="padding: 5px;" class="text-center" mat-cell *matCellDef="let d">
-                      <input type="text" style="width: 50px;" (keyup)="calcularDescuento($event,d)" minlength="1" min="1" value={{d.dcto}} />
+                      <input class="text-end form-control form-control-sm" type="number" style="width: 50px;" (keyup)="calcularDescuento($event,d)" minlength="1" min="1" value={{d.dcto}} />
                     </td>
                   </ng-container>
 
