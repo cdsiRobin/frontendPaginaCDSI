@@ -684,7 +684,7 @@ export class PedidoEdicionComponent implements OnInit {
     }else{
       this.snackBar.open(`La cantidad  del articulo ${dp.descripcion} no debe ser CERO`, 'Salir',
         {
-          duration: 1000,
+          duration: 3000,
           verticalPosition: 'top',
           horizontalPosition: 'center'
         });
@@ -1085,7 +1085,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.arfaccService.saveArfacc(this.arfacc).subscribe( dato => {
       this.snackBar.open('Se actualizo el correlativo del pedido ', 'Salir',
           {
-            duration: 1000,
+            duration: 3000,
             verticalPosition: 'top',
             horizontalPosition: 'center'
           });
