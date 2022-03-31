@@ -1,9 +1,13 @@
 import { DatePipe } from '@angular/common';
 import pdfMake from 'pdfmake/build/pdfmake';
+import { Arccdi } from 'src/app/models/arccdi';
+import { Arccdp } from 'src/app/models/arccdp';
+import { Arccpr } from 'src/app/models/arccpr';
 import { Arfafe } from 'src/app/models/Arfafe';
 import { Arfafp } from 'src/app/models/Arfafp';
 import { Arfamc } from 'src/app/models/arfamc';
 import { Arfcree } from 'src/app/models/Arfcree';
+import { ArccmcService } from 'src/app/services/arccmc.service';
 import { Utils } from "../utils";
 
 export class PdfArfafe {
@@ -25,10 +29,14 @@ export class PdfArfafe {
     detalle: Arfafe,
     uniMed: string[],
     arfafp:Arfafp,
-    datepipe: DatePipe, 
+    datepipe: DatePipe,
     txt: string,
     xCuote: boolean,
-    arfcree: Arfcree) {
+    arfcree: Arfcree,
+    arccdi:Arccdi,
+    arccdp:Arccdp,
+    arccpr:Arccpr,
+  ) {
     var body = [];
     let totalIGV = 0;
     let logoDataUrl = ''; 
@@ -55,11 +63,11 @@ export class PdfArfafe {
                 {text: l.descripcion, bold: false, fontSize: 7, lineHeight: 0.8},
                 {text: uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
                 {text: l.cantidad_ENTR, bold: false, fontSize: 7, alignment: 'right'},
-                {text: this.trunc(l.precio_UNIT_ORIG,5), bold: false, fontSize: 7, alignment: 'right'},
+                {text: this.PriceFormat(this.trunc(this.trunc(l.precio_UNIT_ORIG,5),2)), bold: false, fontSize: 7, alignment: 'right'},
                 {text: l.p_DSCTO3, bold: false, fontSize: 7, alignment: 'right'},
                 {text: 0.00, bold: false, fontSize: 7, alignment: 'right'},
                 {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 7, alignment: 'right'},
-                {text: l.total.toFixed(2), bold: false, fontSize: 7, alignment: 'right'}
+                {text: this.PriceFormat(this.trunc(l.total.toFixed(2),2)), bold: false, fontSize: 7, alignment: 'right'}
                 ]
             );
           });
@@ -168,7 +176,7 @@ export class PdfArfafe {
                     [
                         {text: obj.arfcredPk.noCredito, fontSize: 6, alignment: 'left'},
                         {text: obj.fechaPago,fontSize: 6, alignment: 'center'},
-                        {text: obj.monto, fontSize: 6, alignment: 'right'}
+                        {text: this.PriceFormat(this.trunc(obj.monto,2)), fontSize: 6, alignment: 'right'}
                     ]
                 )
             })
@@ -496,7 +504,12 @@ export class PdfArfafe {
                                             bold:true
                                         },
                                         {
-                                            text: detalle.direccion,
+                                            text: [
+                                                {text: detalle.direccion},
+                                                {text: ', '+arccdi.descDist},
+                                                {text: ', '+arccpr.descProv},
+                                                {text: ', '+arccdp.descDepa}
+                                            ],
                                             fontSize: 8
                                         }
                                     ],

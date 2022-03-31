@@ -42,6 +42,10 @@ import * as moment from 'moment';
 import { ArcgmoService } from 'src/app/services/arcgmo.service';
 import { UtilsArfafe } from '../utils-arfafe/utils-arfafe';
 import { PdfArfafe } from '../utils-arfafe/pdf-arfafe';
+import { ArcctdaEntity } from 'src/app/models/arcctda-entity';
+import { Arccdi } from 'src/app/models/arccdi';
+import { Arccpr } from 'src/app/models/arccpr';
+import { Arccdp } from 'src/app/models/arccdp';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -101,6 +105,7 @@ export class NewArfafeComponent implements OnInit {
     private arfcreeService: ArfcreeService,
     private arcgmoService: ArcgmoService,
     private arfamcService: ArfamcService,
+    private arccmcService: ArccmcService,
     public datepipe: DatePipe,
     private router: Router,
     private sb: MatSnackBar,
@@ -117,7 +122,8 @@ export class NewArfafeComponent implements OnInit {
     this.centroEmisor();
     this.traerData();
   }
-
+  public arcctdas: ArcctdaEntity[] = [];
+  public arcctda: ArcctdaEntity;
   traerData(){
       this.route.queryParams.subscribe(p => {
         this.noCia = p['noCia'];
@@ -125,7 +131,7 @@ export class NewArfafeComponent implements OnInit {
         this.noGuia = p['guia'];
         this.pedidoService.pedidoParaFactura(this.noCia, this.noOrden).
           subscribe(d => {
-            //   console.log(d);
+              console.log(d);
               this.setArfafe(d);
               this.traerGuia(d.bodega);
             });
@@ -397,6 +403,9 @@ export class NewArfafeComponent implements OnInit {
         console.log(this.detalle);
       });
 
+      this.listarDistrito(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+      this.listarProvincia(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+      this.listarDepartamento(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
     }
 
     trunc (x, de = 0) {
@@ -417,6 +426,7 @@ export class NewArfafeComponent implements OnInit {
         // console.log(data);
       })
     }
+
 
     toogleDivCuotas(){
         
@@ -611,7 +621,42 @@ export class NewArfafeComponent implements OnInit {
         this.nomCentro = data.descripcion;
     })
   }
+  arccdi:Arccdi = new Arccdi();
+  arccdp:Arccdp = new Arccdp();
+  arccpr:Arccpr = new Arccpr();
 
+public listarDistrito(cia:string, detalle:Arfafe,arccmcService: ArccmcService): void{
+  arccmcService.listarDistritoXciaAndDepartAndProvinc
+  (cia,detalle.codi_DEPA,detalle.codi_PROV)
+  .subscribe( data => {
+    for (const t of data) {
+      if (t.arccdiPK.codiDist === detalle.codi_DIST) {
+          this.arccdi = t;
+          break;
+      }
+    }
+  });
+ }
+ public listarProvincia(cia:string, detalle:Arfafe,arccmcService: ArccmcService): void{
+  arccmcService.listarProvincXciaAndDepart(cia,detalle.codi_DEPA).subscribe( data => {
+    for (const t of data) {
+      if (t.arccprPK.codiProv === detalle.codi_PROV) {
+          this.arccpr = t;
+          break;
+      }
+    }
+  });
+}
+  public listarDepartamento(cia:string, detalle:Arfafe,arccmcService: ArccmcService){
+  arccmcService.listarDepartXcia(cia).subscribe( data =>{
+      for(const o of data){
+          if(o.arccdpPK.codiDepa === detalle.codi_DEPA){
+              this.arccdp = o;
+              break;
+          }
+      }
+   });
+}
   report(){
       
     this.arcgmoService.listarArcgmo().subscribe( b => {
@@ -622,9 +667,9 @@ export class NewArfafeComponent implements OnInit {
             this.arfamcService.buscarId(sessionStorage.getItem('cia')).subscribe(rs => {
                 
                 if(this.arfafp.arfafpPK.tipoFpago === "20")
-                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,false,new Arfcree());    
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,false,new Arfcree(),this.arccdi,this.arccdp,this.arccpr);    
                 else
-                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,true, this.arfcree); 
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,true, this.arfcree,this.arccdi,this.arccdp,this.arccpr); 
                                 
             });
             }

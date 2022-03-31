@@ -34,6 +34,9 @@ import { Arfamc } from "src/app/models/arfamc";
 import { UtilsArfafe } from "../utils-arfafe/utils-arfafe";
 import { ArcgmoService } from "src/app/services/arcgmo.service";
 import { PdfArfafe } from "../utils-arfafe/pdf-arfafe";
+import { Arccdi } from "src/app/models/arccdi";
+import { Arccdp } from "src/app/models/arccdp";
+import { Arccpr } from "src/app/models/arccpr";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -76,6 +79,7 @@ export class DetailArfafeComponent implements OnInit {
     public arfcreeService: ArfcreeService,
     public arfamcService: ArfamcService,
     private arcgmoService: ArcgmoService,
+    private arccmcService: ArccmcService,
     private sb: MatSnackBar,
     public datepipe: DatePipe) { }
 
@@ -117,6 +121,9 @@ export class DetailArfafeComponent implements OnInit {
             //console.log(a.resultado.arfaflList);
             
 
+            this.listarDistrito(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+            this.listarProvincia(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+            this.listarDepartamento(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
           this.pedidoService.pedidoParaFactura(idArpfoe.noCia, idArpfoe.noOrden).
             subscribe(d => {
                 // console.log(d);
@@ -295,6 +302,44 @@ getCuotas(){
     return Number(Math.round(parseFloat(x + 'e' + de)) + 'e-' + de).toFixed(de);
   }
 
+
+  arccdi:Arccdi = new Arccdi();
+  arccdp:Arccdp = new Arccdp();
+  arccpr:Arccpr = new Arccpr();
+
+public listarDistrito(cia:string, detalle:Arfafe,arccmcService: ArccmcService): void{
+  arccmcService.listarDistritoXciaAndDepartAndProvinc
+  (cia,detalle.codi_DEPA,detalle.codi_PROV)
+  .subscribe( data => {
+    for (const t of data) {
+      if (t.arccdiPK.codiDist === detalle.codi_DIST) {
+          this.arccdi = t;
+          break;
+      }
+    }
+  });
+ }
+ public listarProvincia(cia:string, detalle:Arfafe,arccmcService: ArccmcService): void{
+  arccmcService.listarProvincXciaAndDepart(cia,detalle.codi_DEPA).subscribe( data => {
+    for (const t of data) {
+      if (t.arccprPK.codiProv === detalle.codi_PROV) {
+          this.arccpr = t;
+          break;
+      }
+    }
+  });
+}
+  public listarDepartamento(cia:string, detalle:Arfafe,arccmcService: ArccmcService){
+  arccmcService.listarDepartXcia(cia).subscribe( data =>{
+      for(const o of data){
+          if(o.arccdpPK.codiDepa === detalle.codi_DEPA){
+              this.arccdp = o;
+              break;
+          }
+      }
+   });
+}
+
   report(){
       
     this.arcgmoService.listarArcgmo().subscribe( b => {
@@ -305,9 +350,9 @@ getCuotas(){
             this.arfamcService.buscarId(this.cia).subscribe(rs => {
                 
                 if(this.arfafp.arfafpPK.tipoFpago === "20")
-                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,false,new Arfcree());    
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,false,new Arfcree(),this.arccdi,this.arccdp,this.arccpr);    
                 else
-                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,true, this.arfcree); 
+                new PdfArfafe().ProperDesing(rs,this.detalle,this.uniMed,this.arfafp,this.datepipe, txt,true, this.arfcree,this.arccdi,this.arccdp,this.arccpr); 
                                 
             });
             }
