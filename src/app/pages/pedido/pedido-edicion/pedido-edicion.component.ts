@@ -1049,7 +1049,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.almaDestino = this.arintd.almaDes;
     pedido.totalBruto = this.getTotalPU();
     pedido.centro = sessionStorage.getItem('centro');
-    pedido.codCaja = 'C11';
+    pedido.codCaja = 'C12';
     pedido.cajera = '000002';
     pedido.centroCosto = '3201';
     pedido.operExoneradas = 0;
@@ -1178,7 +1178,7 @@ export class PedidoEdicionComponent implements OnInit {
     arpffe.tipoGuia = 'GR';
     arpffe.imprime = 'S';
     arpffe.indPvent = 'S';
-    arpffe.codCaja = 'C11';
+    arpffe.codCaja = 'C12';
     arpffe.indFerias = 'N';
     arpffe.indProvincia = 'N';
     arpffe.consumo = 'N';
@@ -1274,7 +1274,7 @@ export class PedidoEdicionComponent implements OnInit {
     arinme1.imprime = 'N';
     arinme1.centro = this.centro;
     arinme1.indPvent = 'S';
-    arinme1.codCaja = 'C11';
+    arinme1.codCaja = 'C12';
     arinme1.indProvincia = 'N';
     arinme1.convenio = 'N';
     arinme1.consumo = 'N';
