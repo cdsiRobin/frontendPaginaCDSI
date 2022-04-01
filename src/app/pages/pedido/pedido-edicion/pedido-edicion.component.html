@@ -1,15 +1,19 @@
-<!-- Container fluid  -->
-<!-- ============================================================== -->
-<div >
   <!-- NUEVO INTERFAZ -->
-  <div class="container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
+<div style="padding: 2em;">
     <form class="w-100">
         <div class="row">
-            <div class="col-sm p-3" style="border-right: 1px solid lightgray;">
+            <div class="col-sm-8 p-3" style="border-right: 1px solid lightgray;">
                 <!--TRANSACCION Y SERIE - CORRELATIVO DE PEDIDO-->
                 <div class="row">
+                    <!--UBIGEO-->
+                    <div class="col-sm-3">
+                      <mat-form-field appearance="outline" class="w-100">
+                          <mat-label>O.C</mat-label>
+                          <input type="text" matInput placeholder="Orden Compra" [value]="ordenCompra"/>
+                      </mat-form-field>
+                    </div>
                     <!--TRANSACCION-->
-                    <div class="col-sm-8">
+                    <div class="col-sm-6">
                       <mat-form-field class="materialAncho"  appearance="outline">
                         <mat-label>Transacción</mat-label>
                         <mat-select [(ngModel)]="transaccion" name="transacion"  (selectionChange)="findTransaccion($event)">
@@ -20,7 +24,7 @@
                       </mat-form-field>
                     </div>
                     <!--SERRIE Y CORRELATIVO DE PEDIDO-->
-                    <div class="col-sm-4">
+                    <div class="col-sm-3">
                       <mat-form-field class="materialAncho" appearance="outline">
                         <mat-label>Nro Pedido</mat-label>
                         <mat-select [(ngModel)]="arfacc" name="food">
@@ -56,7 +60,7 @@
                     <!--RAZON SOCIAL DE CLIENTE-->
                     <div class="col-sm-7">
                       <mat-form-field class="col-sm-7" appearance="outline" floatLabel="always" >
-                        <mat-label>RAZÓN SOCIAL / NOMBRE</mat-label>
+                        <mat-label>RAZÓN SOCIAL/NOMBRE Y APELLIDOS</mat-label>
                         <input matInput
                               formControlName="racSoc"
                               placeholder="Buscar Razón Social o Nombre y Apellidos"
@@ -72,7 +76,7 @@
                       </mat-form-field>
                     </div>
                     <div class="col-sm-1">
-                      <button type="submit" [disabled]="groupEmpresa.invalid" mat-raised-button color="primary" style="cursor: pointer">
+                      <button class="col-sm-12" type="submit" [disabled]="groupEmpresa.invalid" mat-raised-button color="primary" style="cursor: pointer">
                         <mat-icon>person_add</mat-icon>
                       </button>
                     </div>
@@ -94,7 +98,7 @@
                     <div class="col-sm-2">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>Ubigeo</mat-label>
-                            <input disabled="true" matInput placeholder="Ubigeo" [value]="ubigeo">
+                            <input disabled="true" matInput placeholder="Ubigeo" [value]="ubigeo"/>
                         </mat-form-field>
                     </div>
                 </div>
@@ -114,7 +118,7 @@
             <div class="col-sm-4 p-3">
 
                 <div class="row">
-                    <div class="col-sm">
+                    <div class="col-sm-12">
                         <!--LISTA DE PRECIO-->
                         <mat-form-field class="materialAncho"  appearance="outline">
                           <mat-label>L.Precio</mat-label>
@@ -272,7 +276,6 @@
             </div>
         </div>
         <!--FIN TIPO DE ITEM-->
-
          <!--DETALLE (TABLA) DE PEDIDO-->
         <div class="row">
           <div class="col-sm-12">
@@ -302,8 +305,7 @@
                     <th class="text-justify" mat-header-cell *matHeaderCellDef>Descripción</th>
                     <!--<td style="padding: 5px;" class="text-justify" mat-cell *matCellDef="let d"> {{d.descripcion}} </td>-->
                     <td style="padding: 5px;" class="text-justify" mat-cell *matCellDef="let d">
-                      <p *ngIf="edtDescripDet" (click)="editDescripDet()">{{ d.descripcion }}</p>
-                      <input *ngIf="!edtDescripDet" class="edtCouteClass form-control form-control-sm" type="text" value={{d.descripcion}}/>
+                      <input (keyup)="actualizarDescripcion($event,d)" class="edtCouteClass form-control form-control-sm" type="text" value={{d.descripcion}}/>
                     </td>
                   </ng-container>
 
@@ -371,9 +373,7 @@
         </div>
         <!--FIN DE TOTALES-->
     </form>
-
 </div>
-
   <!-- FIN ========== -->
 
 

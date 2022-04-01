@@ -72,6 +72,7 @@ import { MarccmcComponent } from '../../arccmc/marccmc/marccmc.component';
   styleUrls: ['./pedido-edicion.component.scss']
 })
 export class PedidoEdicionComponent implements OnInit {
+  ordenCompra: string = '';
   edtDescripDet: boolean = true;
   d: Detpedido;
   anularBF = 'N';
@@ -730,7 +731,19 @@ export class PedidoEdicionComponent implements OnInit {
     } );
     // total de general
     this.totalGeneral = this.getTotalPedido();
+}
 
+  // ACTUALIZAR DESCRIPCION
+  public actualizarDescripcion(event: any, dp: Detpedido): void{
+    const codigo = dp.codigo;
+    const descripcion: string = event.target.value;
+
+    this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+         if (codigo === item.codigo){
+             item.descripcion = descripcion;
+         }
+         return item;
+    } );
 }
 
   // ELIMINAR ARTICULO
@@ -991,7 +1004,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.grupo = '00';
     pedido.tipoFpago = '20';
     pedido.tipo = 'N';
-
+    pedido.noSolic = this.ordenCompra;
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
     pedido.codiDepa = this.ubigeo.substring(0, 2);
