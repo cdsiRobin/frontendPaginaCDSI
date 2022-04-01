@@ -1323,13 +1323,13 @@ export class PedidoEdicionComponent implements OnInit {
       const total = (precio * cantidad) + igv;
       this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
         cantidad, precio, igv, total);
-    } else {
+    } /*else {
       const total = this.groupArticulo.get('precProd').value * cantidad;
       const precio  = total / 1.18;
       const igv = precio * 0.18;
       this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
         cantidad, precio, igv, total);
-    }
+    }*/
     if (this.groupArticulo.get('precProd').value <= 0){
       this.snackBar.open(`El precio no debe ser CERO.`, 'Salir',
       {
