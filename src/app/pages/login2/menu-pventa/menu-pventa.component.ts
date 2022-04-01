@@ -9,7 +9,6 @@ import { Router } from '@angular/router';
 import { MenuDTO } from './../../../DTO/MenuDTO';
 import { Component, OnInit } from '@angular/core';
 import * as moment from 'moment';
-import { Console } from 'console';
 
 @Component({
   selector: 'app-menu-pventa',

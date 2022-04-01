@@ -134,6 +134,9 @@ export class NewArfafeComponent implements OnInit {
               console.log(d);
               this.setArfafe(d);
               this.traerGuia(d.bodega);
+              this.listarDistrito(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+              this.listarProvincia(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+              this.listarDepartamento(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
             });
       });
   }
@@ -403,9 +406,7 @@ export class NewArfafeComponent implements OnInit {
         console.log(this.detalle);
       });
 
-      this.listarDistrito(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
-      this.listarProvincia(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
-      this.listarDepartamento(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
+
     }
 
     trunc (x, de = 0) {
