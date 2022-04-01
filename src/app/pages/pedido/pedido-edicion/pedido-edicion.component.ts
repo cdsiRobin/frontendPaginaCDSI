@@ -1317,13 +1317,12 @@ export class PedidoEdicionComponent implements OnInit {
     const descrip: string = this.groupArticulo.get('desProd').value;
     const cantidad: number = this.groupArticulo.get('cantProd').value;
 
-    if(um === 'UND'){
-      const precio  = this.groupArticulo.get('precProd').value / 1.18;
-      const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
-      const total = (precio * cantidad) + igv;
-      this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
-        cantidad, precio, igv, total);
-    } /*else {
+    /*if(um === 'UND'){*/
+    const precio  = this.groupArticulo.get('precProd').value / 1.18;
+    const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+    const total = (precio * cantidad) + igv;
+    this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),cantidad, precio, igv, total);
+     /*}else {
       const total = this.groupArticulo.get('precProd').value * cantidad;
       const precio  = total / 1.18;
       const igv = precio * 0.18;
