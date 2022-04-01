@@ -47,6 +47,7 @@ export class MenuPventaComponent implements OnInit {
     })
   }*/
   cajasAbiertasCajero() {
+    console.log(this.empleadoSeleccionado);
     if (this.empleadoSeleccionado != null) {
       sessionStorage.setItem('centro', this.empleadoSeleccionado.centro);
       sessionStorage.setItem('usuario', this.empleadoSeleccionado.idUsuario.usuario);

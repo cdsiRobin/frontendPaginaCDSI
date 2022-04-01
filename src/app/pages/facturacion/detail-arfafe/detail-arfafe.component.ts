@@ -116,6 +116,9 @@ export class DetailArfafeComponent implements OnInit {
             this.arfcreeService.findArfcree(data).subscribe( obj => {
                     console.log(obj.resultado);
                     this.arfcree = obj.resultado;
+                    this.arfcree.arfcredList.forEach( o => {
+                      o.fechaPago = this.datepipe.transform(o.fechaPago,'dd/MM/yyyy');
+                    })
             }, error => {console.log(error)});
             // console.log(a.resultado);
             //console.log(a.resultado.arfaflList);
@@ -175,7 +178,7 @@ export class DetailArfafeComponent implements OnInit {
             snackBar.onAction().subscribe(() => this.sb.dismiss());
         } 
         else {
-            this.getCuotas();
+            // this.getCuotas();
             this.btnFp = !this.btnFp;
         }
 }

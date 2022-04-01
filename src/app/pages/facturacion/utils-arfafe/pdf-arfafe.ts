@@ -63,7 +63,7 @@ export class PdfArfafe {
                 {text: l.descripcion, bold: false, fontSize: 7, lineHeight: 0.8},
                 {text: uniMed[l.arfaflPK.consecutivo], bold: false, fontSize: 8},
                 {text: l.cantidad_ENTR, bold: false, fontSize: 7, alignment: 'right'},
-                {text: this.PriceFormat(this.trunc(this.trunc(l.precio_UNIT_ORIG,5),2)), bold: false, fontSize: 7, alignment: 'right'},
+                {text: this.PriceFormat(this.trunc(l.precio_UNIT_ORIG,5)), bold: false, fontSize: 7, alignment: 'right'},
                 {text: l.p_DSCTO3, bold: false, fontSize: 7, alignment: 'right'},
                 {text: 0.00, bold: false, fontSize: 7, alignment: 'right'},
                 {text: l.imp_IGV.toFixed(2), bold: false, fontSize: 7, alignment: 'right'},
@@ -96,7 +96,7 @@ export class PdfArfafe {
                     {text: this.PriceFormat(this.trunc(detalle.oper_GRAVADAS,2)), alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
         ]);
         bodyDet.push([
