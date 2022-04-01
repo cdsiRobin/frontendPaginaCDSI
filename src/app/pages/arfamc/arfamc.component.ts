@@ -22,8 +22,8 @@ export class ArfamcComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit(): void {
-    this.iniciarFormulario();
     this.optenerValoresSession();
+    this.iniciarFormulario();
     this.getArfamc();
   }
 

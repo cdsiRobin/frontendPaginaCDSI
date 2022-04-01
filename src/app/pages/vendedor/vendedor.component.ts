@@ -23,6 +23,15 @@ export class VendedorComponent implements OnInit {
     this.codEmp = sessionStorage.getItem('codEmp');
     this.usuario = sessionStorage.getItem('usuario');
     this.cod = sessionStorage.getItem('cod');
+    setTimeout(() => {
+      this.nombre = sessionStorage.getItem('nombre');
+      this.nomCia = sessionStorage.getItem('nomCia');
+      this.centro = sessionStorage.getItem('centro');
+      this.codEmp = sessionStorage.getItem('codEmp');
+      this.usuario = sessionStorage.getItem('usuario');
+      this.cod = sessionStorage.getItem('cod');
+      }, 2000
+    );
   }
 
 }
