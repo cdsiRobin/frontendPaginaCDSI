@@ -21,7 +21,7 @@ export class PedidoComponent implements OnInit {
     this.openSnackBar();
   }
   public openSnackBar(): void {
-      this.snackBar.open('Bienvenido '.concat(this.nombre).concat(' a la empresa ').concat(this.nomCia),'Done',
+      this.snackBar.open('Bienvenido '.concat(this.nombre).concat(' a la empresa ').concat(this.nomCia),'Cerrar',
         {
           duration: 5000,
           verticalPosition: 'top',

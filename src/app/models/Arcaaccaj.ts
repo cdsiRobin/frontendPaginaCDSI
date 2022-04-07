@@ -1,7 +1,7 @@
 import { IdArcaaccaj } from './IdArcaaccaj';
 export class Arcaaccaj {
-  idArcaja: IdArcaaccaj;
 
+  idArcaja: IdArcaaccaj;
   fecha: string;
   cajera: string;
   saldoInicial: number;
@@ -12,9 +12,9 @@ export class Arcaaccaj {
   serieLiq: string;
   numLiq: string;
   TipoDocLiq: string;
-  ingresoEfectivoSol: number;
+  /*ingresoEfectivoSol: number;
   egresoEfectivoSol: number;
   ingresoEfectivoDol: number;
-  egresoEfectivoDol: number;
+  egresoEfectivoDol: number;*/
 
 }

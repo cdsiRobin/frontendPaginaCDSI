@@ -1,6 +1,6 @@
 export class IdArcaaccaj{
-  cia:string;
+  cia: string;
   centro: string;
   codCaja: string;
-  cod_aper: string;
+  codAper: string;
 }

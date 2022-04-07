@@ -104,10 +104,16 @@
                 </div>
                 <!-- EMAIL DE CLIENTE -->
                 <div class="row">
-                  <div class="col-sm-12">
+                  <div class="col-sm-11">
                     <mat-form-field appearance="outline" class="w-100">
                         <mat-label>Email</mat-label>
                         <input type="email" matInput placeholder="Email" [value]="emailCliente" />
+                    </mat-form-field>
+                  </div>
+                  <div class="col-sm-1">
+                    <mat-form-field appearance="outline" class="w-100">
+                        <mat-label>Caja</mat-label>
+                        <input type="email" disabled="" matInput placeholder="Caja" [value]="caja" />
                     </mat-form-field>
                   </div>
                 </div>

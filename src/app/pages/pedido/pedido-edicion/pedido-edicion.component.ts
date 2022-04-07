@@ -65,6 +65,10 @@ import {Arinme1Service} from '../../../services/arinme1.service';
 import { Arinum } from '../../../models/arinum';
 import { ArinumService } from '../../../services/arinum.service';
 import { MarccmcComponent } from '../../arccmc/marccmc/marccmc.component';
+import { Arcaaccaj } from '../../../models/Arcaaccaj';
+import { ArcaaccajService } from '../../../services/arcaaccaj.service';
+import { Artsccb } from '../../../models/artsccb';
+import { CajaEdicionComponent } from '../caja/caja-edicion/caja-edicion.component';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -180,6 +184,10 @@ export class PedidoEdicionComponent implements OnInit {
   public arfacf: Arfacf;
   public arpffe: Arpffe;
   public arinums: Array<Arinum>;
+  public arcaaccajs: Array<Arcaaccaj>;
+  public arcaaccaj: Arcaaccaj;
+  public artsccb: Artsccb;
+  public caja: string = '';
 
   constructor(public pedidoService: PedidoService,
               public arinumService: ArinumService,
@@ -203,7 +211,8 @@ export class PedidoEdicionComponent implements OnInit {
               private router: Router,
               private route: ActivatedRoute,
               public datepipe: DatePipe,
-              private modalArccmc: MatDialog
+              private modalArccmc: MatDialog,
+              private arcaaccajService: ArcaaccajService
               ) { }
 
   ngOnInit(): void {
@@ -212,6 +221,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.centro = sessionStorage.getItem('centro');
     this.usuario = sessionStorage.getItem('usuario');
     this.codEmp = sessionStorage.getItem('codEmp');
+    this.verificarCajaAbiertaVendedor();
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -225,7 +235,6 @@ export class PedidoEdicionComponent implements OnInit {
       impIgv: new FormControl({ value: 0, disabled: true }, Validators.required),
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
-
     // VAMOS A OPTENER LOS DATOS DEL CENTRO EMISOR
     this.getCentroEmisor(this.cia, this.centro);
     this.listaMonedas();
@@ -234,13 +243,11 @@ export class PedidoEdicionComponent implements OnInit {
     this.buscarTipoCambioClaseAndFecha();
     this.listaPrecio();
     this.listarFormaPago();
-
     this.groupEmpresa = new FormGroup({
       codCli: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),
         Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
       racSoc: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(2)])
     });
-
     this.groupArticulo = new FormGroup({
       codProd: new FormControl(),
       desProd: new FormControl(),
@@ -248,7 +255,6 @@ export class PedidoEdicionComponent implements OnInit {
       precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
       cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
     });
-
     this.getCliente('99999999998');
     // BUSCAR POR RUC
     this.groupEmpresa.get('codCli').valueChanges.subscribe(valueChange => {
@@ -271,12 +277,80 @@ export class PedidoEdicionComponent implements OnInit {
         this.factuOptions = null;
       }
     });
-
     this.listarUnidades();
     // TRAER EL PEDIDOD
     this.traerPedido();
-
   }
+  // VERIFICAR SI EL VENDEDOR TIENE CAJA ABIERTA
+  private verificarCajaAbiertaVendedor(): void {
+    //obtener la fecha actual
+    const fActual = new Date();
+    const fecha = String(fActual.getDate()).padStart(2,'0')+'/'+String(fActual.getMonth() + 1).padStart(2,'0')+'/'+fActual.getFullYear();
+    this.arcaaccajService.verificarCajaAbiertaCajero(this.cia,this.centro,this.codEmp,'A',fecha).subscribe( result => {
+         //console.log(result);
+         this.arcaaccajs = result;
+    }, err => {
+       console.warn(err);
+    }, () => {
+       //console.log('SE TERMINO EL SERVICIO PARA TRAER LA CAJA QUE TIENE ABIERTA EL VENDEDOR');
+       this.vericarCajaVendedora();
+    });
+  }
+  // VERIFICAR QUE CAJA LE CORRESPONDE A LA VENDEDORA
+  private vericarCajaVendedora(): void{
+    /*if(this.arcaaccajs.length >= 1){*/
+       this.arcaaccajService.verificarCajaVendedor(this.cia,'C',this.centro,this.usuario).subscribe( resul => {
+           this.artsccb = resul;
+       }, err =>{
+          console.warn(err);
+       }, () =>{
+           this.buscarCajaDesigna();
+       });
+    /*}else{
+       this.mDeseaAbrirCaja();
+    }*/
+  }
+  // FIN
+  // MENSAJE QUE PREGUNTA SI DESEA ABRIR CAJA
+  private mDeseaAbrirCaja(): void{
+    Swal.fire({
+      title: `El usuario ${this.usuario} no tiene aperturado caja . Desea aperturar caja?`,
+      showDenyButton: true,
+      confirmButtonText: 'SI'
+    }).then((result) => {
+      if (result.isConfirmed) {
+            this.abrirModalCaja();
+      }else{
+          this.router.navigate( ['pedido/empresa']);
+      }
+    });
+  }
+  // FIN
+  // BUSCAMOS SI LA CAJA DESIGNA ESTA ABIERTA
+  private buscarCajaDesigna(): void{
+    //console.log(this.arcaaccajs);
+    const x = this.arcaaccajs.find( i => {
+      if(i.idArcaja.codCaja === this.artsccb.artsccbPK.noCaba){ //this.artsccb.artsccbPK.noCaba
+        return i;
+      }
+    }); //undefined
+    if(x === undefined){
+      this.mDeseaAbrirCaja();
+    }else{
+      this.arcaaccaj = x;
+      this.caja = this.arcaaccaj.idArcaja.codCaja;
+    }
+  }
+  // FIN
+  // ABRIR MODAL PARA ABRIR UNA CAJA
+  private abrirModalCaja(): void {
+    this.modalArccmc.open(CajaEdicionComponent, {
+      width: '30%',
+      height: '40%',
+      data: this.artsccb
+    });
+  }
+  // FIN
   // EVENTO CLICK QUE NOS PERMITER EDITAR LA DESCRIPCION
   public editDescripDet(): void {
     this.edtDescripDet = !this.edtDescripDet;
@@ -1049,8 +1123,8 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.almaDestino = this.arintd.almaDes;
     pedido.totalBruto = this.getTotalPU();
     pedido.centro = sessionStorage.getItem('centro');
-    pedido.codCaja = 'C12';
-    pedido.cajera = '000002';
+    pedido.codCaja = this.arcaaccaj.idArcaja.codCaja;
+    pedido.cajera = this.arcaaccaj.cajera;
     pedido.centroCosto = '3201';
     pedido.operExoneradas = 0;
     pedido.operGratuitas = 0;
@@ -1178,7 +1252,7 @@ export class PedidoEdicionComponent implements OnInit {
     arpffe.tipoGuia = 'GR';
     arpffe.imprime = 'S';
     arpffe.indPvent = 'S';
-    arpffe.codCaja = 'C12';
+    arpffe.codCaja = this.arcaaccaj.idArcaja.codCaja;
     arpffe.indFerias = 'N';
     arpffe.indProvincia = 'N';
     arpffe.consumo = 'N';
@@ -1274,7 +1348,7 @@ export class PedidoEdicionComponent implements OnInit {
     arinme1.imprime = 'N';
     arinme1.centro = this.centro;
     arinme1.indPvent = 'S';
-    arinme1.codCaja = 'C12';
+    arinme1.codCaja = this.arcaaccaj.idArcaja.codCaja;
     arinme1.indProvincia = 'N';
     arinme1.convenio = 'N';
     arinme1.consumo = 'N';
