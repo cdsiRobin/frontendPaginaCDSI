@@ -2,7 +2,7 @@ import { ArtstrdPVenPK } from "./ArtstrdPVenPK";
 
 export class ArtstrdPVen {
 
-    artstrdPVenPk: ArtstrdPVenPK;
+    artstrdPVenPK: ArtstrdPVenPK;
 
     claseTransc: string;
 	tipoM: string;
