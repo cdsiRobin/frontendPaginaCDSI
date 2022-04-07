@@ -1,8 +1,71 @@
-<h1 mat-dialog-title>{{mensaje}}</h1>
+<h1 mat-dialog-title>Operaciones de Pago</h1>
 <!-- <div mat-dialog-content>
-    <p>{{mensaje}}</p>
+    <p>{{data.detalle.no_ORDEN}}</p>
 </div> -->
-<div mat-dialog-actions>
-    <button mat-button (click)="close()">Cancelar</button>
-    <button mat-button (click)="confirm()" cdkFocusInitial>Crear</button>
+<div class="col">
+    <div class="row">
+        <div class="col-sm-3">
+            <mat-form-field appearance="outline" floatLabel="always">
+                <mat-label>Operacion Pago</mat-label>
+                <!-- <mat-select name="operPago" (selectionChange)="cambioSerie(selecc)"  -->
+                    <mat-select name="operPago"
+                    [(ngModel)]="selecc">
+                    <mat-option [value]="o.id" *ngFor="let o of tmpOP">
+                        {{ o.descrip }}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-sm-5">
+            <div class="row">
+                <div class="col-sm-4">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Dol</mat-label>
+                        <input [readonly]="xMon" matInput placeholder="0.00" name="Dol" type="number"
+                        [(ngModel)]="dol">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Dol - Sol</mat-label>
+                        <input [readonly]="true" matInput placeholder="0.00" name="DolSol" type="number"
+                        [(ngModel)]="convDol">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Sol</mat-label>
+                        <input [readonly]="!xMon" matInput placeholder="0.00" name="Sol" type="number"
+                        [(ngModel)]="sol">
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="row">
+                <div class="col-sm-6">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Imp. Caja</mat-label>
+                        <input matInput placeholder="0.00" name="impCaja" type="number"
+                        [(ngModel)]="impCaja">
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-6">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Vuelto</mat-label>
+                        <input matInput placeholder="0.00" name="impCaja" type="number"
+                        [(ngModel)]="vuelto">
+                    </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">{{data.mensaje}}</div>
+    <div class="col" mat-dialog-actions>
+        <button mat-button (click)="close()">Cancelar</button>
+        <button mat-button (click)="confirm()" cdkFocusInitial>Crear</button>
+    </div>
 </div>

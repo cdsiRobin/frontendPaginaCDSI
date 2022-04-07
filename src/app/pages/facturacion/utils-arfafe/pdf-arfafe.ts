@@ -73,13 +73,13 @@ export class PdfArfafe {
           });
         var bodyDet = [];
         bodyDet.push([
-            {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 8},
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: this.PriceFormat(this.trunc(detalle.descuento,2)), alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,5,0]
             }
             // {text: [
@@ -88,74 +88,74 @@ export class PdfArfafe {
             //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         ]);
         bodyDet.push([
-            {text: 'Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 8},
             // {text: 'S/ '+detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: this.PriceFormat(this.trunc(detalle.oper_GRAVADAS,2)), alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,0,0]
             }
         ]);
         bodyDet.push([
-            {text: 'ICBPER',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'ICBPER',margin:[2,0,0,0], bold: true, fontSize: 8},
             // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: '0.00', alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,5,0]
             }
         ]);
         bodyDet.push([
-            {text: 'IGV',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'IGV',margin:[2,0,0,0], bold: true, fontSize: 8},
             // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: this.PriceFormat(this.trunc(totalIGV,2)), alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,5,0]
             }
         ]);
         bodyDet.push([
-            {text: 'Importe Total',margin:[2,0,0,0], bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'Importe Total',margin:[2,0,0,0], bold: true, fontSize: 9},
             // {text: 'S/ '+detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: this.PriceFormat(this.trunc(detalle.total,2)), alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,5,0]
             }
         ]);
         bodyDet.push([
-            {text: 'Redondeo',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'Redondeo',margin:[2,0,0,0], bold: true, fontSize: 8},
             // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: '0.00', alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,5,0]
             }
         ]);
         bodyDet.push([
-            {text: 'Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'},
+            {text: 'Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 8},
             // {text: 'S/.'+detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
                     {text: 'S/ ', alignment: 'left'},
                     {text: this.PriceFormat(this.trunc(detalle.descuento,2)), alignment: 'right'}
                 ],
-                bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF',
+                bold: true, fontSize: 8,
                 margin: [0,0,5,0]
             }
         ]);
@@ -235,7 +235,20 @@ export class PdfArfafe {
                                     [
                                         {
                                             margin: [ 0, 5, 0, 0],
-                                            layout: 'noBorders',
+                                            layout: {
+                                                hLineWidth: function(i, node) {
+                                                return (i === 0 || i === node.table.body.length) ? 0.5 : 0.5;
+                                                },
+                                                vLineWidth: function(i, node) {
+                                                return (i === 0 || i === node.table.widths.length) ? 0.5 : 0.5;
+                                                },
+                                                hLineColor: function (i, node) {
+                                                    return (i === 0 || i === node.table.body.length) ? 'black' : 'gray';
+                                                },
+                                                vLineColor: function(i, node) {
+                                                    return (i === 0 || i === node.table.widths.length) ? 'black' : 'gray';
+                                                }
+                                            },
                                             table: {
                                               headerRows: 0,
                                               widths: ['70%', '30%'],

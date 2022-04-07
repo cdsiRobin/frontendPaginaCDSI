@@ -46,6 +46,8 @@ import { ArcctdaEntity } from 'src/app/models/arcctda-entity';
 import { Arccdi } from 'src/app/models/arccdi';
 import { Arccpr } from 'src/app/models/arccpr';
 import { Arccdp } from 'src/app/models/arccdp';
+import { ArtstrdPVenService } from 'src/app/services/artstrdPVen.service';
+import { ArtstrdPVen } from 'src/app/models/ArtstrdPVen';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 @Component({
@@ -90,6 +92,9 @@ export class NewArfafeComponent implements OnInit {
     tipoDoc: string;
     tipoCambio: number;
 
+    arccdi:Arccdi = new Arccdi();
+    arccdp:Arccdp = new Arccdp();
+    arccpr:Arccpr = new Arccpr();
 
   constructor(public pedidoService: PedidoService,
     private route: ActivatedRoute,
@@ -106,6 +111,7 @@ export class NewArfafeComponent implements OnInit {
     private arcgmoService: ArcgmoService,
     private arfamcService: ArfamcService,
     private arccmcService: ArccmcService,
+    private artdtrdPVenService: ArtstrdPVenService,
     public datepipe: DatePipe,
     private router: Router,
     private sb: MatSnackBar,
@@ -124,6 +130,7 @@ export class NewArfafeComponent implements OnInit {
   }
   public arcctdas: ArcctdaEntity[] = [];
   public arcctda: ArcctdaEntity;
+
   traerData(){
       this.route.queryParams.subscribe(p => {
         this.noCia = p['noCia'];
@@ -131,12 +138,9 @@ export class NewArfafeComponent implements OnInit {
         this.noGuia = p['guia'];
         this.pedidoService.pedidoParaFactura(this.noCia, this.noOrden).
           subscribe(d => {
-              console.log(d);
+            //   console.log(d);
               this.setArfafe(d);
               this.traerGuia(d.bodega);
-              this.listarDistrito(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
-              this.listarProvincia(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
-              this.listarDepartamento(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
             });
       });
   }
@@ -172,19 +176,32 @@ export class NewArfafeComponent implements OnInit {
       let t: string = '';
       if(this.detalle.arfafePK.tipoDoc === 'F') t = 'Factura';
       else t = 'Boleta';
-    this.dialog
-    .open(ConfirmArfafeComponent, {
-      data: `¿Desea crear `+t+`?`
-    })
-    .afterClosed()
-    .subscribe((confirm: Boolean) => {
-      if (confirm) {
-        this.addArfafe();
-      }
-    });
+    if(this.selecc === undefined) {
+        const snackBar = this.sb.open('Debe seleccionar una serie','Cerrar',{ duration : 3000});
+        snackBar.onAction().subscribe(() => this.sb.dismiss());
+    }
+    else {
+        this.dialog
+        .open(ConfirmArfafeComponent, {
+            height: '40%',
+            width: '80%',
+            data: {
+                mensaje: `¿Desea crear `+t+`?`,
+                detalle: this.detalle
+            }
+        })
+        .afterClosed()
+        .subscribe( (data:ArtstrdPVen) => {
+        if (data != null) {
+            this.addArfafe(data);
+            // console.log(data);
+        }
+        
+        });
+    }
   }
 
-  addArfafe(){
+  addArfafe(o: ArtstrdPVen){
 
     if(this.selecc === undefined) {
         const snackBar = this.sb.open('Debe seleccionar una serie','Cerrar',{ duration : 3000});
@@ -215,6 +232,10 @@ export class NewArfafeComponent implements OnInit {
                 this.arfcreeService.createArfcree(this.arfcree)
                 // .subscribe(data => console.log(data), error => console.log(error));
                 .subscribe();
+            }
+
+            if(o != null){
+                this.artdtrdPVenService.save(o).subscribe();
             }
 
             setTimeout(() => {this.report();
@@ -350,6 +371,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.no_GUIA = this.noGuia;
         this.detalle.tipo = 'N';
         this.detalle.estado_SUNAT = '0';
+        // this.detalle.codi_PROV = this.arccmc
         this.listaPrecio(arfoe.tipoPrecio);
         // this.TCambio();
         this.detalle.tipo_FPAGO = arfoe.tipoFpago;
@@ -403,7 +425,20 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.descuento = 0;
         this.detalle.t_DESCUENTO = 0;
         // this.detalle.total_b
-        console.log(this.detalle);
+        // console.log(this.detalle);
+        
+        this.arccmcService.getClientXCodigo(sessionStorage.getItem('cia'),this.detalle.no_CLIENTE).subscribe(data => {
+            // console.log(data);
+            
+            this.listarDepartamento(sessionStorage.getItem('cia'),data.arcctdaEntity[0].codiDepa,
+            this.arccmcService);
+            this.listarProvincia(sessionStorage.getItem('cia'),data.arcctdaEntity[0].codiDepa,
+            data.arcctdaEntity[0].codiProv,
+            this.arccmcService);
+            console.log(this.detalle.codi_PROV);
+            this.listarDistrito(sessionStorage.getItem('cia'),data.arcctdaEntity[0].codiDepa,
+            data.arcctdaEntity[0].codiProv,data.arcctdaEntity[0].codiDist,this.arccmcService);
+        });
       });
 
 
@@ -516,9 +551,7 @@ export class NewArfafeComponent implements OnInit {
         b.plazo9,b.plazo10,b.plazo11,b.plazo12];
 
         this.arfcree.arfcreePk = tempd;
-        // console.log(this.arfcree.arfcredList.length);
          if (c[0] != null && this.arfcree.arfcredList.length === 0) this.arfcree.arfcredList = [];
-        // console.log(c[0]);
         
         for(let i= 0;i<=c.length;i++){
             if(c[i] != null) a++;
@@ -546,7 +579,6 @@ export class NewArfafeComponent implements OnInit {
             this.xCuota = !this.xCuota;
             this.arfcredCuota = 'Cuota00'+(this.arfcree.arfcredList.length+1);
         }
-        // console.log(this.arfcree.arfcredList.length);
         if (g.length > 0 && this.arfcree.arfcredList.length === 0) this.arfcree.arfcredList = g;
 
         this.arfcree.monto = this.detalle.total;
@@ -561,7 +593,6 @@ export class NewArfafeComponent implements OnInit {
         this.arfcree.porcenPercep = 0;
         this.arfcree.porcenRetenc = 0;
         this.arfcree.imporDRP = 0;
-        // console.log(this.arfcree);
         
     }
 
@@ -622,36 +653,37 @@ export class NewArfafeComponent implements OnInit {
         this.nomCentro = data.descripcion;
     })
   }
-  arccdi:Arccdi = new Arccdi();
-  arccdp:Arccdp = new Arccdp();
-  arccpr:Arccpr = new Arccpr();
 
-public listarDistrito(cia:string, detalle:Arfafe,arccmcService: ArccmcService): void{
+public listarDistrito(cia:string, depa:string, prov:string,dist:string,arccmcService: ArccmcService): void{
   arccmcService.listarDistritoXciaAndDepartAndProvinc
-  (cia,detalle.codi_DEPA,detalle.codi_PROV)
+  (cia,depa,prov)
   .subscribe( data => {
+    //   console.log(data);
     for (const t of data) {
-      if (t.arccdiPK.codiDist === detalle.codi_DIST) {
+      if (t.arccdiPK.codiDist === dist) {
           this.arccdi = t;
+        //   console.log(this.arccdi);
           break;
       }
     }
   });
  }
- public listarProvincia(cia:string, detalle:Arfafe,arccmcService: ArccmcService): void{
-  arccmcService.listarProvincXciaAndDepart(cia,detalle.codi_DEPA).subscribe( data => {
+ public listarProvincia(cia:string, depa:string,prov:string,arccmcService: ArccmcService): void{
+  arccmcService.listarProvincXciaAndDepart(cia,depa).subscribe( data => {
+    // console.log(data);
     for (const t of data) {
-      if (t.arccprPK.codiProv === detalle.codi_PROV) {
+      if (t.arccprPK.codiProv === prov) {
           this.arccpr = t;
+        //   console.log(this.arccpr);
           break;
       }
     }
   });
 }
-  public listarDepartamento(cia:string, detalle:Arfafe,arccmcService: ArccmcService){
+  public listarDepartamento(cia:string, depa:string,arccmcService: ArccmcService){
   arccmcService.listarDepartXcia(cia).subscribe( data =>{
       for(const o of data){
-          if(o.arccdpPK.codiDepa === detalle.codi_DEPA){
+          if(o.arccdpPK.codiDepa === depa){
               this.arccdp = o;
               break;
           }
