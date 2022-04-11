@@ -82,15 +82,14 @@ export class Login2Component implements OnInit {
       this.vendedor = data;
     }, err => {
       if (err.status == 404) {
-        Swal.fire({
+         Swal.fire({
           allowOutsideClick: false,
           icon: 'info',
-          title: 'Usuario o Clave incorrecta !!'
-        });
+          title: 'DNI o Contraseña es incorrecta !!'
+         });
       }
     }, () => {
       this.getCia();
-
     });
   }
   guardarCampos() {
@@ -115,4 +114,10 @@ export class Login2Component implements OnInit {
 
   }
   //FIN
+  // SONIDO DE NEGACION
+  private sonidoNegacion(): void{
+    const audio = new Audio('sonido/negacion.mp3');
+    audio.play();
+  }
+  // FIN
 }
