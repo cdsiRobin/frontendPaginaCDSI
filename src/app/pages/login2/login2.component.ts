@@ -12,6 +12,12 @@ import { CompanyService } from './../../services/company.service';
 import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { TapusupvenService } from '../../services/tapusupven.service';
+import { Licencia } from '../../models/licencia';
+import { LicenciaService } from '../../services/licencia.service';
+import { DatePipe } from '@angular/common';
+import { UsuacService } from '../../services/usuac.service';
+import { Usuac } from '../../models/usuac';
+import { Usuacpk } from '../../models/usuacpk';
 
 @Component({
   selector: 'app-login2',
@@ -29,14 +35,19 @@ export class Login2Component implements OnInit {
   form: FormGroup;
   codEmpleado: string;
   empleadoSeleccionado: TapUsuPven;
+  private licencia: Licencia;
+  private usuacs: Array<Usuac>;
+  private usuac: Usuac;
 
   constructor(
-    private route: ActivatedRoute,
+    private licenciaService: LicenciaService,
+    private usuacService: UsuacService,
     private ciaServ: CompanyService,
-    public usuService: TapusupvenService,
+    private usuService: TapusupvenService,
     private venServ: ArccvcService,
     private router: Router,
-    public dialog: MatDialog) { }
+    private datePipe: DatePipe,
+    private dialog: MatDialog) { }
 
   ngOnInit() {
     //this.listarCias();
@@ -55,19 +66,85 @@ export class Login2Component implements OnInit {
       this.company = data;
     }, err => {
         console.warn(err)
-    }, () => {
-      this.guardarCampos();
+    }, () => {  // -------------------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>
       this.traerUsuarioAndCentro();
-      Swal.close();
-      // this.router.navigateByUrl('/pedido');
-      this.router.navigateByUrl('/pedido/empresa');
     });
   }
+  // VEFICAR SI COMPAÑIA TIENE LICENCIA
+  private verificarLicenciaCompany(): void{
+     this.licenciaService.consultarCia(this.company.cia).subscribe( data => {
+          this.licencia = data;
+     },err => {
+          console.log(err);
+          Swal.fire('Error al traer la Licencia de la compañia.')
+     }, () => {
+          this.verificarFechaFinalAndCantidadUsu();
+     });
+  }
+  // FIN
+  // VERIFICAR FECHA DE FINALIZACION Y CANTIDAD DE USUARIO
+  private verificarFechaFinalAndCantidadUsu(): void{
+     const fechaActual = Date.now();
+     if(fechaActual <= Date.parse(this.datePipe.transform(this.licencia.fecFinaliza, 'yyyy-MM-dd'))){
+         this.consultarUsuActivo();
+     }else{
+        Swal.fire(`Tu Licencia expiro el día ${this.datePipe.transform(this.licencia.fecFinaliza, 'dd/MM/yyyy')}.`);
+     }
 
-  obtenerVendedor() {
+  }
+  // FIN
+  // CONSULTAR LA CANTIDAD DE USUARIOS ACTIVO
+  private consultarUsuActivo(): void {
+     this.usuacService.listarUsuariosActivos(this.company.cia,'A').subscribe( data => {
+       this.usuacs = data;
+     },err => {
+        console.log(err);
+     }, () =>{
+         if(this.licencia.usuAc >= this.usuacs.length){
+              // BUSCAR SI EL USUARIO ESTA ACTIVO EN OTRA PC
+              const x = this.usuacs.find( r => {
+                if(r.usuacPK.usuario === this.empleadoSeleccionado.idUsuario.usuario){
+                    return r;
+                }
+              });
+              if(x === undefined){
+                  // GUARDAMOS O ACTUALIZAMOS EL USUARIO
+                  this.guardar();
+              }else{
+                Swal.fire(`El usuario ${x.usuacPK.usuario} se encuentra activo desde ${this.datePipe.transform(x.entrada, 'dd-MM-yyyy hh:mm:ss','es-ES')}`);
+              }
+         }else{
+            Swal.fire(`No puede superar cantidad de usuarios permitidos por tu Licencia ${this.licencia.nroLicencia}`);
+         }
+     });
+  }
+  // FIN
+  // GUARDAMOS O ACTUaLIZAMOS EL USUARIO
+  private guardar(): void{
+     const usupk: Usuacpk = new Usuacpk();
+     usupk.noCia = this.company.cia;
+     usupk.usuario = this.empleadoSeleccionado.idUsuario.usuario;
+     const usuac = new Usuac();
+     usuac.usuacPK = usupk;
+     usuac.activo = 'A';
+     usuac.modulo = 'PVENT';
+     usuac.entrada = this.datePipe.transform(Date.now(), 'yyyy-MM-ddTHH:mm:ss');
+     this.usuacService.guardar(usuac).subscribe(data => {
+          this.usuac = data;
+     }, err =>{
+        console.log(err);
+     }, () =>{
+        this.guardarCampos();
+        Swal.close();
+        this.router.navigateByUrl('/pedido/empresa');
+     });
+  }
+  // FIN
+  // EVENTO CLICK DEL LOGIN
+  public obtenerVendedor(): void {
 
     Swal.fire({
-      allowOutsideClick: false, // CLICK FUERA
+      allowOutsideClick: false,
       icon: 'info',
       text: 'Espere por favor...'
     });
@@ -92,12 +169,16 @@ export class Login2Component implements OnInit {
       this.getCia();
     });
   }
+  // FIN
   guardarCampos() {
       sessionStorage.setItem('cia', this.vendedor.idArc.cia);
       sessionStorage.setItem('nomCia', this.company.nombre);
       sessionStorage.setItem('cod', this.vendedor.idArc.codigo);
       sessionStorage.setItem('nombre',  this.vendedor.descripcion);
       sessionStorage.setItem('codEmp', this.vendedor.idArc.codigo);
+
+      sessionStorage.setItem('centro', this.empleadoSeleccionado.centro);
+      sessionStorage.setItem('usuario', this.empleadoSeleccionado.idUsuario.usuario);
   }
   abrirDialogo() {
     this.dialog.open(MenuPventaComponent, {
@@ -108,8 +189,11 @@ export class Login2Component implements OnInit {
   public traerUsuarioAndCentro(): void{
       this.usuService.traerUsuario(this.vendedor.idArc.cia, this.vendedor.idArc.codigo).subscribe(data => {
         this.empleadoSeleccionado = data
-        sessionStorage.setItem('centro', this.empleadoSeleccionado.centro);
-        sessionStorage.setItem('usuario', this.empleadoSeleccionado.idUsuario.usuario);
+      }, err => {
+         console.log(err);
+         Swal.fire('No se pudo traer el usuario y su centro emisor.');
+      }, () => {
+           this.verificarLicenciaCompany();
       });
 
   }

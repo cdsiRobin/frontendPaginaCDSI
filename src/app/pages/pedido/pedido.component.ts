@@ -2,6 +2,10 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import Swal from 'sweetalert2';
+import { UsuacService } from '../../services/usuac.service';
+import { Usuacpk } from '../../models/usuacpk';
+import { Usuac } from '../../models/usuac';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-pedido',
@@ -12,8 +16,12 @@ export class PedidoComponent implements OnInit {
   nombre: string;
   nomCia: string;
   sMensaje = 5;
+  private usuac: Usuac;
 
-  constructor(private router: Router, public route: ActivatedRoute,private snackBar: MatSnackBar) { }
+  constructor(private router: Router,
+     private usuacService: UsuacService,
+     private datePipe: DatePipe,
+     private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
     this.nombre = sessionStorage.getItem('nombre');
@@ -45,8 +53,34 @@ export class PedidoComponent implements OnInit {
   // FIN
   // ELIMINAR ALMACENAMIENTO DE SESSION
   private eliminarAlmacenamientoSession(): void{
-    sessionStorage.clear();
-    this.router.navigate(['dashboard/log_arti']);
+    Swal.fire({
+      allowOutsideClick: false,
+      icon: 'info',
+      text: 'Espere por favor...'
+    });
+    Swal.showLoading();
+    this.actualizarUsuac();
   }
   // FIN
+   // ACTUALIZAR EL USUARIO
+  private actualizarUsuac(): void{
+      const usupk: Usuacpk = new Usuacpk();
+      usupk.noCia = sessionStorage.getItem('cia');
+      usupk.usuario = sessionStorage.getItem('usuario');
+      const usuac = new Usuac();
+      usuac.usuacPK = usupk;
+      usuac.activo = 'N';
+      usuac.modulo = '';
+      usuac.salida = this.datePipe.transform(Date.now(), 'yyyy-MM-ddTHH:mm:ss');
+      this.usuacService.guardar(usuac).subscribe(data => {
+          this.usuac = data;
+      }, err =>{
+        console.log(err);
+      }, () =>{
+         Swal.close();
+         sessionStorage.clear();
+         this.router.navigate(['dashboard/log_arti']);
+      });
+ }
+ // FIN
 }

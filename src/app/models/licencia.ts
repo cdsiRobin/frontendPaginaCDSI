@@ -1,4 +1,5 @@
 import { Licenciapk } from './licenciapk';
+
 export class Licencia {
   licenciaPK: Licenciapk;
   razonSocial: string;
