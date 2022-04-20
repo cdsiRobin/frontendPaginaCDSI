@@ -224,6 +224,7 @@
                     <div class="col-sm-7">
                         <mat-form-field appearance="outline" floatLabel="always">
                             <mat-label>Detracción</mat-label>
+                            <div matPrefix style="position: relative; bottom: 4px; font-size: 12px;">{{ prefixMon }}</div>
                             <input matInput type="number" class="text-end" placeholder="0.00" 
                             name="valorDetrac" [readonly]="true" [(ngModel)]="monDetrac">
                         </mat-form-field>

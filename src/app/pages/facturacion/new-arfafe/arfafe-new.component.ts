@@ -101,6 +101,7 @@ export class NewArfafeComponent implements OnInit {
     arccdp:Arccdp = new Arccdp();
     arccpr:Arccpr = new Arccpr();
 
+    prefixMon: string = 'S/.';
     codDetrac: string = '037';
     valDetrac: number = null;
     monDetrac: number = null;
@@ -140,10 +141,9 @@ export class NewArfafeComponent implements OnInit {
     this.traerData();
     this.tabSunatService.listar('54').subscribe( l => {
         this.listDetrac = l;
-        console.log(l);
+        // console.log(l);
         this.codDetrac = this.listDetrac[0].codigo;
         this.onChangeDetrac(this.codDetrac);
-        // console.log(this.cod);
     });
 
   }
@@ -154,7 +154,6 @@ export class NewArfafeComponent implements OnInit {
     for(const o of this.listDetrac){
         if(o.codigo === cod){
             this.valDetrac = +o.valor;
-            this.monDetrac = parseFloat(this.trunc(this.totalFactu*this.valDetrac,2));
         }
     }
   }
@@ -327,17 +326,9 @@ export class NewArfafeComponent implements OnInit {
                     }
                 );
         }
-        //this.arfacc = d[0];
-        //this.arfacc.consDesde;
-        //console.log(d);
-        //creacion llave primaria
         this.detalle.arfafePK = new ArfafePK();
 
         this.detalle.arfafePK.noCia = sessionStorage.getItem('cia');
-        //creacion correlativo
-        /*let cortar = d[0].consDesde.toString().length  * -1;
-        this.correlativo = this.correlativo.slice(0,cortar)+d[0].consDesde;
-        this.detalle.arfafePK.noFactu = d[0].arfaccPK.serie+this.correlativo;*/
 
         this.detalle.arfafePK.tipoDoc = this.tipoDoc;
 
@@ -345,7 +336,6 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.estado = 'D';
         this.detalle.ind_PVENT = arfoe.indPvent;
         this.detalle.no_ORDEN = arfoe.arpfoePK.noOrden;
-        //this.detalle.tipo_CLIENTE = arfoe.tipoDocCli;
         this.detalle.no_CLIENTE = arfoe.noCliente;
         this.traeCliente();
         this.detalle.no_VENDEDOR = arfoe.noVendedor;
@@ -364,7 +354,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.centro_COSTO = arfoe.centroCosto;
         this.detalle.cod_CAJA = arfoe.codCaja;
         this.detalle.cuser = sessionStorage.getItem('usuario');
-        this.detalle.tipo_CAMBIO = arfoe.tipoCambio;
+        this.detalle.tipo_CAMBIO = +this.trunc(arfoe.tipoCambio,1);
         this.detalle.ind_DOC = 'N';
         this.detalle.imprime = 'S';
         this.detalle.ind_VTA_ANTICIPADA = 'N';
@@ -399,12 +389,11 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.no_GUIA = this.noGuia;
         this.detalle.tipo = 'N';
         this.detalle.estado_SUNAT = '0';
-        // this.detalle.codi_PROV = this.arccmc
         this.listaPrecio(arfoe.tipoPrecio);
-        // this.TCambio();
         this.detalle.tipo_FPAGO = arfoe.tipoFpago;
         this.detalle.cod_FPAGO = arfoe.codFpago;
         this.formaPago(arfoe.codFpago);
+
         //detalle productos
         this.detalle.arfaflList = [];
         this.detalle.oper_GRAVADAS = 0;
@@ -414,7 +403,6 @@ export class NewArfafeComponent implements OnInit {
             arfafl.arfaflPK = new arfaflPK();
             arfafl.arfaflPK.noCia = this.detalle.arfafePK.noCia;
             arfafl.arfaflPK.tipoDoc = this.detalle.arfafePK.tipoDoc;
-            //arfafl.arfaflPK.noFactu = this.detalle.arfafePK.noFactu;
             arfafl.arfaflPK.consecutivo = list.noLinea;
             arfafl.no_ARTI = list.arpfolPK.noArti;
             arfafl.bodega = list.bodega;
@@ -430,7 +418,6 @@ export class NewArfafeComponent implements OnInit {
             
             arfafl.precio_UNIT = parseFloat(this.trunc(list.precio-(list.precio*(list.dscto/100)),5));
 
-            //arfafl.total = parseFloat(this.trunc((arfafl.precio_UNIT*list.cantEntreg),2));
             arfafl.total = parseFloat(this.trunc(list.totalLin,2));
             arfafl.precio_UNIT_ORIG = parseFloat(this.trunc(list.precio,5));
             arfafl.tipo_AFECTACION = list.tipoAfectacion;
@@ -452,11 +439,8 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.m_DSCTO_GLOBAL = 0;
         this.detalle.descuento = 0;
         this.detalle.t_DESCUENTO = 0;
-        // this.detalle.total_b
-        // console.log(this.detalle);
         
         this.arccmcService.getClientXCodigo(sessionStorage.getItem('cia'),this.detalle.no_CLIENTE).subscribe(data => {
-            // console.log(data);
             
             this.listarDepartamento(sessionStorage.getItem('cia'),data.arcctdaEntity[0].codiDepa,
             this.arccmcService);
@@ -466,8 +450,12 @@ export class NewArfafeComponent implements OnInit {
             this.listarDistrito(sessionStorage.getItem('cia'),data.arcctdaEntity[0].codiDepa,
             data.arcctdaEntity[0].codiProv,data.arcctdaEntity[0].codiDist,this.arccmcService);
         });
+        
+        this.monDetrac = parseFloat(this.trunc(this.totalFactu*(this.valDetrac/100),2));
+        // console.log(this.detalle.moneda);
+        if(this.detalle.moneda === 'SOL') this.prefixMon = 'S/';
+        else this.prefixMon = '$';
       });
-
 
     }
 
@@ -477,16 +465,13 @@ export class NewArfafeComponent implements OnInit {
 
     traeCliente() {
       let cli = new DatosClienteDTO(sessionStorage.getItem('cia'));
-      // cli.documento = this.detalle.no_CLIENTE;
       cli.id = this.detalle.no_CLIENTE;
-    //   console.log(cli);
       this.clienteServices.traeCliente(cli).subscribe(data => {
         this.detalle.direccion = data.arcctdaEntity[0].direccion;
         this.detalle.codi_DEPA = data.arcctdaEntity[0].codiDepa;
         this.detalle.codi_PROV = data.arcctdaEntity[0].codiProv;
         this.detalle.codi_DIST = data.arcctdaEntity[0].codiDist;
         this.detalle.nbr_CLIENTE = data.nombre;
-        // console.log(data);
       })
     }
 
@@ -524,10 +509,7 @@ export class NewArfafeComponent implements OnInit {
     }
 
     editCuota(){
-        // console.log('Entro editCuota - cuota '+c);
         this.edtCuote = !this.edtCuote;
-        
-        // console.log(this.arfcree.arfcredList);
     }
 
     createCuota(){
