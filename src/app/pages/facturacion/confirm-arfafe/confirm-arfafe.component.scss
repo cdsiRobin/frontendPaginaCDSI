@@ -7,6 +7,14 @@
   display: none;
 }
 
+input[type=number] {
+	-moz-appearance: textfield;
+}
+
+// .confirmData input::-moz-outer-spin-button,
+// .confirmData input::-moz-inner-spin-button {
+//   display: none;
+// }
 .rdCurrency{
 	position: relative;
 }

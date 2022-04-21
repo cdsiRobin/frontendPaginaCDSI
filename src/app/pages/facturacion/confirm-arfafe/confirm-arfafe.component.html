@@ -18,7 +18,7 @@
                 <div class="col-sm-4">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Dol</mat-label>
-                        <input [readonly]="!xMon" matInput placeholder="0.00" name="Dol" type="number"
+                        <input [readonly]="true" matInput placeholder="0.00" name="Dol" type="number"
                         [(ngModel)]="dol">
                     </mat-form-field>
                 </div>
@@ -32,7 +32,7 @@
                 <div class="col-sm-4">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Sol</mat-label>
-                        <input [readonly]="xMon" matInput placeholder="0.00" name="Sol" type="number"
+                        <input [readonly]="true" matInput placeholder="0.00" name="Sol" type="number"
                         [(ngModel)]="sol">
                     </mat-form-field>
                 </div>

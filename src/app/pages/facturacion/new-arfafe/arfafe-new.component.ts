@@ -354,7 +354,7 @@ export class NewArfafeComponent implements OnInit {
         this.detalle.centro_COSTO = arfoe.centroCosto;
         this.detalle.cod_CAJA = arfoe.codCaja;
         this.detalle.cuser = sessionStorage.getItem('usuario');
-        this.detalle.tipo_CAMBIO = +this.trunc(arfoe.tipoCambio,1);
+        this.detalle.tipo_CAMBIO = arfoe.tipoCambio;
         this.detalle.ind_DOC = 'N';
         this.detalle.imprime = 'S';
         this.detalle.ind_VTA_ANTICIPADA = 'N';
