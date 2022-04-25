@@ -59,7 +59,6 @@ export class DetailArfafeComponent implements OnInit {
     cia: string;
     doc: string;
     fact: string;
-    tipoCambio: number;
     nomCentro: string;
     centro: string = sessionStorage.getItem('centro');
     totalIGV:number = 0;
@@ -71,7 +70,6 @@ export class DetailArfafeComponent implements OnInit {
   constructor(private route: ActivatedRoute,
     private arfafeService: ArfafeService,
     public clienteServices: ArccmcService,
-    private arcgtcService: ArcgtcService,
     private arfatpService: ArfatpService,
     private arfafpservice: ArfafpService,
     private arfacfservice: ArfacfService,
@@ -97,33 +95,32 @@ export class DetailArfafeComponent implements OnInit {
       if(this.doc == 'B') this.tipoComprobante = 'Boleta';
       this.arfafeService.arfafeDetalle(new ArfafeDTO(this.cia,this.doc,this.fact))
       .subscribe(a => {
-          //this.detalle = a.resultado;
+        // console.log(a.resultado);
+          this.detalle = a;
             let idArpfoe: IdArpfoe = new IdArpfoe();
-            idArpfoe.noCia = a.resultado.arfafePK.noCia;
-            idArpfoe.noOrden = a.resultado.no_ORDEN;
+            idArpfoe.noCia = a.arfafePK.noCia;
+            idArpfoe.noOrden = a.no_ORDEN;
             // console.log(idArpfoe);
-            this.detalle.arfafePK = new ArfafePK();
-            this.detalle = a.resultado;
+            // this.detalle.arfafePK = new ArfafePK();
             this.traeCliente();
-            this.formaPago(a.resultado.cod_FPAGO);
-            this.listaPrecio(a.resultado.tipo_PRECIO);
-            this.TCambio();
+            this.formaPago(a.cod_FPAGO);
+            this.listaPrecio(a.tipo_PRECIO);
             this.cargarExtras();
-            let data: ArfcreePK = new ArfcreePK();
-            data.noCia = this.cia;
-            data.noCliente = this.detalle.no_CLIENTE;
-            data.noOrden = this.detalle.arfafePK.noFactu;
-            this.arfcreeService.findArfcree(data).subscribe( obj => {
-                    console.log(obj.resultado);
-                    this.arfcree = obj.resultado;
-                    this.arfcree.arfcredList.forEach( o => {
-                      o.fechaPago = this.datepipe.transform(o.fechaPago,'dd/MM/yyyy');
-                    })
-            }, error => {console.log(error)});
+            if(a.tipo_FPAGO === '40'){
+              let data: ArfcreePK = new ArfcreePK();
+              data.noCia = this.cia;
+              data.noCliente = this.detalle.no_CLIENTE;
+              data.noOrden = this.detalle.arfafePK.noFactu;
+              this.arfcreeService.findArfcree(data).subscribe( obj => {
+                // console.log(obj.resultado);
+                this.arfcree = obj.resultado;
+                this.arfcree.arfcredList.forEach( o => {
+                  o.fechaPago = this.datepipe.transform(o.fechaPago,'dd/MM/yyyy');
+                });
+              });
+            }
             // console.log(a.resultado);
             //console.log(a.resultado.arfaflList);
-            
-
             this.listarDistrito(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
             this.listarProvincia(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
             this.listarDepartamento(sessionStorage.getItem('cia'),this.detalle,this.arccmcService);
@@ -183,7 +180,7 @@ export class DetailArfafeComponent implements OnInit {
         }
 }
 
-getCuotas(){
+  getCuotas(){
     let a: number = -1;
     let b: Arfafp = new Arfafp();
     let tempd: ArfcreePK = new ArfcreePK();
@@ -239,7 +236,7 @@ getCuotas(){
     this.arfcree.imporDRP = 0;
     // console.log(this.arfcree);
 
-}
+  }
 
   public formaPago(cod: string){
     let list: Arfafp[] = [];
@@ -267,7 +264,7 @@ getCuotas(){
       '001',
       this.detalle.arfafePK.tipoDoc,
       this.detalle.arfafePK.noFactu).subscribe(data => console.log(data), error => console.log(error));
-}
+  }
 
   public centroEmisor(){
     //this.arfacfservice.buscarCentro(sessionStorage.getItem('cia'),sessionStorage.getItem('centro'))
@@ -278,14 +275,6 @@ getCuotas(){
     .subscribe(data => {
         this.nomCentro = data.descripcion;
     })
-  }
-
-  public TCambio(){
-    let fecha = this.datepipe.transform(new Date,'dd/MM/yyyy');
-    this.arcgtcService.getTipoCambioClaseAndFecha('02',fecha).subscribe(data => {
-        this.tipoCambio = data.resultado.tipoCambio;
-    });
-
   }
 
   public listaPrecio(cod: string){

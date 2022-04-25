@@ -7,7 +7,6 @@ import { Arfafe } from 'src/app/models/Arfafe';
 import { Arfafp } from 'src/app/models/Arfafp';
 import { Arfamc } from 'src/app/models/arfamc';
 import { Arfcree } from 'src/app/models/Arfcree';
-import { ArccmcService } from 'src/app/services/arccmc.service';
 import { Utils } from "../utils";
 
 export class PdfArfafe {
@@ -41,6 +40,7 @@ export class PdfArfafe {
     let totalIGV = 0;
     let logoDataUrl = ''; 
     let doc = '';
+    console.log(detalle);
     if(detalle.arfafePK.tipoDoc === 'F') doc = 'FACTURA';
     else doc = 'BOLETA';
     Utils.getImageDataUrlFromLocalPath1('assets/Logo'+sessionStorage.getItem('cia')+'.jpg').then(
@@ -76,24 +76,19 @@ export class PdfArfafe {
             {text: 'Descuento Global',margin:[2,0,0,0], bold: true, fontSize: 8},
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: this.PriceFormat(this.trunc(detalle.descuento,2)), alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: this.PriceFormat(this.trunc(detalle.descuento,2)), alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
-            // {text: [
-            //     {text: 'S/ ', alignment: 'left'},
-            //     {text: detalle.descuento, alignment: 'right'}],
-            //      bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
         ]);
         bodyDet.push([
             {text: 'Total Valor Venta - Operaciones Gravadas:',margin:[2,0,0,0], bold: true, fontSize: 8},
-            // {text: 'S/ '+detalle.oper_GRAVADAS, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: this.PriceFormat(this.trunc(detalle.oper_GRAVADAS,2)), alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: this.PriceFormat(this.trunc(detalle.oper_GRAVADAS,2)), alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
                 margin: [0,0,0,0]
@@ -101,62 +96,57 @@ export class PdfArfafe {
         ]);
         bodyDet.push([
             {text: 'ICBPER',margin:[2,0,0,0], bold: true, fontSize: 8},
-            // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: '0.00', alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: '0.00', alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
         ]);
         bodyDet.push([
             {text: 'IGV',margin:[2,0,0,0], bold: true, fontSize: 8},
-            // {text: 'S/ '+this.totalIGV, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: this.PriceFormat(this.trunc(totalIGV,2)), alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: this.PriceFormat(this.trunc(totalIGV,2)), alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
         ]);
         bodyDet.push([
             {text: 'Importe Total',margin:[2,0,0,0], bold: true, fontSize: 9},
-            // {text: 'S/ '+detalle.total, bold: true, fontSize: 9,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: this.PriceFormat(this.trunc(detalle.total,2)), alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: this.PriceFormat(this.trunc(detalle.total,2)), alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
         ]);
         bodyDet.push([
             {text: 'Redondeo',margin:[2,0,0,0], bold: true, fontSize: 8},
-            // {text: 'S/ 0', bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: '0.00', alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: '0.00', alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
         ]);
         bodyDet.push([
             {text: 'Descuentos Totales',margin:[2,0,0,0], bold: true, fontSize: 8},
-            // {text: 'S/.'+detalle.descuento, bold: true, fontSize: 8,fillColor: '#008CD9',color:'#FFF'}
             {
                 columns: [
-                    {text: 'S/ ', alignment: 'left'},
-                    {text: this.PriceFormat(this.trunc(detalle.descuento,2)), alignment: 'right'}
+                    {width: '20%', text: 'S/ ', alignment: 'left'},
+                    {width: '80%', text: this.PriceFormat(this.trunc(detalle.descuento,2)), alignment: 'right'}
                 ],
                 bold: true, fontSize: 8,
-                margin: [0,0,5,0]
+                margin: [0,0,0,0]
             }
         ]);
 
@@ -650,7 +640,6 @@ export class PdfArfafe {
                     }
                 ]
             },
-            // 'texto antes de tabla',
             {
             //   margin: [ 0, 1, 0, 0],
               layout: 'noBorders',

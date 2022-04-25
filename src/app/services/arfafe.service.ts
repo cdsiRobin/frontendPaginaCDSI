@@ -1,7 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { ArfafeDTO } from '../DTO/arfafeDTO';
 import { arfafeInterface } from '../interfaces/arfafeInterface';
+import { ConsultaExitosa } from '../interfaces/consulta-exitosa';
 import { Arfafe } from '../models/Arfafe';
 import {GenericoService} from './generico/generico.service';
 
@@ -19,7 +21,11 @@ export class ArfafeService extends GenericoService {
 
     public arfafeDetalle(datos: ArfafeDTO) {
         const body = JSON.stringify(datos);
-        return this.http.post<arfafeInterface>(this.url + `/arfafe/id`, body, this.options);
+        return this.http.post<ConsultaExitosa<Arfafe>>(this.url + `/arfafe/id`, body, this.options)
+        .pipe(map(data => {
+            console.log(data.resultado.direccion);
+            return data.resultado;
+        }));
       }
 
     listaArfafe(cia: string, pven: string, doc: string, f1: string, f2: string, fac: string){

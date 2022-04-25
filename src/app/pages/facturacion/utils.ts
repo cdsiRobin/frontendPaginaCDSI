@@ -2,7 +2,7 @@ import { Observable } from 'rxjs';
 
 export class Utils {
 
-    /** Retorna la fecha llevado a Local Date Peru en formato ISO, p.e. 2019-12-07. */
+    /** Retorna la fecha llevado a Local Date en formato ISO, p.e. 2022-03-17. **/
     static getStringLocalDate(fecha: Date): string {
         const tzoffset = new Date().getTimezoneOffset() * 60000;
         const ISOlocalDate = (new Date(fecha.getTime() - tzoffset)).toISOString().substr(0, 10);
