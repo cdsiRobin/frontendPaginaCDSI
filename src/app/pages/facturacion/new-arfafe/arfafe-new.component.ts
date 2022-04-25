@@ -105,6 +105,7 @@ export class NewArfafeComponent implements OnInit {
     codDetrac: string = '037';
     valDetrac: number = null;
     monDetrac: number = null;
+    ctaDetrac: string = '';
     listDetrac: TabSunatFe[] = [];
 
   constructor(public pedidoService: PedidoService,
@@ -456,6 +457,14 @@ export class NewArfafeComponent implements OnInit {
         if(this.detalle.moneda === 'SOL') this.prefixMon = 'S/';
         else this.prefixMon = '$';
       });
+
+      if(this.chkDetrac) {
+        this.detalle.ind_DETRAC = 'S';
+        this.detalle.cod_DETRAC = this.codDetrac;
+        this.detalle.proc_DETRAC = this.valDetrac;
+        this.detalle.num_CUENTA_DETRAC = this.ctaDetrac;
+        this.detalle.detraccion = this.monDetrac;
+      }
 
     }
 
