@@ -5,7 +5,7 @@ import { VendedorDTO } from './../../DTO/VendedorDTO';
 import { Company } from './../../models/company';
 import { IdArccvc } from './../../models/IdArccvc';
 import { Arccvc } from './../../models/Arccvc';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Router} from '@angular/router';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ArccvcService } from './../../services/arccvc.service';
 import { CompanyService } from './../../services/company.service';
@@ -109,9 +109,9 @@ export class Login2Component implements OnInit {
               });
               if(x === undefined){
                   // GUARDAMOS O ACTUALIZAMOS EL USUARIO
-                  this.guardar();
+                  this.guardarUsuario();
               }else{
-                Swal.fire(`El usuario ${x.usuacPK.usuario} se encuentra activo desde ${this.datePipe.transform(x.entrada, 'dd-MM-yyyy hh:mm:ss','es-ES')}`);
+                this.verificarUsuarioActivo(x.usuacPK.usuario);
               }
          }else{
             Swal.fire(`No puede superar cantidad de usuarios permitidos por tu Licencia ${this.licencia.nroLicencia}`);
@@ -120,14 +120,14 @@ export class Login2Component implements OnInit {
   }
   // FIN
   // GUARDAMOS O ACTUaLIZAMOS EL USUARIO
-  private guardar(): void{
+  private guardarUsuario(): void{
      const usupk: Usuacpk = new Usuacpk();
      usupk.noCia = this.company.cia;
      usupk.usuario = this.empleadoSeleccionado.idUsuario.usuario;
      const usuac = new Usuac();
      usuac.usuacPK = usupk;
      usuac.activo = 'A';
-     usuac.modulo = 'PVENT';
+     usuac.modulo = 'PVEN';
      usuac.entrada = this.datePipe.transform(Date.now(), 'yyyy-MM-ddTHH:mm:ss');
      this.usuacService.guardar(usuac).subscribe(data => {
           this.usuac = data;
@@ -140,6 +140,31 @@ export class Login2Component implements OnInit {
      });
   }
   // FIN
+
+  private verificarUsuarioActivo(usurio: string): void{
+    if (this.validarLicencia()){
+        this.guardarUsuario();
+    } else {
+        this.actualizarLicencia();
+    }
+  }
+
+  private actualizarLicencia(): void {
+     const llave: string = Math.random().toString(36);
+     this.licenciaService.actualizar(this.licencia.licenciaPK.noCia, this.licencia.licenciaPK.ruc, llave).subscribe( value => {
+        console.log('licencia : ', value);
+        this.licencia = value;
+     }, err => {
+        console.error(err);
+     }, () => {
+         this.guardarUsuario();
+     });
+  }
+
+  private validarLicencia(): boolean{
+    return this.licencia.llave === localStorage.getItem('licencia') ? true : false;
+  }
+
   // EVENTO CLICK DEL LOGIN
   public obtenerVendedor(): void {
 
@@ -170,7 +195,7 @@ export class Login2Component implements OnInit {
     });
   }
   // FIN
-  guardarCampos() {
+  private guardarCampos(): void {
       sessionStorage.setItem('cia', this.vendedor.idArc.cia);
       sessionStorage.setItem('nomCia', this.company.nombre);
       sessionStorage.setItem('cod', this.vendedor.idArc.codigo);
@@ -179,6 +204,8 @@ export class Login2Component implements OnInit {
 
       sessionStorage.setItem('centro', this.empleadoSeleccionado.centro);
       sessionStorage.setItem('usuario', this.empleadoSeleccionado.idUsuario.usuario);
+
+      localStorage.setItem('licencia', this.licencia.llave);
   }
   abrirDialogo() {
     this.dialog.open(MenuPventaComponent, {
@@ -198,10 +225,4 @@ export class Login2Component implements OnInit {
 
   }
   //FIN
-  // SONIDO DE NEGACION
-  private sonidoNegacion(): void{
-    const audio = new Audio('sonido/negacion.mp3');
-    audio.play();
-  }
-  // FIN
 }
