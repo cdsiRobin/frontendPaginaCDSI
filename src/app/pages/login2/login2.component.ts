@@ -152,7 +152,6 @@ export class Login2Component implements OnInit {
   private actualizarLicencia(): void {
      const llave: string = Math.random().toString(36);
      this.licenciaService.actualizar(this.licencia.licenciaPK.noCia, this.licencia.licenciaPK.ruc, llave).subscribe( value => {
-        console.log('licencia : ', value);
         this.licencia = value;
      }, err => {
         console.error(err);
@@ -206,6 +205,7 @@ export class Login2Component implements OnInit {
       sessionStorage.setItem('usuario', this.empleadoSeleccionado.idUsuario.usuario);
 
       localStorage.setItem('licencia', this.licencia.llave);
+      sessionStorage.setItem('ruc', this.company.ruc);
   }
   abrirDialogo() {
     this.dialog.open(MenuPventaComponent, {

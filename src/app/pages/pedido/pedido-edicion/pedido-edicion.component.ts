@@ -69,6 +69,7 @@ import { Arcaaccaj } from '../../../models/Arcaaccaj';
 import { ArcaaccajService } from '../../../services/arcaaccaj.service';
 import { Artsccb } from '../../../models/artsccb';
 import { CajaEdicionComponent } from '../caja/caja-edicion/caja-edicion.component';
+import { TokenService } from '../../../services/token.service';
 
 @Component({
   selector: 'app-pedido-edicion',
@@ -206,6 +207,7 @@ export class PedidoEdicionComponent implements OnInit {
               public arinseService: ArinseService,
               public arfacfService: ArfacfService,
               public arpffeService: ArpffeService,
+              private tokenService: TokenService,
               private snackBar: MatSnackBar,
               private dialogItems: MatDialog,
               private router: Router,
@@ -287,18 +289,15 @@ export class PedidoEdicionComponent implements OnInit {
     const fActual = new Date();
     const fecha = String(fActual.getDate()).padStart(2,'0')+'/'+String(fActual.getMonth() + 1).padStart(2,'0')+'/'+fActual.getFullYear();
     this.arcaaccajService.verificarCajaAbiertaCajero(this.cia,this.centro,this.codEmp,'A',fecha).subscribe( result => {
-         //console.log(result);
          this.arcaaccajs = result;
     }, err => {
        console.warn(err);
     }, () => {
-       //console.log('SE TERMINO EL SERVICIO PARA TRAER LA CAJA QUE TIENE ABIERTA EL VENDEDOR');
        this.vericarCajaVendedora();
     });
   }
   // VERIFICAR QUE CAJA LE CORRESPONDE A LA VENDEDORA
   private vericarCajaVendedora(): void{
-    /*if(this.arcaaccajs.length >= 1){*/
        this.arcaaccajService.verificarCajaVendedor(this.cia,'C',this.centro,this.usuario).subscribe( resul => {
            this.artsccb = resul;
        }, err =>{
@@ -306,9 +305,6 @@ export class PedidoEdicionComponent implements OnInit {
        }, () =>{
            this.buscarCajaDesigna();
        });
-    /*}else{
-       this.mDeseaAbrirCaja();
-    }*/
   }
   // FIN
   // MENSAJE QUE PREGUNTA SI DESEA ABRIR CAJA

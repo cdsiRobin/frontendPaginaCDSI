@@ -1,7 +1,7 @@
 import {PedidoComponent} from './pedido.component';
 import {PedidoEdicionComponent} from './pedido-edicion/pedido-edicion.component';
 import {CajaComponent} from './caja/caja.component';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { ListArfafeComponent } from '../facturacion/list-arfafe/list-arfafe.component';
 import { NewArfafeComponent } from '../facturacion/new-arfafe/arfafe-new.component';
@@ -11,10 +11,12 @@ import { ArccmcComponent } from '../arccmc/arccmc.component';
 import { ArccvcComponent } from '../arccvc/arccvc.component';
 import { ListapedComponent } from './listaped/listaped.component';
 import { ArfamcComponent } from '../arfamc/arfamc.component';
+import { AuthGuard } from '../../guards/auth.guard';
 
 const routes: Routes = [
   {
     path: 'pedido', component: PedidoComponent,
+    canActivate: [AuthGuard],
     children: [
           // { path: '', component: PedidoComponent },
           { path: 'nuevo', component: PedidoEdicionComponent },
