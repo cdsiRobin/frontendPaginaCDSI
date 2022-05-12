@@ -7,7 +7,7 @@ export const environment = {
   // URL_BASE: 'http://cdsiapi.hopto.org/spring-boot-backend-inve/api'
   // URL_BASE: 'http://localhost:8444/api'
   // URL_BASE: 'http://190.43.4.86:8444/api'
-  URL_BASE : 'https://2359-2001-1388-91-d83e-69a1-99c0-6e00-63bd.ngrok.io/spring-boot-backend-pvCdsi/api'
+  URL_BASE : 'https://ab97-2001-1388-91-1169-69a1-99c0-6e00-63bd.ngrok.io/spring-boot-backend-pvCdsi/api'
 };
 
 /*
