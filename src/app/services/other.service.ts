@@ -23,7 +23,7 @@ export class OtherService {
     // return this.url = 'http://cdsiapi.hopto.org/spring-boot-backend-inve/api';
     // return this.url = 'http://localhost:8444/api';
     // return this.url = 'http://190.43.4.86:8444/api';
-    return this.url = 'https://64d3-2001-1388-90-65db-69a1-99c0-6e00-63bd.ngrok.io/spring-boot-backend-pvCdsi/api';
+    return this.url = 'https://4adc-2001-1388-90-d85c-69a1-99c0-6e00-63bd.ngrok.io/spring-boot-backend-pvCdsi/api';
   }
 
 // SET TOKEN
