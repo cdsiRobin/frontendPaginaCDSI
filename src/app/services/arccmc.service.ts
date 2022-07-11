@@ -76,10 +76,21 @@ export class ArccmcService extends GenericoService{
   //GUARDAR CLIENTE
   public guardarCliente(arccmc: Arccmc): Observable<Arccmc>{
       const body = JSON.stringify(arccmc);
+      console.log(body);
       return this.http.post<Guardar<Arccmc>>(this.url + `/cli/save`, body, this.options).pipe(
         map( (response: Guardar<Arccmc>) => {
           return response.detalle;
-        } )
+        } ),
+        catchError(err => {
+        if (err.status === 400 || err.status === 500) {
+          console.error(err.erro.message);
+          return throwError(err);
+        }
+        if (err.error.mensaje) {
+          console.error(err.error.message);
+        }
+        return  throwError(err);
+      })
       );
   }
 

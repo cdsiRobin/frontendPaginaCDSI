@@ -377,8 +377,7 @@ export class MarccmcComponent implements OnInit {
         this.arccmcService.guardarCliente(this.getArccmc()).subscribe( data => {
             Swal.close();
             this.cerrarModalArccmc();
-            this.snackBar.open(`Se guardo correctamente`, 'Salir',
-            {
+            this.snackBar.open(`Se guardo correctamente`, 'Salir',{
               duration: 1000,
               verticalPosition: 'top',
               horizontalPosition: 'center'
@@ -412,6 +411,12 @@ export class MarccmcComponent implements OnInit {
      arccmc.pais = this.fArccmc.get('pais').value;
      arccmc.documento = this.fArccmc.get('documento').value;
      arccmc.email = this.fArccmc.get('email').value;
+     arccmc.clase = '020';
+     arccmc.codPais = '001';
+     arccmc.codVenCob = '001';
+     arccmc.tipoFpago = '20';
+     arccmc.codFpago = '01';
+
      //DIRECCION
      let arcctda = new ArcctdaEntity();
      let idArcctda = new ArcctdaPKEntity();
