@@ -190,3 +190,10 @@ tr.example-element-row:not(.example-expanded-row):active {
   margin:auto;
   display:block;
 }
+
+.borde {
+  border-top-width: 10px;
+  border-right-width: 1em;
+  border-bottom-width: thick;
+  border-left-width: thin;
+}

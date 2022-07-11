@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-itemsnc',
@@ -6,9 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ItemsncComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  public atras(): void {
+    this.router.navigate(['pedido/notacredito/list']);
   }
 
 }

@@ -1,6 +1,5 @@
 import { DatePipe } from "@angular/common";
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MediaChange, MediaObserver } from "@angular/flex-layout";
+import { AfterViewInit,  Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatSort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
@@ -57,7 +56,7 @@ export class ListArfafeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cargarData();
   }
 
-  ngAfterViewInit(): void { 
+  ngAfterViewInit(): void {
   }
 
   ngOnDestroy(): void {

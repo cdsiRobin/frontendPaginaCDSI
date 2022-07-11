@@ -5,11 +5,12 @@ import { ItemsncComponent } from './itemsnc/itemsnc.component';
 import { SinitemncComponent } from './sinitemnc/sinitemnc.component';
 
 const routes: Routes = [
-  { path: 'notacredito', component: ListancComponent, children: [
+  { path: 'notacredito', component: ListancComponent, children:
+    [
       { path: '', redirectTo: 'list', pathMatch: 'full' },
       { path:'items', component: ItemsncComponent },
       { path:'sinitem', component: SinitemncComponent }
-      ]
+    ]
   }
 ];
 

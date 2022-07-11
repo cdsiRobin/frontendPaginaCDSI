@@ -7,7 +7,6 @@ import { ListancComponent } from './listanc/listanc.component';
 import { ItemsncComponent } from './itemsnc/itemsnc.component';
 import { SinitemncComponent } from './sinitemnc/sinitemnc.component';
 
-
 @NgModule({
   declarations: [ListancComponent, ItemsncComponent, SinitemncComponent],
   imports: [

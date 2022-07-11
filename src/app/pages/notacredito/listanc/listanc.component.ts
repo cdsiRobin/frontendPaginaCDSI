@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-listanc',
@@ -6,9 +7,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ListancComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  public newNotaCredito(nc: string): void{
+    if(nc === 'C'){
+      this.router.navigate(['pedido/notacredito/items']);
+    }else{
+      this.router.navigate(['pedido/notacredito/sinitem']);
+    }
   }
 
 }
