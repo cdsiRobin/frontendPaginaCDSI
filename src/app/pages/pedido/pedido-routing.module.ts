@@ -11,6 +11,9 @@ import { ArccmcComponent } from '../arccmc/arccmc.component';
 import { ArccvcComponent } from '../arccvc/arccvc.component';
 import { ListapedComponent } from './listaped/listaped.component';
 import { ArfamcComponent } from '../arfamc/arfamc.component';
+import { ListancComponent } from '../notacredito/listanc/listanc.component';
+import { ItemsncComponent } from '../notacredito/itemsnc/itemsnc.component';
+import { SinitemncComponent } from '../notacredito/sinitemnc/sinitemnc.component';
 
 const routes: Routes = [
   {
@@ -35,6 +38,14 @@ const routes: Routes = [
           { path: 'edicion/:orden', component: PedidoEdicionComponent },
           { path: 'caja', component: CajaComponent },
           { path: 'perfil', component: ArccvcComponent },
+          { path: 'notacredito' ,
+            children: [
+              { path: '', redirectTo: 'list', pathMatch: 'full' },
+              { path:'list', component: ListancComponent },
+              { path:'items', component: ItemsncComponent },
+              { path:'sinitem', component: SinitemncComponent }
+            ]
+          },
           { path: 'arfafe' ,
             children: [
               { path: '', redirectTo: 'list', pathMatch: 'full' },

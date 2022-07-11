@@ -51,6 +51,7 @@ import { ItemModule } from './items/item.module';
 import { ArccvcComponent } from './arccvc/arccvc.component';
 import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
 import { ArfamcComponent } from './arfamc/arfamc.component';
+import { NotacreditoComponent } from './notacredito/notacredito.component';
 
 @NgModule({
   declarations: [
@@ -91,7 +92,8 @@ import { ArfamcComponent } from './arfamc/arfamc.component';
     ArccmcComponent,
     ArccvcComponent,
     MarccmcComponent,
-    ArfamcComponent
+    ArfamcComponent,
+    NotacreditoComponent
   ],
   exports: [
     ProgressComponent,
