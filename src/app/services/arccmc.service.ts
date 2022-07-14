@@ -14,6 +14,7 @@ import { Arccpr } from '../models/arccpr';
 import { Arccdi } from '../models/arccdi';
 import { Arccmc } from '../models/Arccmc';
 import { Guardar } from '../interfaces/guardar';
+import { Arccmcdto } from '../models/arccmcdto';
 
 @Injectable({
   providedIn: 'root'
@@ -126,6 +127,22 @@ export class ArccmcService extends GenericoService{
   public listaClientesDescripLike( cia: string, nombre: string): Observable<Arccmc[]> {
     return this.http.get<ConsultaExitosas<Arccmc>>(this.url + `/cli/list/nombre?cia=${cia}&nombre=${nombre}`, this.options).pipe(
         map( (value: ConsultaExitosas<Arccmc>) => {
+          return value.resultado;
+        } )
+    );
+  }
+
+  public listaClienteDtoByCiaAndId( cia: string, codigo: string): Observable< Array<Arccmcdto> > {
+    return this.http.get<ConsultaExitosas<Arccmcdto>>(this.url + `/cli/dto/id?cia=${cia}&codigo=${codigo}`, this.options).pipe(
+        map( (value: ConsultaExitosas<Arccmcdto>) => {
+          return value.resultado;
+        } )
+    );
+  }
+
+  public listaClienteDtoByCiaAndNombre( cia: string, nombre: string): Observable< Array<Arccmcdto> > {
+    return this.http.get<ConsultaExitosas<Arccmcdto>>(this.url + `/cli/dto/nombre?cia=${cia}&nombre=${nombre}`, this.options).pipe(
+        map( (value: ConsultaExitosas<Arccmcdto>) => {
           return value.resultado;
         } )
     );

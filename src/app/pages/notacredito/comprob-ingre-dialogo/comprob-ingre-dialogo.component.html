@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>Lista Comprobantes de Ingreso</h2>
+<mat-dialog-content class="mat-typography">
+
+  <mat-form-field>
+    <mat-label>Buscar</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+  </mat-form-field>
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!-- Position Column -->
+    <ng-container matColumnDef="almacen">
+      <th mat-header-cell *matHeaderCellDef> Almacen </th>
+      <td mat-cell *matCellDef="let element"> {{element.almacen}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="tipoDoc">
+      <th mat-header-cell *matHeaderCellDef> transaccion </th>
+      <td mat-cell *matCellDef="let element"> {{element.tipoDoc}} </td>
+    </ng-container>
+
+    <!-- Weight Column -->
+    <ng-container matColumnDef="noDocu">
+      <th mat-header-cell *matHeaderCellDef> Numero </th>
+      <td mat-cell *matCellDef="let element"> {{element.noDocu}} </td>
+    </ng-container>
+
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="fecha">
+      <th mat-header-cell *matHeaderCellDef> Fecha </th>
+      <td mat-cell *matCellDef="let element"> {{element.fecha | date: 'd/M/yy'}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="noCliente">
+      <th mat-header-cell *matHeaderCellDef> Cliente </th>
+      <td mat-cell *matCellDef="let element"> {{element.noCliente}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tipoDocRem">
+      <th mat-header-cell *matHeaderCellDef> TipoGen </th>
+      <td mat-cell *matCellDef="let element"> {{element.tipoDocRem}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="serieDocRem">
+      <th mat-header-cell *matHeaderCellDef> SerieGen </th>
+      <td mat-cell *matCellDef="let element"> {{element.serieDocRem}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="corrDocRem">
+      <th mat-header-cell *matHeaderCellDef> NumeroGen </th>
+      <td mat-cell *matCellDef="let element"> {{element.corrDocRem}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="tipoDocRec2">
+      <th mat-header-cell *matHeaderCellDef> TipDoc </th>
+      <td mat-cell *matCellDef="let element"> {{element.tipoDocRec2}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="corrDocRec2">
+      <th mat-header-cell *matHeaderCellDef> DocRefe </th>
+      <td mat-cell *matCellDef="let element"> {{element.corrDocRec2}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="estado">
+      <th mat-header-cell *matHeaderCellDef> Estado </th>
+      <td mat-cell *matCellDef="let element"> {{element.estado}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr matTooltip="Doble Click para Seleccionar" (dblclick)="dobleClick(row)"
+         mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">No hay datos que coincidan con el filtro "{{input.value}}"</td>
+    </tr>
+  </table>
+
+</mat-dialog-content>

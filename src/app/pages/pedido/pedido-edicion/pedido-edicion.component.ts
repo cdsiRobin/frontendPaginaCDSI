@@ -244,8 +244,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.listaPrecio();
     this.listarFormaPago();
     this.groupEmpresa = new FormGroup({
-      codCli: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),
-        Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+      codCli: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
       racSoc: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(2)])
     });
     this.groupArticulo = new FormGroup({

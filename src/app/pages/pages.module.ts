@@ -52,6 +52,7 @@ import { ArccvcComponent } from './arccvc/arccvc.component';
 import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
 import { ArfamcComponent } from './arfamc/arfamc.component';
 import { NotacreditoComponent } from './notacredito/notacredito.component';
+import { NotacreditoModule } from './notacredito/notacredito.module';
 
 @NgModule({
   declarations: [
@@ -112,6 +113,7 @@ import { NotacreditoComponent } from './notacredito/notacredito.component';
     BrowserAnimationsModule,
     PedidoModule,
     ArfafeModule,
+    NotacreditoModule,
     ItemModule,
     ArcgtcModule,
     MaterialModule

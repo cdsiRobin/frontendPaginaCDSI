@@ -21,6 +21,7 @@
     </div>
     <div class="col-12">
        <div class="row">
+           <!--PRIMERA PARTE-->
            <div class="col-6">
               <div class="row">
                    <div class="col-12">
@@ -34,20 +35,42 @@
               </div>
               <div class="row">
                 <div class="col-12">
-                    <div class="row">
-                       <div class="col-3">
-                         <label for="codigo" class="form-label">Cliente</label>
-                         <input type="text" class="form-control form-control-sm" id="codigo" placeholder="RUC/DNI">
-                       </div>
-                       <div class="col-9">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control form-control-sm" id="nombre" placeholder="Razón Social/Nombre Ape.">
-                      </div>
-                    </div>
+                  <form [formGroup]="grupoArccmcdto"  matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                        <div class="row">
+                            <div class="col-3">
+                                <mat-form-field>
+                                  <label for="codigo" class="form-label">Cliente</label>
+                                  <input type="text" matInput
+                                    formControlName="id"
+                                    aria-label="State"
+                                    [matAutocomplete]="auto"
+                                    [matAutocompleteConnectedTo]="origin"
+                                    class="form-control form-control-sm" id="codigo">
+                                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getCliente($event)">
+                                    <mat-option *ngFor="let arccmcdto of arccmcdtos | async" [value]="arccmcdto">
+                                      <span>{{arccmcdto.noCliente}}</span> |
+                                      <small>{{arccmcdto.tipoDocumento}}</small> |
+                                      <small>{{arccmcdto.nombre}}</small>
+                                    </mat-option>
+                                  </mat-autocomplete>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-9">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" formControlName="nombre" class="form-control form-control-sm" id="nombre" placeholder="Razón Social/Nombre Ape.">
+                            </div>
+                        </div>
+                  </form>
                 </div>
+              </div>
+              <div class="row">
+                 <div class="col-12">
+                     <button mat-button class="btn btn-outline-danger" (click)="openComprobIngresoDialog()">Buscar C.I</button>
+                 </div>
+              </div>
            </div>
-           </div>
-           <div class="col-6 borde">
+           <!--SEGUNDA PARTE-->
+           <div class="col-6">
               <div class="row">
 
               </div>
