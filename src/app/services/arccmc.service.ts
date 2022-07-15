@@ -15,6 +15,7 @@ import { Arccdi } from '../models/arccdi';
 import { Arccmc } from '../models/Arccmc';
 import { Guardar } from '../interfaces/guardar';
 import { Arccmcdto } from '../models/arccmcdto';
+import { DirecLegal } from '../DTO/direc-legal';
 
 @Injectable({
   providedIn: 'root'
@@ -143,6 +144,14 @@ export class ArccmcService extends GenericoService{
   public listaClienteDtoByCiaAndNombre( cia: string, nombre: string): Observable< Array<Arccmcdto> > {
     return this.http.get<ConsultaExitosas<Arccmcdto>>(this.url + `/cli/dto/nombre?cia=${cia}&nombre=${nombre}`, this.options).pipe(
         map( (value: ConsultaExitosas<Arccmcdto>) => {
+          return value.resultado;
+        } )
+    );
+  }
+
+  public listaDirecionesLegal( cia: string, nocli: string): Observable< Array<DirecLegal> > {
+    return this.http.get<ConsultaExitosas<DirecLegal>>(this.url + `/cli/dto/direc?cia=${cia}&noCli=${nocli}`, this.options).pipe(
+        map( (value: ConsultaExitosas<DirecLegal>) => {
           return value.resultado;
         } )
     );

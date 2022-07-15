@@ -12,6 +12,8 @@ import { ComprabanteIngresodto } from '../../../DTO/comprabante-ingresodto';
 import { ArfacrService } from '../../../services/arfacr.service';
 import { ConceptoComponent } from '../../concepto/concepto.component';
 import { ConceptoDto } from '../../../DTO/concepto-dto';
+import { DirecLegal } from '../../../DTO/direc-legal';
+import { ArcctdaComponent } from '../../arcctda/arcctda.component';
 
 
 @Component({
@@ -20,11 +22,12 @@ import { ConceptoDto } from '../../../DTO/concepto-dto';
 })
 export class ItemsncComponent implements OnInit {
   cia: string;
-  grupoArccmcdto: FormGroup;
-  gNotaCredito: FormGroup;
-  arccmcdtos: Observable<Array<Arccmcdto>>;
+  grupoArccmcdto:    FormGroup;
+  gNotaCredito:      FormGroup;
+  arccmcdtos:        Observable<Array<Arccmcdto>>;
   comprobIngresoDto: ComprabanteIngresodto;
-  conceptoDto: ConceptoDto;
+  conceptoDto:       ConceptoDto;
+  direcLegal:        DirecLegal;
 
   constructor(private router: Router,
               public  dialog: MatDialog,
@@ -56,7 +59,21 @@ export class ItemsncComponent implements OnInit {
       descTipoDoc: new FormControl({value: '', disabled: true}),
       noDocu: new FormControl({value: '', disabled: true}),
       concepto: new FormControl({value: '', disabled: false}),
-      descConcepto: new FormControl({value: '', disabled: true})
+      descConcepto: new FormControl({value: '', disabled: true}),
+      sucursal: new FormControl({value: '', disabled: false}),
+      direccion: new FormControl({value: '', disabled: true}),
+      moneda: new FormControl({value: '', disabled: false}),
+      referencia: new FormControl({value: '', disabled: false}),
+      noFactu: new FormControl({value: '', disabled: false}),
+      tipNc: new FormControl({value: '', disabled: true}),
+      serieNc: new FormControl({value: '', disabled: false}),
+      correNc: new FormControl({value: '', disabled: true}),
+      fechaNc: new FormControl({value: '', disabled: false}),
+      sustento: new FormControl({value: '', disabled: false}),
+      tipoOpe: new FormControl({value: '', disabled: false}),
+      operacion: new FormControl({value: '', disabled: true}),
+      motivo: new FormControl({value: '', disabled: false}),
+      contingencia: new FormControl({value: '', disabled: true})
     });
 
   }
@@ -68,7 +85,6 @@ export class ItemsncComponent implements OnInit {
   }
 
   public openComprobIngresoDialog(): void {
-
     if(this.grupoArccmcdto.get('id').value !== '') {
         this.comprobIngresoDto = new ComprabanteIngresodto();
         this.comprobIngresoDto.noCliente = this.grupoArccmcdto.get('id').value;
@@ -85,9 +101,10 @@ export class ItemsncComponent implements OnInit {
            this.gNotaCredito.controls.almacen.setValue(this.comprobIngresoDto.almacen , {emitEvent: false});
            this.gNotaCredito.controls.tipoDoc.setValue(this.comprobIngresoDto.tipoDoc , {emitEvent: false});
            this.gNotaCredito.controls.noDocu.setValue(this.comprobIngresoDto.noDocu , {emitEvent: false});
+           this.gNotaCredito.controls.referencia.setValue(this.comprobIngresoDto.tipoDocRec2 , {emitEvent: false});
+           this.gNotaCredito.controls.noFactu.setValue(this.comprobIngresoDto.corrDocRec2 , {emitEvent: false});
         });
     }
-
   }
 
   public dcConcepto(){
@@ -100,6 +117,23 @@ export class ItemsncComponent implements OnInit {
        this.gNotaCredito.controls.concepto.setValue(this.conceptoDto.concepto , {emitEvent: false});
        this.gNotaCredito.controls.descConcepto.setValue(this.conceptoDto.descripcion , {emitEvent: false});
     });
+  }
+
+  public dobleClickDirecc(): void {
+    if(this.grupoArccmcdto.get('id').value !== '') {
+
+        const dialogRef = this.dialog.open(ArcctdaComponent,{
+          width: '100%',
+          data: this.grupoArccmcdto.get('id').value
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+           this.direcLegal = JSON.parse(localStorage.getItem('direccion'));
+           this.gNotaCredito.controls.sucursal.setValue(this.direcLegal.codTienda , {emitEvent: false});
+           this.gNotaCredito.controls.direccion.setValue(this.direcLegal.direccion , {emitEvent: false});
+           localStorage.clear();
+        });
+    }
   }
 
   public atras(): void {
