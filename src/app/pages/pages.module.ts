@@ -53,6 +53,7 @@ import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
 import { ArfamcComponent } from './arfamc/arfamc.component';
 import { NotacreditoComponent } from './notacredito/notacredito.component';
 import { NotacreditoModule } from './notacredito/notacredito.module';
+import { ConceptoComponent } from './concepto/concepto.component';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { NotacreditoModule } from './notacredito/notacredito.module';
     ArccvcComponent,
     MarccmcComponent,
     ArfamcComponent,
-    NotacreditoComponent
+    NotacreditoComponent,
+    ConceptoComponent
   ],
   exports: [
     ProgressComponent,

@@ -21,60 +21,108 @@
     </div>
     <div class="col-12">
        <div class="row">
-           <!--PRIMERA PARTE-->
-           <div class="col-6">
-              <div class="row">
-                   <div class="col-12">
-                       <div class="row">
-                          <div class="col-3">
-                            <label for="centro" class="form-label">Centro Emisor</label>
-                            <input type="text" class="form-control form-control-sm" id="centro" placeholder="Centro Emisor">
+          <form [formGroup]="gNotaCredito">
+              <!--PRIMERA PARTE-->
+              <div class="col-6">
+                  <div class="row">
+                      <div class="col-12">
+                          <div class="row">
+                              <div class="col-3">
+                                <label for="centro" class="form-label">Centro Emisor</label>
+                                <input type="text" formControlName="centro" class="form-control form-control-sm" id="centro" placeholder="Centro Emisor">
+                              </div>
                           </div>
-                       </div>
-                   </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <form [formGroup]="grupoArccmcdto"  matAutocompleteOrigin #origin="matAutocompleteOrigin">
-                        <div class="row">
-                            <div class="col-3">
-                                <mat-form-field>
-                                  <label for="codigo" class="form-label">Cliente</label>
-                                  <input type="text" matInput
-                                    formControlName="id"
-                                    aria-label="State"
-                                    [matAutocomplete]="auto"
-                                    [matAutocompleteConnectedTo]="origin"
-                                    class="form-control form-control-sm" id="codigo">
-                                  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getCliente($event)">
-                                    <mat-option *ngFor="let arccmcdto of arccmcdtos | async" [value]="arccmcdto">
-                                      <span>{{arccmcdto.noCliente}}</span> |
-                                      <small>{{arccmcdto.tipoDocumento}}</small> |
-                                      <small>{{arccmcdto.nombre}}</small>
-                                    </mat-option>
-                                  </mat-autocomplete>
-                                </mat-form-field>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <form [formGroup]="grupoArccmcdto"  matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                            <div class="row">
+                                <div class="col-3">
+                                    <mat-form-field>
+                                      <label for="codigo" class="form-label">Cliente</label>
+                                      <input type="text" matInput
+                                        formControlName="id"
+                                        aria-label="State"
+                                        [matAutocomplete]="auto"
+                                        [matAutocompleteConnectedTo]="origin"
+                                        class="form-control form-control-sm" id="codigo">
+                                      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getCliente($event)">
+                                        <mat-option *ngFor="let arccmcdto of arccmcdtos | async" [value]="arccmcdto">
+                                          <span>{{arccmcdto.noCliente}}</span> |
+                                          <small>{{arccmcdto.tipoDocumento}}</small> |
+                                          <small>{{arccmcdto.nombre}}</small>
+                                        </mat-option>
+                                      </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-9">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" formControlName="nombre" class="form-control form-control-sm" id="nombre" placeholder="Razón Social/Nombre Ape.">
+                                </div>
                             </div>
-                            <div class="col-9">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" formControlName="nombre" class="form-control form-control-sm" id="nombre" placeholder="Razón Social/Nombre Ape.">
-                            </div>
-                        </div>
-                  </form>
-                </div>
+                      </form>
+                    </div>
+                  </div>
+                  <div class="row">
+                   <!-- <div class="col-3">
+                        <button mat-button class="btn btn-outline-danger" (click)="openComprobIngresoDialog()">Buscar C.I</button>
+                    </div> -->
+                    <div class="col-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <input type="text" matTooltip="Doble Click" (dblclick)="openComprobIngresoDialog()" formControlName="tipoDocRem" class="form-control form-control-sm" id="tipo" placeholder="Tipo">
+                    </div>
+                    <div class="col-3">
+                        <label for="serie" class="form-label">Serie</label>
+                        <input type="text" formControlName="serieDocRem" class="form-control form-control-sm" id="serie" placeholder="Serie">
+                    </div>
+                    <div class="col-3">
+                        <label for="numero" class="form-label">Numero</label>
+                        <input type="text" formControlName="corrDocRem" class="form-control form-control-sm" id="numero" placeholder="Numero">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <label for="almacen" class="form-label">Almacen</label>
+                      <input type="text" formControlName="almacen" class="form-control form-control-sm" id="almacen" placeholder="Almacen">
+                    </div>
+                    <div class="col-9">
+                      <label for="descAlmacen" class="form-label">Nombre</label>
+                      <input type="text" formControlName="descAlmacen" class="form-control form-control-sm" id="descAlmacen" placeholder="Almacen">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <label for="tipoDoc" class="form-label">Transacción</label>
+                      <input type="text" formControlName="tipoDoc" class="form-control form-control-sm" id="tipoDoc" placeholder="Transacción">
+                    </div>
+                    <div class="col-7">
+                      <label for="descTipoDoc" class="form-label">Nombre</label>
+                      <input type="text" formControlName="descTipoDoc" class="form-control form-control-sm" id="descTipoDoc" placeholder="">
+                    </div>
+                    <div class="col-2">
+                      <label for="noDocu" class="form-label">Numero</label>
+                      <input type="text" formControlName="noDocu" class="form-control form-control-sm" id="noDocu" placeholder="">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <label for="concepto" class="form-label">Concepto</label>
+                      <input type="text" matTooltip="Doble Click" (dblclick)="dcConcepto()" formControlName="concepto" class="form-control form-control-sm" id="concepto" placeholder="Concepto">
+                    </div>
+                    <div class="col-9">
+                      <label for="descConcepto" class="form-label"> Nombre </label>
+                      <input type="text" formControlName="descConcepto" class="form-control form-control-sm" id="descConcepto" placeholder="">
+                    </div>
+                  </div>
               </div>
-              <div class="row">
-                 <div class="col-12">
-                     <button mat-button class="btn btn-outline-danger" (click)="openComprobIngresoDialog()">Buscar C.I</button>
-                 </div>
-              </div>
-           </div>
-           <!--SEGUNDA PARTE-->
-           <div class="col-6">
-              <div class="row">
+              <!--SEGUNDA PARTE-->
+              <div class="col-6">
+                  <div class="row">
 
+                  </div>
               </div>
-           </div>
+          </form>
        </div>
     </div>
   </div>
