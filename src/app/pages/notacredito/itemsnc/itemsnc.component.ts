@@ -9,12 +9,17 @@ import { Iarccmcdto } from '../../../interfaces/iarccmcdto';
 import { MatDialog } from '@angular/material/dialog';
 import { ComprobIngreDialogoComponent } from '../comprob-ingre-dialogo/comprob-ingre-dialogo.component';
 import { ComprabanteIngresodto } from '../../../DTO/comprabante-ingresodto';
-import { ArfacrService } from '../../../services/arfacr.service';
 import { ConceptoComponent } from '../../concepto/concepto.component';
 import { ConceptoDto } from '../../../DTO/concepto-dto';
 import { DirecLegal } from '../../../DTO/direc-legal';
 import { ArcctdaComponent } from '../../arcctda/arcctda.component';
-
+import { ArfaccComponent } from '../../arfacc/arfacc.component';
+import { IserieDocuInput } from '../../../interfaces/Iserie-docu-input';
+import { SeridocuInput } from '../../../models/seridocu-input';
+import { SerieDocumento } from '../../../DTO/serie-documento';
+import { SputilsService } from '../../../services/sputils.service';
+import { NotaCreditoci } from '../../../DTO/nota-creditoci';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-itemsnc',
@@ -22,21 +27,25 @@ import { ArcctdaComponent } from '../../arcctda/arcctda.component';
 })
 export class ItemsncComponent implements OnInit {
   cia: string;
+  centro: string;
   grupoArccmcdto:    FormGroup;
   gNotaCredito:      FormGroup;
   arccmcdtos:        Observable<Array<Arccmcdto>>;
   comprobIngresoDto: ComprabanteIngresodto;
   conceptoDto:       ConceptoDto;
   direcLegal:        DirecLegal;
+  seriedocuInput:    IserieDocuInput;
+  notaCreditoci:     NotaCreditoci;
 
   constructor(private router: Router,
               public  dialog: MatDialog,
-              private arfacrService: ArfacrService,
+              private sputilsService: SputilsService,
               private arccmcService: ArccmcService) { }
 
   ngOnInit(): void {
 
     this.cia = sessionStorage.getItem('cia');
+    this.centro = sessionStorage.getItem('centro');
     this.grupoArccmcdto = new FormGroup({
       id: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
       nombre: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(2)])
@@ -49,7 +58,7 @@ export class ItemsncComponent implements OnInit {
     });
 
     this.gNotaCredito = new FormGroup({
-      centro: new FormControl({value: '', disabled: true}),
+      centro: new FormControl({value: this.centro, disabled: true}),
       tipoDocRem:   new FormControl({value: '', disabled: false}),
       serieDocRem:  new FormControl({value: '', disabled: true}),
       corrDocRem: new FormControl({value: '', disabled: true}),
@@ -62,18 +71,18 @@ export class ItemsncComponent implements OnInit {
       descConcepto: new FormControl({value: '', disabled: true}),
       sucursal: new FormControl({value: '', disabled: false}),
       direccion: new FormControl({value: '', disabled: true}),
-      moneda: new FormControl({value: '', disabled: false}),
+      moneda: new FormControl({value: 'SOL', disabled: false}),
       referencia: new FormControl({value: '', disabled: false}),
       noFactu: new FormControl({value: '', disabled: false}),
-      tipNc: new FormControl({value: '', disabled: true}),
+      tipNc: new FormControl({value: 'NC', disabled: true}),
       serieNc: new FormControl({value: '', disabled: false}),
       correNc: new FormControl({value: '', disabled: true}),
       fechaNc: new FormControl({value: '', disabled: false}),
-      sustento: new FormControl({value: '', disabled: false}),
-      tipoOpe: new FormControl({value: '', disabled: false}),
-      operacion: new FormControl({value: '', disabled: true}),
-      motivo: new FormControl({value: '', disabled: false}),
-      contingencia: new FormControl({value: '', disabled: true})
+      sustento: new FormControl({value: 'DEVOLUCIÓN POR ÍTEM', disabled: false}),
+      tipoOpe: new FormControl({value: '0101', disabled: false}),
+      operacion: new FormControl({value: 'Venta interna/No Domiciliado', disabled: true}),
+      motivo: new FormControl({value: '0', disabled: false}),
+      contingencia: new FormControl({value: 'Facturación Electronica-Normal', disabled: true})
     });
 
   }
@@ -134,6 +143,109 @@ export class ItemsncComponent implements OnInit {
            localStorage.clear();
         });
     }
+  }
+
+  public dobleClickSerieDocumento(): void {
+        //var serieDocuInput: SerieDocuInput { "centro": localStorage.getItem('centro') };
+        this.seriedocuInput        = new SeridocuInput();
+        this.seriedocuInput.cia    = this.cia;
+        this.seriedocuInput.tipDoc = this.gNotaCredito.get('tipNc').value;
+        this.seriedocuInput.centro = this.centro;
+        this.seriedocuInput.activo = 'S';
+
+        const dialogRef = this.dialog.open(ArfaccComponent,{
+          width: '100%',
+          data: this.seriedocuInput
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+           const serieDocumento: SerieDocumento = JSON.parse(localStorage.getItem('seriedocu'));
+           this.gNotaCredito.controls.serieNc.setValue(serieDocumento.serie , {emitEvent: false});
+           this.gNotaCredito.controls.correNc.setValue(serieDocumento.consDesde , {emitEvent: false});
+           localStorage.clear();
+        });
+  }
+
+  public guardarNotaCreditoCi() {
+      Swal.fire({
+        title: 'Esá seguro de crear la Nota de Credito?',
+        showDenyButton: true,
+        confirmButtonText: 'Guardar',
+        denyButtonText: `Salir`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+            this.saveNotaCredito();
+        }
+      });
+  }
+
+  private saveNotaCredito(){
+    let respuesta: string;
+    this.notaCreditoci = new NotaCreditoci();
+    this.notaCreditoci.wnocia         = this.cia;
+    this.notaCreditoci.wbodega        = this.gNotaCredito.get('almacen').value;
+    this.notaCreditoci.wtipodoc       = this.gNotaCredito.get('tipoDoc').value;
+    this.notaCreditoci.wnodocu        = this.gNotaCredito.get('noDocu').value;
+    this.notaCreditoci.wcliente       = this.grupoArccmcdto.get('id').value;
+    this.notaCreditoci.wtiporefefactu = this.gNotaCredito.get('referencia').value;
+    this.notaCreditoci.wnorefefactu   = this.gNotaCredito.get('noFactu').value;
+    this.notaCreditoci.wcodtienda     = this.gNotaCredito.get('sucursal').value;
+    this.notaCreditoci.wmoneda        = this.gNotaCredito.get('moneda').value;
+    this.notaCreditoci.wmotivonc      = this.gNotaCredito.get('concepto').value;
+    this.notaCreditoci.wsustento      = this.gNotaCredito.get('sustento').value;
+    this.notaCreditoci.wcentro        = this.centro;
+    this.notaCreditoci.wserie         = this.gNotaCredito.get('serieNc').value;
+
+    this.sputilsService.crearNotaCreditoCi(this.notaCreditoci).subscribe( result => {
+        respuesta = result;
+    }, error => {
+        console.warn(error);
+        Swal.fire({
+          title: 'Error!',
+          text: 'No se puedo crear la nota de credito',
+          icon: 'error',
+          confirmButtonText: 'Okey'
+        })
+    }, () => {
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: respuesta,
+          showConfirmButton: false,
+          timer: 1500
+        });
+        this.limpiarFormulario();
+    } );
+  }
+
+  private limpiarFormulario(){
+    this.gNotaCredito = new FormGroup({
+      centro: new FormControl({value: this.centro, disabled: true}),
+      tipoDocRem:   new FormControl({value: '', disabled: false}),
+      serieDocRem:  new FormControl({value: '', disabled: true}),
+      corrDocRem: new FormControl({value: '', disabled: true}),
+      almacen: new FormControl({value: '', disabled: true}),
+      descAlmacen: new FormControl({value: '', disabled: true}),
+      tipoDoc: new FormControl({value: '', disabled: true}),
+      descTipoDoc: new FormControl({value: '', disabled: true}),
+      noDocu: new FormControl({value: '', disabled: true}),
+      concepto: new FormControl({value: '', disabled: false}),
+      descConcepto: new FormControl({value: '', disabled: true}),
+      sucursal: new FormControl({value: '', disabled: false}),
+      direccion: new FormControl({value: '', disabled: true}),
+      moneda: new FormControl({value: 'SOL', disabled: false}),
+      referencia: new FormControl({value: '', disabled: false}),
+      noFactu: new FormControl({value: '', disabled: false}),
+      tipNc: new FormControl({value: 'NC', disabled: true}),
+      serieNc: new FormControl({value: '', disabled: false}),
+      correNc: new FormControl({value: '', disabled: true}),
+      fechaNc: new FormControl({value: '', disabled: false}),
+      sustento: new FormControl({value: 'DEVOLUCIÓN POR ÍTEM', disabled: false}),
+      tipoOpe: new FormControl({value: '0101', disabled: false}),
+      operacion: new FormControl({value: 'Venta interna/No Domiciliado', disabled: true}),
+      motivo: new FormControl({value: '0', disabled: false}),
+      contingencia: new FormControl({value: 'Facturación Electronica-Normal', disabled: true})
+    });
   }
 
   public atras(): void {

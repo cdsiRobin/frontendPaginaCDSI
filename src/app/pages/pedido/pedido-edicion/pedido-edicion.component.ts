@@ -1190,7 +1190,8 @@ export class PedidoEdicionComponent implements OnInit {
       this.actualizarArfacf();
     }, error => {
       this.savePed = false;
-      Swal.fire('No se pudo guardo la información.'); }
+      Swal.fire('No se pudo guardo la información.');
+      }
     );
     if(this.savePed) {
       if (indBoleta === 'N' && indFactura === 'N') {

@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="col-12">
-      <form [formGroup]="gNotaCredito">
+      <form [formGroup]="gNotaCredito" #NotaCreditoCi="ngForm" (ngSubmit)="guardarNotaCreditoCi()">
         <div class="row">
               <!--PRIMERA PARTE-->
               <div class="col-6">
@@ -70,7 +70,7 @@
                     </div> -->
                     <div class="col-3">
                         <label for="tipo" class="form-label">Tipo</label>
-                        <input type="text" matTooltip="Doble Click" (dblclick)="openComprobIngresoDialog()" formControlName="tipoDocRem" class="form-control form-control-sm" id="tipo" placeholder="Tipo">
+                        <input type="text" formControlName="tipoDocRem" matTooltip="Doble Click" (dblclick)="openComprobIngresoDialog()" class="form-control form-control-sm" id="tipo" placeholder="Tipo">
                     </div>
                     <div class="col-3">
                         <label for="serie" class="form-label">Serie</label>
@@ -159,7 +159,7 @@
                               </div>
                               <div class="col-3">
                                 <label for="serieNc" class="form-label">Serie</label>
-                                <input type="text" formControlName="serieNc" class="form-control form-control-sm" id="serieNc" placeholder="Serie">
+                                <input type="text"  matTooltip="Doble Click" (dblclick)="dobleClickSerieDocumento()" formControlName="serieNc" class="form-control form-control-sm" id="serieNc" placeholder="Serie">
                               </div>
                               <div class="col-3">
                                 <label for="correNc" class="form-label">Correlativo</label>
@@ -212,6 +212,15 @@
                     </div>
                 </div>
               </div>
+        </div>
+        <br>
+        <div class="row">
+           <div class="col-12">
+              <button style="width: 100% ;" type="submit" mat-raised-button color="primary" [disabled]="NotaCreditoCi.invalid">
+                <mat-icon>done</mat-icon>
+                <span>Aceptar</span>
+              </button>
+           </div>
         </div>
       </form>
     </div>

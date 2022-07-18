@@ -25,7 +25,7 @@ export class ArcctdaComponent implements OnInit {
     this.listaDirecionesLegales();
   }
 
-  private listaDirecionesLegales(): void{
+  private listaDirecionesLegales(): void {
     this.arccmcService.listaDirecionesLegal(this.cia, this.data).subscribe(result => {
       this.direcLegals = result
     }, error => {
