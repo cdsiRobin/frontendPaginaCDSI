@@ -1,6 +1,6 @@
 <!-- html new factura -->
 
-<div class="container-lg container-xl mt-md-5 mb-md-5 border rounded p-md-5">
+<div class="container-lg container-xl mt-md-3 mb-md-2 border rounded p-md-3">
     <!-- <mat-label>fecha: </mat-label>
     <span> {{ detalle.fecha | date }} </span> -->
     <!-- <span> {{idArfoe.cia}} | {{idArfoe.noOrden}} </span> -->
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 m-sm-1 m-lg-3 position-relative">
+            <div class="col-md-4 m-sm-1 m-lg-3 position-relative modRight">
                 <div class="row">
                     <div class="col-sm-8">
                         <mat-form-field appearance="outline" class="w-100">
@@ -135,6 +135,21 @@
                         </mat-form-field>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkDetrac" name="detrac"
+                        >Detracción</mat-checkbox>
+                        <!-- (change)="validaDRP()">Detracción</mat-checkbox> -->
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkRetenc" name="retenc"
+                        >Retención</mat-checkbox>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkPercep" name="percep"
+                        >Percepción</mat-checkbox>
+                    </div>
+                </div>
                 <div *ngIf="btnFp" id="formCuotas" class="position-absolute top-0 start-0 pt-2">
                     <p class="text-center fw-bold">Cuotas</p>
                     <div *ngIf="!xCuota" class="row">
@@ -183,7 +198,49 @@
                 </div>
             </div>
         </div>
-        <br>
+        <div class="row div-detrac" *ngIf="chkDetrac">
+            <div class="col-sm-3">
+                <mat-form-field appearance="outline" class="w-100" floatLabel="always">
+                    <mat-label>Cod. Detracción</mat-label>
+                    <mat-select name="codDetrac" [(ngModel)]="codDetrac"
+                    (selectionChange)="onChangeDetrac(codDetrac)">
+                        <mat-option [value]="o.codigo" *ngFor="let o of listDetrac">
+                            {{ o.descrip }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <mat-form-field appearance="outline" floatLabel="always">
+                            <mat-label>Detracción %</mat-label>
+                            <input matInput type="number" class="text-end" [(ngModel)]="valDetrac"
+                            placeholder="100.00" name="porcDetrac" [readonly]="true">
+                            <div matSuffix style="position: relative; bottom: 4px; font-size: 12px;"> %</div>
+                            <!-- [(ngModel)]="correlativo"> -->
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-7">
+                        <mat-form-field appearance="outline" floatLabel="always">
+                            <mat-label>Detracción</mat-label>
+                            <div matPrefix style="position: relative; bottom: 4px; font-size: 12px;">{{ prefixMon }}</div>
+                            <input matInput type="number" class="text-end" placeholder="0.00" 
+                            name="valorDetrac" [readonly]="true" [(ngModel)]="monDetrac">
+                        </mat-form-field>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-label>Cuenta Detracción</mat-label>
+                    <input matInput type="number" class="text-end" [(ngModel)]="ctaDetrac" name="cuentaDetracc">
+                </mat-form-field>
+            </div>
+            <div class="col-sm-3">
+            </div>
+        </div>
+        <!-- <br> -->
         <div class="row">
             <table class="table">
                 <thead>
@@ -239,7 +296,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="row mt-5">
+        <div class="row mt-2">
             <div class="col-sm d-flex justify-content-center">
             </div>
             <div class="col-sm d-flex justify-content-center">

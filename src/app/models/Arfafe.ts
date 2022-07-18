@@ -55,6 +55,7 @@ export class Arfafe {
     gasto_FINAN: number;
     tea: number;
     gastos: number;
+    ind_DETRAC: string;
     notas_DEB: number;
     notas_CRE: number;
     impuesto_FINAN: number;

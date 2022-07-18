@@ -1,0 +1,66 @@
+::ng-deep .confirmData .mat-form-field-flex > .mat-form-field-infix {
+    padding: 0.7em 0px !important;
+    font-size: 12px;
+}
+.confirmData input::-webkit-outer-spin-button,
+.confirmData input::-webkit-inner-spin-button {
+  display: none;
+}
+
+input[type=number] {
+	-moz-appearance: textfield;
+}
+
+// .confirmData input::-moz-outer-spin-button,
+// .confirmData input::-moz-inner-spin-button {
+//   display: none;
+// }
+.rdCurrency{
+	position: relative;
+}
+
+.rdCurrency .row{
+	position: absolute;
+	top: 20%;
+	transform: translateY(-20%);
+}
+//[type="radio"]:not(:checked) + label:before
+
+.rdCurrency input[type=radio]:not(:checked) + label {
+	padding-left: 0px;
+}
+
+.rdCurrency input[type=radio]:checked + label>.mon{
+	background-color: #18f98d;
+	border:1px solid #18f98d;
+}
+
+.rdCurrency input[type=radio]:checked + label {
+	padding-left: 0px;
+}
+
+.rdCurrency input[type=radio] + label:before {
+	display: none;
+	padding-left: 0px;
+}
+
+.rdCurrency input[type=radio]:checked + label:after {
+	display: none;
+	position: absolute;
+	width: 0px;
+	height: 0px;
+}
+
+.mon{
+	width: 34px;
+	height: 34px;
+	background-color: grey;// #18f98d;
+	padding: 3px;
+	border: 2px solid lightgray;
+	border-radius: 50%;
+	box-shadow: inset 0 0 0 3px white;
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+	font-weight: bold;
+}

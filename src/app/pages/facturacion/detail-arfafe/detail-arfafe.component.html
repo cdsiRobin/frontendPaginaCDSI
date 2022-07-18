@@ -26,7 +26,7 @@
                     <div class="col-sm">
                         <mat-form-field appearance="outline" floatLabel="always" class="w-100">
                             <mat-label>Dirección</mat-label>
-                            <input disabled="true" matInput placeholder="Placeholder" name="direc"
+                            <input matInput placeholder="Placeholder" name="direc"
                             [(ngModel)]="detalle.direccion">
                         </mat-form-field>
                     </div>
@@ -77,7 +77,7 @@
                     <div class="col-sm-4">
                         <mat-form-field appearance="outline" class="w-100">
                             <mat-label>T.C.</mat-label>
-                            <input disabled="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="tipoCambio">
+                            <input disabled="true" name="TC" matInput placeholder="Cambio" [(ngModel)]="detalle.tipo_CAMBIO">
                         </mat-form-field>
                     </div>
                 </div>
@@ -168,33 +168,33 @@
                 </thead>
                 <tbody>
                     <tr *ngFor ="let data of detalle.arfaflList">
-                        <td class="text-right d-sm-none d-xl-table-cell">{{ data.arfaflPK.consecutivo }}</td>
+                        <td class="text-end d-sm-none d-xl-table-cell">{{ data.arfaflPK.consecutivo }}</td>
                         <td>{{ data.no_ARTI }}</td>
                         <td>{{ uniMed[data.arfaflPK.consecutivo] }}</td>
                         <td>{{ data.descripcion }}</td>
-                        <td class="text-right">{{ data.tipo_AFECTACION }}</td>
-                        <td class="text-right">{{ data.cantidad_FACT }}</td>
-                        <td class="text-right">{{ data.precio_UNIT }}</td>
-                        <td class="text-right">{{ data.p_DSCTO3 }}%</td>
-                        <td class="text-right">0</td>
-                        <td class="text-right">{{ data.imp_IGV }}</td>
-                        <td class="text-right">{{ data.total | number : '1.2-2' }}</td>
+                        <td class="text-end">{{ data.tipo_AFECTACION }}</td>
+                        <td class="text-end">{{ data.cantidad_FACT }}</td>
+                        <td class="text-end">{{ data.precio_UNIT }}</td>
+                        <td class="text-end">{{ data.p_DSCTO3 }}%</td>
+                        <td class="text-end">0</td>
+                        <td class="text-end">{{ data.imp_IGV }}</td>
+                        <td class="text-end">{{ data.total | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
                 
                 <tbody>
                     <tr>
-                        <td class="text-right d-sm-none d-xl-table-cell"></td>
+                        <td class="text-end d-sm-none d-xl-table-cell"></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"><b>Total:</b></td>
-                        <td class="text-right">{{ detalle.total | number : '1.2-2' }}</td>
+                        <td class="text-end"></td>
+                        <td class="text-end"></td>
+                        <td class="text-end"></td>
+                        <td class="text-end"></td>
+                        <td class="text-end"></td>
+                        <td class="text-end"><b>Total:</b></td>
+                        <td class="text-end">{{ detalle.total | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
             </table>

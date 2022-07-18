@@ -1,8 +1,5 @@
 <h1 mat-dialog-title>Operaciones de Pago</h1>
-<!-- <div mat-dialog-content>
-    <p>{{data.detalle.no_ORDEN}}</p>
-</div> -->
-<div class="col">
+<div class="col confirmData">
     <div class="row">
         <div class="col-sm-3">
             <mat-form-field appearance="outline" floatLabel="always">
@@ -21,7 +18,7 @@
                 <div class="col-sm-4">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Dol</mat-label>
-                        <input [readonly]="xMon" matInput placeholder="0.00" name="Dol" type="number"
+                        <input [readonly]="true" matInput placeholder="0.00" name="Dol" type="number"
                         [(ngModel)]="dol">
                     </mat-form-field>
                 </div>
@@ -35,7 +32,7 @@
                 <div class="col-sm-4">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Sol</mat-label>
-                        <input [readonly]="!xMon" matInput placeholder="0.00" name="Sol" type="number"
+                        <input [readonly]="true" matInput placeholder="0.00" name="Sol" type="number"
                         [(ngModel)]="sol">
                     </mat-form-field>
                 </div>
@@ -43,19 +40,105 @@
         </div>
         <div class="col-sm-4">
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Imp. Caja</mat-label>
                         <input matInput placeholder="0.00" name="impCaja" type="number"
-                        [(ngModel)]="impCaja">
+                        [(ngModel)]="impCaja" (keyup)="onChangeCajaValue()">
                     </mat-form-field>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4 rdCurrency">
+                    <!-- <div class="row">
+                        <div class="col-sm-6">
+                            <div id="pen">S/.</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div id="dol">$</div>
+                        </div>
+                    </div> -->
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <input type="radio" name="payment" id="PEN" [checked]="monSol"
+                            value="SOL" (change)="onItemChange($event.target.value)">
+                            <label for="PEN">
+                                <div class="mon">S/.</div>
+                                <!-- <i class="fa fa-credit-card" aria-hidden="true"></i>} -->
+                                <!-- <span>Card</span> -->
+                            </label>
+                        </div>
+                        <div class="col-sm-6">
+                            <input type="radio" name="payment" id="USD" [checked]="monDol"
+                            value="DOL" (change)="onItemChange($event.target.value)">
+                            <label for="USD">
+                                <div class="mon">$</div>
+                                <!-- <i class="fa fa-money" aria-hidden="true"></i> -->
+                                <!-- <span>Cash</span> -->
+                            </label>      
+                        </div>
+                    </div>
+                        <!-- Separacion 2 formas -->
+                        <!-- <mat-radio-group class="row align-middle" aria-label="Select an option">
+                            <div class="col-sm-4">
+                                <mat-radio-button value="sol">
+                                    <mat-label>
+                                        <div id="pen">S/.</div>
+                                    </mat-label>
+                                </mat-radio-button>
+                            </div>
+                            <div class="col-sm-4">
+                                <mat-radio-button value="dol">
+                                    <mat-label>
+                                        <div id="dol">$</div>
+                                    </mat-label>
+                                </mat-radio-button>
+                            </div>
+                        </mat-radio-group> -->
+                </div>
+                <div class="col-sm-4">
                     <mat-form-field appearance="outline" floatLabel="always">
                         <mat-label>Vuelto</mat-label>
                         <input matInput placeholder="0.00" name="impCaja" type="number"
-                        [(ngModel)]="vuelto">
+                        [(ngModel)]="vuelto" [readonly]="true">
                     </mat-form-field>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkTarjeta"  (change)="onCheckTarjeta()"
+            name="tarjeta">Pago con tarjeta</mat-checkbox>
+        </div>
+        <div class="col-sm-9">
+            <div class="row">
+                <div class="col-sm-4">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                        <mat-label>Clase tarjeta</mat-label>
+                            <mat-select name="claseTarj" [disabled]="!chkTarjeta"
+                            [(ngModel)]="cTarj">
+                            <mat-option [value]="c.artstarPk.clase" *ngFor="let c of artstar">
+                                {{ c.descripcion }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-label>Documento</mat-label>
+                    <input [readonly]="!chkTarjeta" matInput placeholder="" name="numDocu" type="text"
+                    [(ngModel)]="numDoc">
+                </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                    <mat-form-field appearance="outline" floatLabel="always">
+                    <mat-label>Entidad pago</mat-label>
+                        <mat-select name="entPago" [disabled]="!chkTarjeta"
+                        [(ngModel)]="ePago">
+                        <mat-option [value]="er.banco" *ngFor="let er of arcktb">
+                            {{ er.descripcion }}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
                 </div>
             </div>
         </div>
@@ -64,7 +147,7 @@
 
 <div class="row">
     <div class="col">{{data.mensaje}}</div>
-    <div class="col" mat-dialog-actions>
+    <div class="col" style="padding: 0px;" mat-dialog-actions>
         <button mat-button (click)="close()">Cancelar</button>
         <button mat-button (click)="confirm()" cdkFocusInitial>Crear</button>
     </div>
