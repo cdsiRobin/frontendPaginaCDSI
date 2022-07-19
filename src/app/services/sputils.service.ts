@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { GenericoService } from './generico/generico.service';
 import { HttpClient } from '@angular/common/http';
 import { NotaCreditoci } from '../DTO/nota-creditoci';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { StoredProcedure } from '../interfaces/stored-procedure';
 import { map } from 'rxjs/operators';
 
@@ -11,6 +11,8 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SputilsService extends GenericoService {
+
+  private mensajeCambio = new Subject<string>();
 
   constructor(
     private http: HttpClient
