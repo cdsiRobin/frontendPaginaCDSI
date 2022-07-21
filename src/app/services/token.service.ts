@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
 import { GenericoService } from './generico/generico.service';
 import { HttpClient } from '@angular/common/http';
 import { Consulta } from '../interfaces/consulta';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 
