@@ -10,6 +10,8 @@ import {AppRoutingModule} from '../../app-routing.module';
 import {VendedorComponent} from '../vendedor/vendedor.component';
 import { DialogSerieComponent } from './dialog-serie/dialog-serie.component';
 import { ListapedComponent } from './listaped/listaped.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { InterceptorService } from '../../interceptor/interceptor.service';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,12 @@ import { ListapedComponent } from './listaped/listaped.component';
     ReactiveFormsModule,
     MaterialModule,
     AppRoutingModule
+  ], providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: InterceptorService,
+      multi: true
+    }
   ]
 })
 export class PedidoModule { }

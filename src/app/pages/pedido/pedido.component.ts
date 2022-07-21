@@ -6,6 +6,7 @@ import { UsuacService } from '../../services/usuac.service';
 import { Usuacpk } from '../../models/usuacpk';
 import { Usuac } from '../../models/usuac';
 import { DatePipe } from '@angular/common';
+import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-pedido',
