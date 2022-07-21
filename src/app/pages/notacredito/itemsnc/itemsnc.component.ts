@@ -20,12 +20,14 @@ import { SerieDocumento } from '../../../DTO/serie-documento';
 import { SputilsService } from '../../../services/sputils.service';
 import { NotaCreditoci } from '../../../DTO/nota-creditoci';
 import Swal from 'sweetalert2';
+import { OnExit } from '../../../guards/exit.guard';
+import { RtlScrollAxisType } from '@angular/cdk/platform';
 
 @Component({
   selector: 'app-itemsnc',
   templateUrl: './itemsnc.component.html'
 })
-export class ItemsncComponent implements OnInit {
+export class ItemsncComponent implements OnInit, OnExit {
   cia: string;
   centro: string;
   grupoArccmcdto:    FormGroup;
@@ -85,6 +87,14 @@ export class ItemsncComponent implements OnInit {
       contingencia: new FormControl({value: 'Facturación Electronica-Normal', disabled: true})
     });
 
+  }
+
+  onExist() {
+     if( this.grupoArccmcdto.dirty || this.gNotaCredito.dirty){
+         const rta = confirm('Esta seguro de salir?');
+         return rta;
+     }
+     return true;
   }
 
   public getCliente($event: MatAutocompleteSelectedEvent): void {

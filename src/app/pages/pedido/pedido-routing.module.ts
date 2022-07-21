@@ -14,6 +14,7 @@ import { ArfamcComponent } from '../arfamc/arfamc.component';
 import { ListancComponent } from '../notacredito/listanc/listanc.component';
 import { ItemsncComponent } from '../notacredito/itemsnc/itemsnc.component';
 import { SinitemncComponent } from '../notacredito/sinitemnc/sinitemnc.component';
+import { ExitGuard } from '../../guards/exit.guard';
 
 const routes: Routes = [
   {
@@ -42,7 +43,9 @@ const routes: Routes = [
             children: [
               { path: '', redirectTo: 'list', pathMatch: 'full' },
               { path:'list', component: ListancComponent },
-              { path:'items', component: ItemsncComponent },
+              { path:'items',
+                canDeactivate: [ExitGuard],
+                component: ItemsncComponent },
               { path:'sinitem', component: SinitemncComponent }
             ]
           },
