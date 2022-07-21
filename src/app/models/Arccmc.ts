@@ -17,7 +17,7 @@ export class Arccmc {
   documento: string;
   email: string;
   clase: string;
-  codPais: string;
+  //codPais: string;
   codVenCob: string;
   tipoFpago: string;
   codFpago: string;

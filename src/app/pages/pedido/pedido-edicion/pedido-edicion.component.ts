@@ -283,7 +283,8 @@ export class PedidoEdicionComponent implements OnInit, OnExit {
   }
 
   onExist() {
-    if( this.form.dirty || this.groupEmpresa.dirty || this.groupArticulo.dirty){
+
+    if( this.form.dirty && this.groupEmpresa.dirty && this.groupArticulo.dirty){
         const rta = confirm('Esta seguro de salir?');
         return rta;
     }

@@ -412,7 +412,7 @@ export class MarccmcComponent implements OnInit {
      arccmc.documento = this.fArccmc.get('documento').value;
      arccmc.email = this.fArccmc.get('email').value;
      arccmc.clase = '020';
-     arccmc.codPais = '001';
+     //arccmc.codPais = '001';
      arccmc.codVenCob = '001';
      arccmc.tipoFpago = '20';
      arccmc.codFpago = '01';
