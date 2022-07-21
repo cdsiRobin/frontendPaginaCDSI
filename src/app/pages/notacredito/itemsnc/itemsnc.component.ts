@@ -93,8 +93,9 @@ export class ItemsncComponent implements OnInit, OnExit {
      if( this.grupoArccmcdto.dirty || this.gNotaCredito.dirty){
          const rta = confirm('Esta seguro de salir?');
          return rta;
+     }else {
+         return true;
      }
-     return true;
   }
 
   public getCliente($event: MatAutocompleteSelectedEvent): void {

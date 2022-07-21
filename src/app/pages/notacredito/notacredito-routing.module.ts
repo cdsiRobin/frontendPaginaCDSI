@@ -10,7 +10,7 @@ const routes: Routes = [
     [
       { path: '', redirectTo: 'list', pathMatch: 'full' },
       { path:'items',
-        canDeactivate: [ExitGuard],
+        //canDeactivate: [ExitGuard],
         component: ItemsncComponent },
       { path:'sinitem', component: SinitemncComponent }
     ]

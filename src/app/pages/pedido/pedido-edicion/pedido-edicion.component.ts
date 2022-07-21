@@ -69,13 +69,14 @@ import { Arcaaccaj } from '../../../models/Arcaaccaj';
 import { ArcaaccajService } from '../../../services/arcaaccaj.service';
 import { Artsccb } from '../../../models/artsccb';
 import { CajaEdicionComponent } from '../caja/caja-edicion/caja-edicion.component';
+import { OnExit } from '../../../guards/exit.guard';
 
 @Component({
   selector: 'app-pedido-edicion',
   templateUrl: './pedido-edicion.component.html',
   styleUrls: ['./pedido-edicion.component.scss']
 })
-export class PedidoEdicionComponent implements OnInit {
+export class PedidoEdicionComponent implements OnInit, OnExit {
   ordenCompra: string = '';
   edtDescripDet: boolean = true;
   d: Detpedido;
@@ -280,6 +281,14 @@ export class PedidoEdicionComponent implements OnInit {
     // TRAER EL PEDIDOD
     this.traerPedido();
   }
+
+  onExist() {
+    if( this.form.dirty || this.groupEmpresa.dirty || this.groupArticulo.dirty){
+        const rta = confirm('Esta seguro de salir?');
+        return rta;
+    }
+    return true;
+ }
   // VERIFICAR SI EL VENDEDOR TIENE CAJA ABIERTA
   private verificarCajaAbiertaVendedor(): void {
     //obtener la fecha actual

@@ -21,7 +21,9 @@ const routes: Routes = [
     path: 'pedido', component: PedidoComponent,
     children: [
           // { path: '', component: PedidoComponent },
-          { path: 'nuevo', component: PedidoEdicionComponent },
+          { path: 'nuevo',
+            canDeactivate: [ExitGuard],
+            component: PedidoEdicionComponent },
           { path: 'lista', component: ListapedComponent },
           { path: 'empresa', component: ArfamcComponent },
           { path: 'arcgtc' ,
@@ -53,7 +55,8 @@ const routes: Routes = [
             children: [
               { path: '', redirectTo: 'list', pathMatch: 'full' },
               { path:'list', component: ListArfafeComponent },
-              { path:'new', component: NewArfafeComponent },
+              { path:'new',
+                component: NewArfafeComponent },
               { path:'detail', component: DetailArfafeComponent }
             ]
           }
