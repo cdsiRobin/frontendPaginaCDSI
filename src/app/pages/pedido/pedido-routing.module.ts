@@ -22,11 +22,11 @@ import { AuthGuard } from '../../guards/auth.guard';
 const routes: Routes = [
   {
     path: 'pedido', component: PedidoComponent,
-    canActivate: [AuthGuard],
+     canActivate: [AuthGuard],
     children: [
           // { path: '', component: PedidoComponent },
           { path: 'nuevo',
-            canDeactivate: [ExitGuard],
+             canDeactivate: [ExitGuard],
             component: PedidoEdicionComponent },
           { path: 'lista', component: ListapedComponent },
           { path: 'empresa', component: ArfamcComponent },
@@ -50,17 +50,17 @@ const routes: Routes = [
               { path: '', redirectTo: 'list', pathMatch: 'full' },
               { path:'list', component: ListancComponent },
               { path:'items',
-                canDeactivate: [ExitGuard],
+                 canDeactivate: [ExitGuard],
                 component: ItemsncComponent },
               { path:'sinitem', component: SinitemncComponent }
             ]
           },
           { path: 'arfafe' ,
+          canDeactivate: [ExitGuard],
             children: [
               { path: '', redirectTo: 'list', pathMatch: 'full' },
               { path:'list', component: ListArfafeComponent },
-              { path:'new',
-                component: NewArfafeComponent },
+              { path:'new', component: NewArfafeComponent },
               { path:'detail', component: DetailArfafeComponent }
             ]
           }

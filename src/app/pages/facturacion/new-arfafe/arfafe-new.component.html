@@ -137,16 +137,16 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-4">
-                        <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkDetrac" name="detrac"
+                        <mat-checkbox class="ChkBx-Factu" name="detrac" [(ngModel)]="chkDetrac"
                         >Detracción</mat-checkbox>
                         <!-- (change)="validaDRP()">Detracción</mat-checkbox> -->
                     </div>
                     <div class="col-sm-4">
-                        <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkRetenc" name="retenc"
+                        <mat-checkbox class="ChkBx-Factu" name="retenc" [(ngModel)]="chkRetenc"
                         >Retención</mat-checkbox>
                     </div>
                     <div class="col-sm-4">
-                        <mat-checkbox class="ChkBx-Factu" [(ngModel)]="chkPercep" name="percep"
+                        <mat-checkbox class="ChkBx-Factu" name="percep" [(ngModel)]="chkPercep"
                         >Percepción</mat-checkbox>
                     </div>
                 </div>
@@ -274,7 +274,7 @@
                         <td class="text-end">{{ data.p_DSCTO3 }}%</td>
                         <td class="text-end d-sm-none d-lg-table-cell">0</td>
                         <td class="text-end d-sm-none d-lg-table-cell">{{ data.imp_IGV }}</td>
-                        <td class="text-end">{{ data.total | number : '1.2-2' }}</td>
+                        <td class="text-end">{{ data.total_LIN | number : '1.2-2' }}</td>
                     </tr>
                 </tbody>
                 <!-- <hr class="mb-3"> -->

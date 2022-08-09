@@ -140,6 +140,7 @@ export class NewArfafeComponent implements OnInit {
     this.detalle.arfafePK = new ArfafePK();
     this.centroEmisor();
     this.traerData();
+    
     this.tabSunatService.listar('54').subscribe( l => {
         this.listDetrac = l;
         // console.log(l);
@@ -341,6 +342,7 @@ export class NewArfafeComponent implements OnInit {
         this.traeCliente();
         this.detalle.no_VENDEDOR = arfoe.noVendedor;
         this.detalle.moneda = arfoe.moneda;
+        if (this.detalle.moneda === '') this.detalle.moneda = 'SOL';
         this.detalle.igv = arfoe.igv;
         this.detalle.tipo_PRECIO = arfoe.tipoPrecio;
         this.detalle.cod_CLAS_PED = arfoe.codClasPed;
@@ -419,11 +421,15 @@ export class NewArfafeComponent implements OnInit {
             
             arfafl.precio_UNIT = parseFloat(this.trunc(list.precio-(list.precio*(list.dscto/100)),5));
 
-            arfafl.total = parseFloat(this.trunc(list.totalLin,2));
             arfafl.precio_UNIT_ORIG = parseFloat(this.trunc(list.precio,5));
+            arfafl.total = arfafl.precio_UNIT;
             arfafl.tipo_AFECTACION = list.tipoAfectacion;
             arfafl.tipo_ARTI = list.tipoArti;
             arfafl.total_LIN = list.totalLin;
+            arfafl.oper_GRAVADAS = arfafl.precio_UNIT;
+            arfafl.oper_EXONERADAS = 0;
+            arfafl.oper_GRATUITAS = 0;
+            arfafl.oper_INAFECTAS = 0;
             this.detalle.oper_GRAVADAS += parseFloat(this.trunc(arfafl.precio_UNIT*arfafl.cantidad_FACT,2));
             this.detalle.sub_TOTAL += parseFloat(this.trunc((arfafl.cantidad_FACT*arfafl.precio_UNIT),5));
             this.totalFactu += list.totalLin;
