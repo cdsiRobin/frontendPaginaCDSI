@@ -197,7 +197,7 @@ export class PdfArfafe {
         }
     
         const documentDefinition = {
-        pageMargins: [40, 20, 40, 600],
+        pageMargins: [40, 20, 40, 400],
         footer: {
             columns: [
                 [
