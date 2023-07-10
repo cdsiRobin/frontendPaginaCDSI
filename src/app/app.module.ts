@@ -16,8 +16,6 @@ import { AppComponent } from './app.component';
 import { NopagefoundComponent } from './nopagefound/nopagefound.component';
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
-
-
 @NgModule({
   declarations: [
     AppComponent,

@@ -1,0 +1,228 @@
+<div class="container-md container-lg container-xl container-xxl w-100 pt-2 h-100">
+  <div class="row">
+    <div class="col-12">
+      <div class="row">
+          <div class="col-12">
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <button type="button" class="btn btn-outline-danger" (click)="atras()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5zM10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5z"></path>
+                </svg>
+                 Atras
+              </button>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="row">
+          <h2 class="text-center" >Genera Nota de Credito por Devolución de Articulo</h2>
+      </div>
+    </div>
+    <div class="col-12">
+      <form [formGroup]="gNotaCredito" #NotaCreditoCi="ngForm" (ngSubmit)="guardarNotaCreditoCi()">
+        <div class="row">
+              <!--PRIMERA PARTE-->
+              <div class="col-6">
+                  <div class="row">
+                      <div class="col-12">
+                          <div class="row">
+                              <div class="col-3">
+                                <label for="centro" class="form-label">Centro Emisor</label>
+                                <input type="text" formControlName="centro" class="form-control form-control-sm" id="centro" placeholder="Centro Emisor">
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <form [formGroup]="grupoArccmcdto"  matAutocompleteOrigin #origin="matAutocompleteOrigin">
+                            <div class="row">
+                                <div class="col-3">
+                                    <mat-form-field>
+                                      <label for="codigo" class="form-label">Cliente</label>
+                                      <input type="text" matInput
+                                        formControlName="id"
+                                        aria-label="State"
+                                        [matAutocomplete]="auto"
+                                        [matAutocompleteConnectedTo]="origin"
+                                        class="form-control form-control-sm" id="codigo">
+                                      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="getCliente($event)">
+                                        <mat-option *ngFor="let arccmcdto of arccmcdtos | async" [value]="arccmcdto">
+                                          <span>{{arccmcdto.noCliente}}</span> |
+                                          <small>{{arccmcdto.tipoDocumento}}</small> |
+                                          <small>{{arccmcdto.nombre}}</small>
+                                        </mat-option>
+                                      </mat-autocomplete>
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-9">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" formControlName="nombre" class="form-control form-control-sm" id="nombre" placeholder="Razón Social/Nombre Ape.">
+                                </div>
+                            </div>
+                      </form>
+                    </div>
+                  </div>
+                  <div class="row">
+                   <!-- <div class="col-3">
+                        <button mat-button class="btn btn-outline-danger" (click)="openComprobIngresoDialog()">Buscar C.I</button>
+                    </div> -->
+                    <div class="col-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <input type="text" formControlName="tipoDocRem" matTooltip="Doble Click" (dblclick)="openComprobIngresoDialog()" class="form-control form-control-sm" id="tipo" placeholder="Tipo">
+                    </div>
+                    <div class="col-3">
+                        <label for="serie" class="form-label">Serie</label>
+                        <input type="text" formControlName="serieDocRem" class="form-control form-control-sm" id="serie" placeholder="Serie">
+                    </div>
+                    <div class="col-3">
+                        <label for="numero" class="form-label">Numero</label>
+                        <input type="text" formControlName="corrDocRem" class="form-control form-control-sm" id="numero" placeholder="Numero">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <label for="almacen" class="form-label">Almacen</label>
+                      <input type="text" formControlName="almacen" class="form-control form-control-sm" id="almacen" placeholder="Almacen">
+                    </div>
+                    <div class="col-9">
+                      <label for="descAlmacen" class="form-label">Nombre</label>
+                      <input type="text" formControlName="descAlmacen" class="form-control form-control-sm" id="descAlmacen" placeholder="Almacen">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <label for="tipoDoc" class="form-label">Transacción</label>
+                      <input type="text" formControlName="tipoDoc" class="form-control form-control-sm" id="tipoDoc" placeholder="Transacción">
+                    </div>
+                    <div class="col-7">
+                      <label for="descTipoDoc" class="form-label">Nombre</label>
+                      <input type="text" formControlName="descTipoDoc" class="form-control form-control-sm" id="descTipoDoc" placeholder="">
+                    </div>
+                    <div class="col-2">
+                      <label for="noDocu" class="form-label">Numero</label>
+                      <input type="text" formControlName="noDocu" class="form-control form-control-sm" id="noDocu" placeholder="">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-3">
+                      <label for="concepto" class="form-label">Concepto</label>
+                      <input type="text" matTooltip="Doble Click" (dblclick)="dcConcepto()" formControlName="concepto" class="form-control form-control-sm" id="concepto" placeholder="Concepto">
+                    </div>
+                    <div class="col-9">
+                      <label for="descConcepto" class="form-label"> Nombre </label>
+                      <input type="text" formControlName="descConcepto" class="form-control form-control-sm" id="descConcepto" placeholder="">
+                    </div>
+                  </div>
+              </div>
+              <!--SEGUNDA PARTE-->
+              <div class="col-6">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-3">
+                          <label for="sucursal" class="form-label">Sucursal</label>
+                          <input type="text" matTooltip="Doble Click" (dblclick)="dobleClickDirecc()" formControlName="sucursal" class="form-control form-control-sm" id="sucursal" placeholder="Sucursal">
+                        </div>
+                        <div class="col-9">
+                          <label for="direccion" class="form-label">Dirección</label>
+                          <input type="text" formControlName="direccion" class="form-control form-control-sm" id="direccion" placeholder="Dirección">
+                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="row">
+                            <div class="col-4">
+                              <label for="moneda" class="form-label">Moneda</label>
+                              <select formControlName="moneda" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                <option selected value="SOL">SOLES(S/)</option>
+                                <option value="DOL">DOLARES($/)</option>
+                              </select>
+                            </div>
+                            <div class="col-4">
+                              <label for="referencia" class="form-label">Referencia</label>
+                              <input type="text" formControlName="referencia" class="form-control form-control-sm" id="referencia" placeholder="Referencia">
+                            </div>
+                            <div class="col-4">
+                              <label for="noFactu" class="form-label">Documento(F/B)</label>
+                              <input type="text" formControlName="noFactu" class="form-control form-control-sm" id="noFactu" placeholder="Documento">
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                          <div class="row">
+                              <div class="col-3">
+                                <label for="tipNc" class="form-label">Tipo</label>
+                                <input type="text" formControlName="tipNc" class="form-control form-control-sm" id="tipNc" placeholder="tipo">
+                              </div>
+                              <div class="col-3">
+                                <label for="serieNc" class="form-label">Serie</label>
+                                <input type="text"  matTooltip="Doble Click" (dblclick)="dobleClickSerieDocumento()" formControlName="serieNc" class="form-control form-control-sm" id="serieNc" placeholder="Serie">
+                              </div>
+                              <div class="col-3">
+                                <label for="correNc" class="form-label">Correlativo</label>
+                                <input type="text" formControlName="correNc" class="form-control form-control-sm" id="correNc" placeholder="Correlativo">
+                              </div>
+                              <div class="col-3">
+                                <label for="fechaNc" class="form-label">Fecha</label>
+                                <input type="text" formControlName="fechaNc" class="form-control form-control-sm" id="fechaNc" placeholder="Fecha">
+                              </div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                          <div class="row">
+                          <div class="col-12">
+                            <label for="sustento" class="form-label">Sustento</label>
+                            <input type="text" formControlName="sustento" class="form-control form-control-sm" id="sustento" placeholder="Sustento">
+                          </div>
+                          </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-12">
+                        <div class="row">
+                        <div class="col-3">
+                          <label for="tipoOpe" class="form-label">Tipo</label>
+                          <input type="text" formControlName="tipoOpe" class="form-control form-control-sm" id="tipoOpe" placeholder="Tipo">
+                        </div>
+                        <div class="col-9">
+                          <label for="operacion" class="form-label">Operación</label>
+                          <input type="text" formControlName="operacion" class="form-control form-control-sm" id="operacion" placeholder="Operación">
+                        </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12">
+                          <div class="row">
+                           <div class="col-3">
+                             <label for="motivo" class="form-label">Motivo</label>
+                             <input type="text" formControlName="motivo" class="form-control form-control-sm" id="motivo" placeholder="Motivo">
+                           </div>
+                           <div class="col-9">
+                            <label for="contingencia" class="form-label">Contingencia</label>
+                            <input type="text" formControlName="contingencia" class="form-control form-control-sm" id="contingencia" placeholder="Contingencia">
+                          </div>
+                          </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+        </div>
+        <br>
+        <div class="row">
+           <div class="col-12">
+              <button style="width: 100% ;" type="submit" mat-raised-button color="primary" [disabled]="NotaCreditoCi.invalid">
+                <mat-icon>done</mat-icon>
+                <span>Aceptar</span>
+              </button>
+           </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

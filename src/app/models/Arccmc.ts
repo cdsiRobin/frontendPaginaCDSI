@@ -16,5 +16,10 @@ export class Arccmc {
   pais: string;
   documento: string;
   email: string;
+  clase: string;
+  //codPais: string;
+  codVenCob: string;
+  tipoFpago: string;
+  codFpago: string;
   arcctdaEntity: ArcctdaEntity[];
 }

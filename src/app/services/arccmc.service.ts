@@ -14,6 +14,8 @@ import { Arccpr } from '../models/arccpr';
 import { Arccdi } from '../models/arccdi';
 import { Arccmc } from '../models/Arccmc';
 import { Guardar } from '../interfaces/guardar';
+import { Arccmcdto } from '../models/arccmcdto';
+import { DirecLegal } from '../DTO/direc-legal';
 
 @Injectable({
   providedIn: 'root'
@@ -79,7 +81,17 @@ export class ArccmcService extends GenericoService{
       return this.http.post<Guardar<Arccmc>>(this.url + `/cli/save`, body, this.options).pipe(
         map( (response: Guardar<Arccmc>) => {
           return response.detalle;
-        } )
+        } ),
+        catchError(err => {
+        if (err.status === 400 || err.status === 500) {
+          console.error(err.erro.message);
+          return throwError(err);
+        }
+        if (err.error.mensaje) {
+          console.error(err.error.message);
+        }
+        return  throwError(err);
+      })
       );
   }
 
@@ -115,6 +127,30 @@ export class ArccmcService extends GenericoService{
   public listaClientesDescripLike( cia: string, nombre: string): Observable<Arccmc[]> {
     return this.http.get<ConsultaExitosas<Arccmc>>(this.url + `/cli/list/nombre?cia=${cia}&nombre=${nombre}`, this.options).pipe(
         map( (value: ConsultaExitosas<Arccmc>) => {
+          return value.resultado;
+        } )
+    );
+  }
+
+  public listaClienteDtoByCiaAndId( cia: string, codigo: string): Observable< Array<Arccmcdto> > {
+    return this.http.get<ConsultaExitosas<Arccmcdto>>(this.url + `/cli/dto/id?cia=${cia}&codigo=${codigo}`, this.options).pipe(
+        map( (value: ConsultaExitosas<Arccmcdto>) => {
+          return value.resultado;
+        } )
+    );
+  }
+
+  public listaClienteDtoByCiaAndNombre( cia: string, nombre: string): Observable< Array<Arccmcdto> > {
+    return this.http.get<ConsultaExitosas<Arccmcdto>>(this.url + `/cli/dto/nombre?cia=${cia}&nombre=${nombre}`, this.options).pipe(
+        map( (value: ConsultaExitosas<Arccmcdto>) => {
+          return value.resultado;
+        } )
+    );
+  }
+
+  public listaDirecionesLegal( cia: string, nocli: string): Observable< Array<DirecLegal> > {
+    return this.http.get<ConsultaExitosas<DirecLegal>>(this.url + `/cli/dto/direc?cia=${cia}&noCli=${nocli}`, this.options).pipe(
+        map( (value: ConsultaExitosas<DirecLegal>) => {
           return value.resultado;
         } )
     );

@@ -8,7 +8,6 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MenuDTO } from './../../../DTO/MenuDTO';
 import { Component, OnInit } from '@angular/core';
-import * as moment from 'moment';
 
 @Component({
   selector: 'app-menu-pventa',
@@ -55,61 +54,12 @@ export class MenuPventaComponent implements OnInit {
       let datos = new DatosCajaDTO(this.cia, this.empleadoSeleccionado.centro,
         null, this.codEmp);
       if (this.empleadoSeleccionado.tipusua == "04") {
-        this.cajaService.caja(datos).subscribe(data => {
+         /*this.cajaService.caja(datos).subscribe(data => {
           this.cajas = data;
          // console.log(this.cajas);
-        });
+        });*/
       }
     }
-  }
-  aceptar() {
-    if (this.menuSeleccionado == "1") {
-      if (this.empleadoSeleccionado != null) {
-        let datos = new DatosCajaDTO(this.cia, this.empleadoSeleccionado.centro,
-          null, this.codEmp);
-        datos.fecha = moment(this.maxFecha).format('YYYY-MM-DDTHH:mm:ss');
-        if (this.cajas.length >= 1) {
-          if (this.empleadoSeleccionado.centro != null) {
-            this.cajaService.totalCajas(datos).subscribe(data => {
-              console.log(data);
-              this.cajaService.cajasCreadas.next(data);
-            })
-            this.cancelar();
-            this.router.navigateByUrl('/pedido');
-          } else {
-            Swal.close();
-            Swal.fire({
-              allowOutsideClick: false,
-              icon: 'info',
-              title: 'Seleccione Usuario'
-            });
-          }
-        } else {
-          Swal.close();
-
-          this.cajaService.totalCajas(datos).subscribe(data => {
-            this.cajaService.cajasCreadas.next(data);
-          })
-          this.cancelar();
-          this.router.navigateByUrl('/pedido');
-        }
-      }else{
-        Swal.close();
-          Swal.fire({
-            allowOutsideClick: false,
-            icon: 'info',
-            title: `El usuario: ${sessionStorage.getItem('nombre')}, no tiene permiso de hacer una venta`
-          });
-      }
-    } else {
-      if (this.menuSeleccionado == "2") {
-        this.cancelar();
-        this.router.navigateByUrl('/articulo');
-      }
-    }
-  }
-  cancelar() {
-    this.dialogRef.close();
   }
 
 }

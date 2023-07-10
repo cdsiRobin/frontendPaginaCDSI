@@ -2,8 +2,7 @@
     <div class="col-12">
         <div class="login-box card">
             <div class="card-body">
-                <form class="login100-form validate-form flex-sb flex-w" [formGroup]="form" #frmLog="ngForm"
-                    (ngSubmit)="obtenerVendedor()">
+                <form class="login100-form validate-form flex-sb flex-w" [formGroup]="form" #frmLog="ngForm" (ngSubmit)="obtenerVendedor()">
                     <h2 class="box-title text-center text-info"><strong>LOGIN DE PUNTO DE VENTA</strong></h2>
                     <hr>
                     <!--
@@ -21,7 +20,7 @@
                         <label for="exampleInputuname">Usuario</label>
                         <div class="input-group mb-3">
                           <span class="input-group-text" id="basic-addon1"><i class="ti-user"></i></span>
-                          <input class="form-control" type="text" required placeholder="Ingresar Usuario" formControlName="codigo"/>
+                          <input type="number" class="form-control" required placeholder="Ingrese DNI" formControlName="codigo"/>
                         </div>
                     </div>
 
@@ -29,7 +28,7 @@
                         <label>Contraseña</label>
                         <div class="input-group mb-3">
                           <span class="input-group-text" id="basic-addon1"><i class="ti-lock"></i></span>
-                          <input class="form-control" type="password" required placeholder="Ingresar Contraseña"formControlName="pass"/>
+                          <input class="form-control" type="password" required placeholder="Ingrese Contraseña"formControlName="pass"/>
                         </div>
                     </div>
 

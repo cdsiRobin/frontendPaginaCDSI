@@ -5,7 +5,6 @@ import { Rgtacde } from '../../models/rgtacde';
 import { ActivatedRoute } from '@angular/router';
 import { Usuario } from '../../models/usuario';
 
-
 @Component({
   selector: 'app-rgtacde',
   templateUrl: './rgtacde.component.html'
@@ -27,7 +26,6 @@ export class RgtacdeComponent implements OnInit {
       this.usuario = JSON.parse(sessionStorage.getItem('usuario'));
       this.serveRg.getPageRgtacde(this.usuario, page).pipe(
           tap(response => {
-            console.log('RgtacdeComponent: tap 3');
             (response.content as Rgtacde[]).forEach( rgtacde => {
                // console.warn(rgtacde.usuario);
             });

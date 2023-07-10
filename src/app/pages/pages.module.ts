@@ -51,6 +51,11 @@ import { ItemModule } from './items/item.module';
 import { ArccvcComponent } from './arccvc/arccvc.component';
 import { MarccmcComponent } from './arccmc/marccmc/marccmc.component';
 import { ArfamcComponent } from './arfamc/arfamc.component';
+import { NotacreditoComponent } from './notacredito/notacredito.component';
+import { NotacreditoModule } from './notacredito/notacredito.module';
+import { ConceptoComponent } from './concepto/concepto.component';
+import { ArcctdaComponent } from './arcctda/arcctda.component';
+import { ArfaccComponent } from './arfacc/arfacc.component';
 
 @NgModule({
   declarations: [
@@ -91,7 +96,11 @@ import { ArfamcComponent } from './arfamc/arfamc.component';
     ArccmcComponent,
     ArccvcComponent,
     MarccmcComponent,
-    ArfamcComponent
+    ArfamcComponent,
+    NotacreditoComponent,
+    ConceptoComponent,
+    ArcctdaComponent,
+    ArfaccComponent
   ],
   exports: [
     ProgressComponent,
@@ -110,6 +119,7 @@ import { ArfamcComponent } from './arfamc/arfamc.component';
     BrowserAnimationsModule,
     PedidoModule,
     ArfafeModule,
+    NotacreditoModule,
     ItemModule,
     ArcgtcModule,
     MaterialModule

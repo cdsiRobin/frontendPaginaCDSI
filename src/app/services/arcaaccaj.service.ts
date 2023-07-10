@@ -1,46 +1,52 @@
-import { CajaDTO } from './../DTO/CajaDTO';
-import { IdArcaaccaj } from './../models/IdArcaaccaj';
-import { DatosCajaDTO } from './../DTO/DatosCajaDTO';
 import { Arcaaccaj } from './../models/Arcaaccaj';
 import { HttpClient } from '@angular/common/http';
-import { OtherService } from './other.service';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { GenericoService } from './generico/generico.service';
+import { ConsultaExitosas } from '../interfaces/consulta-exitosas';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { Artsccb } from '../models/artsccb';
+import { ConsultaExitosa } from '../interfaces/consulta-exitosa';
+import { Guardar } from '../interfaces/guardar';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ArcaaccajService {
+export class ArcaaccajService extends GenericoService {
 
-  cajasCreadas = new Subject<Arcaaccaj[]>();
-  mensajeCambio = new Subject<string>();
+  constructor(private http: HttpClient) { super(); }
 
-  constructor(private http: HttpClient, private url: OtherService) { }
+  //METODO QUE NOS PERMITE SABER SI TIENE UNA CAJA ABIERTA
+  public verificarCajaAbiertaCajero(cia: string, centro: string, cajera: string, estado: string, fecha: string): Observable< Array<Arcaaccaj> >{
+    return this.http.get< ConsultaExitosas<Arcaaccaj> >(this.url+`/apercaja/vericaja?cia=${cia}&centro=${centro}&cajera=${cajera}&estado=${estado}&fecha=${fecha}`, this.options).pipe(
+      map( (response: ConsultaExitosas<Arcaaccaj>) => {
+        return response.resultado;
+      } )
+    );
+  }
+  //FIN
 
-  aperturaCaja(caja: Arcaaccaj) {
-    return this.http.post<Arcaaccaj>(this.url.getUrl() + `/cajas`, caja);
+  // VERIFICAR QUE CAJA TIENE DISPONIBLE EL VENDEDOR
+  public verificarCajaVendedor(cia: string, tipo: string, centro: string, responsable: string): Observable<Artsccb>{
+    return this.http.get< ConsultaExitosa<Artsccb> >(this.url+`/artsccb?cia=${cia}&tipo=${tipo}&centro=${centro}&responsable=${responsable}`, this.options).pipe(
+      map( (response: ConsultaExitosa<Artsccb>) => {
+        return response.resultado;
+      } )
+    );
   }
-  actualizaCaja(caja: Arcaaccaj) {
-    return this.http.put<Arcaaccaj>(this.url.getUrl() + `/cajas`, caja);
-  }
+  // FIN
 
-  validaCaja(datos: DatosCajaDTO) {
-    return this.http.post<Arcaaccaj>(this.url.getUrl() + `/cajas/valida/caja`, datos);
+  //METODO QUE NOS PERMITE GUARDAR O APERTURAR CAJA
+  public aperturarCaja(arcaaccaj: Arcaaccaj): Observable<Arcaaccaj>{
+    const body = JSON.stringify(arcaaccaj);
+    // console.log(body);
+    return this.http.post<Guardar<Arcaaccaj>>(this.url + `/apercaja`, body, this.options).pipe(
+      map((responde: Guardar<Arcaaccaj>) => {
+        return responde.detalle;
+      })
+    );
   }
-  //=====================================
-  caja(datos: DatosCajaDTO) {
-    return this.http.post<Arcaaccaj[]>(this.url.getUrl() + `/cajas/caja`, datos);
-  }
-  totalCajas(datos: DatosCajaDTO) {
-    return this.http.post<Arcaaccaj[]>(this.url.getUrl() + `/cajas/total`, datos);
-  }
-  eliminar(id: IdArcaaccaj){
-    return this.http.post(this.url.getUrl() + `/cajas/eliminar`,id);
-  }
-  cajaSeleccianda(cia:string,centro:string){
-    return this.http.get<CajaDTO[]>(this.url.getUrl()+`/cajas/seleccionada/${cia}/${centro}`);
-  }
-  cajaRegistro(cia:string,centro:string){
-    return this.http.get<CajaDTO[]>(this.url.getUrl()+`/cajas/${cia}/${centro}`);
-  }
+  // fin
+
+
 }

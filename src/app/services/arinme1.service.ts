@@ -5,7 +5,8 @@ import {Arinme1} from '../models/arinme1';
 import {Observable} from 'rxjs';
 import {Guardar} from '../interfaces/guardar';
 import {map} from 'rxjs/operators';
-import {Arinse} from '../models/arinse';
+import { ComprabanteIngresodto } from '../DTO/comprabante-ingresodto';
+import { ConsultaExitosas } from '../interfaces/consulta-exitosas';
 
 @Injectable({
   providedIn: 'root'
@@ -23,4 +24,12 @@ export class Arinme1Service extends  GenericoService{
     );
   }
   // FIN
+  public listaComprobanteIngreso(cia: string, noCli: string): Observable< Array<ComprabanteIngresodto> >{
+    return this.http.get< ConsultaExitosas<ComprabanteIngresodto> >(this.url+`/arinme1/lcinc?cia=${cia}&noCli=${noCli}`, this.options).pipe(
+      map( (response: ConsultaExitosas<ComprabanteIngresodto>) => {
+        return response.resultado;
+      } )
+    );
+  }
+
 }

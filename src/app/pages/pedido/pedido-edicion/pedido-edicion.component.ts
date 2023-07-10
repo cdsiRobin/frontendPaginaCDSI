@@ -65,13 +65,19 @@ import {Arinme1Service} from '../../../services/arinme1.service';
 import { Arinum } from '../../../models/arinum';
 import { ArinumService } from '../../../services/arinum.service';
 import { MarccmcComponent } from '../../arccmc/marccmc/marccmc.component';
+import { Arcaaccaj } from '../../../models/Arcaaccaj';
+import { ArcaaccajService } from '../../../services/arcaaccaj.service';
+import { Artsccb } from '../../../models/artsccb';
+import { CajaEdicionComponent } from '../caja/caja-edicion/caja-edicion.component';
+import { OnExit } from '../../../guards/exit.guard';
 
 @Component({
   selector: 'app-pedido-edicion',
   templateUrl: './pedido-edicion.component.html',
   styleUrls: ['./pedido-edicion.component.scss']
 })
-export class PedidoEdicionComponent implements OnInit {
+export class PedidoEdicionComponent implements OnInit, OnExit {
+  ordenCompra: string = '';
   edtDescripDet: boolean = true;
   d: Detpedido;
   anularBF = 'N';
@@ -179,6 +185,10 @@ export class PedidoEdicionComponent implements OnInit {
   public arfacf: Arfacf;
   public arpffe: Arpffe;
   public arinums: Array<Arinum>;
+  public arcaaccajs: Array<Arcaaccaj>;
+  public arcaaccaj: Arcaaccaj;
+  public artsccb: Artsccb;
+  public caja: string = '';
 
   constructor(public pedidoService: PedidoService,
               public arinumService: ArinumService,
@@ -202,7 +212,8 @@ export class PedidoEdicionComponent implements OnInit {
               private router: Router,
               private route: ActivatedRoute,
               public datepipe: DatePipe,
-              private modalArccmc: MatDialog
+              private modalArccmc: MatDialog,
+              private arcaaccajService: ArcaaccajService
               ) { }
 
   ngOnInit(): void {
@@ -211,6 +222,7 @@ export class PedidoEdicionComponent implements OnInit {
     this.centro = sessionStorage.getItem('centro');
     this.usuario = sessionStorage.getItem('usuario');
     this.codEmp = sessionStorage.getItem('codEmp');
+    this.verificarCajaAbiertaVendedor();
     this.form = new FormGroup({
       cia: new FormControl(sessionStorage.getItem('cia')),
       grupo: new FormControl('00'),
@@ -224,7 +236,6 @@ export class PedidoEdicionComponent implements OnInit {
       impIgv: new FormControl({ value: 0, disabled: true }, Validators.required),
       totalLin: new FormControl({ value: 0, disabled: true }, Validators.required)
     });
-
     // VAMOS A OPTENER LOS DATOS DEL CENTRO EMISOR
     this.getCentroEmisor(this.cia, this.centro);
     this.listaMonedas();
@@ -233,13 +244,10 @@ export class PedidoEdicionComponent implements OnInit {
     this.buscarTipoCambioClaseAndFecha();
     this.listaPrecio();
     this.listarFormaPago();
-
     this.groupEmpresa = new FormGroup({
-      codCli: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),
-        Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
+      codCli: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(1),Validators.pattern(/^-?(0|[0-9]\d*)?$/)]),
       racSoc: new FormControl({value: '', disabled: false}, [Validators.required,Validators.minLength(2)])
     });
-
     this.groupArticulo = new FormGroup({
       codProd: new FormControl(),
       desProd: new FormControl(),
@@ -247,7 +255,6 @@ export class PedidoEdicionComponent implements OnInit {
       precProd: new FormControl({ value: 0, disabled: false }, Validators.required),
       cantProd: new FormControl({ value: 1, disabled: false }, Validators.required)
     });
-
     this.getCliente('99999999998');
     // BUSCAR POR RUC
     this.groupEmpresa.get('codCli').valueChanges.subscribe(valueChange => {
@@ -270,12 +277,83 @@ export class PedidoEdicionComponent implements OnInit {
         this.factuOptions = null;
       }
     });
-
     this.listarUnidades();
     // TRAER EL PEDIDOD
     this.traerPedido();
-
   }
+
+  onExist() {
+
+    if( this.form.dirty && this.groupEmpresa.dirty && this.groupArticulo.dirty){
+        const rta = confirm('Esta seguro de salir?');
+        return rta;
+    }
+    return true;
+ }
+  // VERIFICAR SI EL VENDEDOR TIENE CAJA ABIERTA
+  private verificarCajaAbiertaVendedor(): void {
+    //obtener la fecha actual
+    const fActual = new Date();
+    const fecha = String(fActual.getDate()).padStart(2,'0')+'/'+String(fActual.getMonth() + 1).padStart(2,'0')+'/'+fActual.getFullYear();
+    this.arcaaccajService.verificarCajaAbiertaCajero(this.cia,this.centro,this.codEmp,'A',fecha).subscribe( result => {
+         this.arcaaccajs = result;
+    }, err => {
+       console.warn(err);
+    }, () => {
+       this.vericarCajaVendedora();
+    });
+  }
+  // VERIFICAR QUE CAJA LE CORRESPONDE A LA VENDEDORA
+  private vericarCajaVendedora(): void{
+       this.arcaaccajService.verificarCajaVendedor(this.cia,'C',this.centro,this.usuario).subscribe( resul => {
+           this.artsccb = resul;
+       }, err =>{
+          console.warn(err);
+       }, () =>{
+           this.buscarCajaDesigna();
+       });
+  }
+  // FIN
+  // MENSAJE QUE PREGUNTA SI DESEA ABRIR CAJA
+  private mDeseaAbrirCaja(): void{
+    Swal.fire({
+      title: `El usuario ${this.usuario} no tiene aperturado caja . Desea aperturar caja?`,
+      showDenyButton: true,
+      confirmButtonText: 'SI'
+    }).then((result) => {
+      if (result.isConfirmed) {
+            this.abrirModalCaja();
+      }else{
+          this.router.navigate( ['pedido/empresa']);
+      }
+    });
+  }
+  // FIN
+  // BUSCAMOS SI LA CAJA DESIGNA ESTA ABIERTA
+  private buscarCajaDesigna(): void{
+    //console.log(this.arcaaccajs);
+    const x = this.arcaaccajs.find( i => {
+      if(i.idArcaja.codCaja === this.artsccb.artsccbPK.noCaba){ //this.artsccb.artsccbPK.noCaba
+        return i;
+      }
+    }); //undefined
+    if(x === undefined){
+      this.mDeseaAbrirCaja();
+    }else{
+      this.arcaaccaj = x;
+      this.caja = this.arcaaccaj.idArcaja.codCaja;
+    }
+  }
+  // FIN
+  // ABRIR MODAL PARA ABRIR UNA CAJA
+  private abrirModalCaja(): void {
+    this.modalArccmc.open(CajaEdicionComponent, {
+      width: '30%',
+      height: '40%',
+      data: this.artsccb
+    });
+  }
+  // FIN
   // EVENTO CLICK QUE NOS PERMITER EDITAR LA DESCRIPCION
   public editDescripDet(): void {
     this.edtDescripDet = !this.edtDescripDet;
@@ -730,7 +808,19 @@ export class PedidoEdicionComponent implements OnInit {
     } );
     // total de general
     this.totalGeneral = this.getTotalPedido();
+}
 
+  // ACTUALIZAR DESCRIPCION
+  public actualizarDescripcion(event: any, dp: Detpedido): void{
+    const codigo = dp.codigo;
+    const descripcion: string = event.target.value;
+
+    this.detPedidos = this.detPedidos.map( (item: Detpedido) => {
+         if (codigo === item.codigo){
+             item.descripcion = descripcion;
+         }
+         return item;
+    } );
 }
 
   // ELIMINAR ARTICULO
@@ -991,7 +1081,7 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.grupo = '00';
     pedido.tipoFpago = '20';
     pedido.tipo = 'N';
-
+    pedido.noSolic = this.ordenCompra;
     pedido.indPvent = 'S';
     pedido.indGuiado = 'N';
     pedido.codiDepa = this.ubigeo.substring(0, 2);
@@ -1036,8 +1126,8 @@ export class PedidoEdicionComponent implements OnInit {
     pedido.almaDestino = this.arintd.almaDes;
     pedido.totalBruto = this.getTotalPU();
     pedido.centro = sessionStorage.getItem('centro');
-    pedido.codCaja = 'C11';
-    pedido.cajera = '000002';
+    pedido.codCaja = this.arcaaccaj.idArcaja.codCaja;
+    pedido.cajera = this.arcaaccaj.cajera;
     pedido.centroCosto = '3201';
     pedido.operExoneradas = 0;
     pedido.operGratuitas = 0;
@@ -1104,7 +1194,8 @@ export class PedidoEdicionComponent implements OnInit {
       this.actualizarArfacf();
     }, error => {
       this.savePed = false;
-      Swal.fire('No se pudo guardo la información.'); }
+      Swal.fire('No se pudo guardo la información.');
+      }
     );
     if(this.savePed) {
       if (indBoleta === 'N' && indFactura === 'N') {
@@ -1165,7 +1256,7 @@ export class PedidoEdicionComponent implements OnInit {
     arpffe.tipoGuia = 'GR';
     arpffe.imprime = 'S';
     arpffe.indPvent = 'S';
-    arpffe.codCaja = 'C11';
+    arpffe.codCaja = this.arcaaccaj.idArcaja.codCaja;
     arpffe.indFerias = 'N';
     arpffe.indProvincia = 'N';
     arpffe.consumo = 'N';
@@ -1261,7 +1352,7 @@ export class PedidoEdicionComponent implements OnInit {
     arinme1.imprime = 'N';
     arinme1.centro = this.centro;
     arinme1.indPvent = 'S';
-    arinme1.codCaja = 'C11';
+    arinme1.codCaja = this.arcaaccaj.idArcaja.codCaja;
     arinme1.indProvincia = 'N';
     arinme1.convenio = 'N';
     arinme1.consumo = 'N';
@@ -1304,19 +1395,18 @@ export class PedidoEdicionComponent implements OnInit {
     const descrip: string = this.groupArticulo.get('desProd').value;
     const cantidad: number = this.groupArticulo.get('cantProd').value;
 
-    if(um === 'UND'){
-      const precio  = this.groupArticulo.get('precProd').value / 1.18;
-      const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
-      const total = (precio * cantidad) + igv;
-      this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
-        cantidad, precio, igv, total);
-    } else {
+    /*if(um === 'UND'){*/
+    const precio  = this.groupArticulo.get('precProd').value / 1.18;
+    const igv = (this.groupArticulo.get('precProd').value - precio) * cantidad;
+    const total = (precio * cantidad) + igv;
+    this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),cantidad, precio, igv, total);
+     /*}else {
       const total = this.groupArticulo.get('precProd').value * cantidad;
       const precio  = total / 1.18;
       const igv = precio * 0.18;
       this.d = new Detpedido(this.detPedidos.length + 1, 'L', cod.toUpperCase(), um.toUpperCase(), descrip.toUpperCase(),
         cantidad, precio, igv, total);
-    }
+    }*/
     if (this.groupArticulo.get('precProd').value <= 0){
       this.snackBar.open(`El precio no debe ser CERO.`, 'Salir',
       {

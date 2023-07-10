@@ -54,6 +54,11 @@
         <span>Nuevo Pedido</span>
       </button>
       <mat-divider></mat-divider>
+      <button mat-menu-item (click)="sidenav.toggle()" routerLink="notacredito" style="cursor: pointer">
+        <mat-icon>feed</mat-icon>
+        <span>Nota Credito</span>
+      </button>
+      <mat-divider></mat-divider>
       <button mat-menu-item (click)="sidenav.toggle()" routerLink="lista" style="cursor: pointer">
         <mat-icon>view_carousel</mat-icon>
         <span>Consulta Ped.</span>

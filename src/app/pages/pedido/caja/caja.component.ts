@@ -48,7 +48,7 @@ export class CajaComponent implements OnInit {
           centro: new FormControl(this.centro),
           fecha: new FormControl(this.maxFecha)
         });
-    this.cajaService.cajasCreadas.subscribe(data => {
+    /*this.cajaService.cajasCreadas.subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
@@ -57,7 +57,7 @@ export class CajaComponent implements OnInit {
       this.snackBar.open(data, 'AVISO', {
         duration: 2000,
       });
-    });
+    });*/
   }
   regresar(): void {
     this.router.navigateByUrl('/pedido');
@@ -76,11 +76,11 @@ export class CajaComponent implements OnInit {
       delete datos.caja;
       delete datos.cajera;
     }
-    this.cajaService.totalCajas(datos).subscribe(data => {
+    /*this.cajaService.totalCajas(datos).subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
-    });
+    });*/
   }
   eliminar(caja: Arcaaccaj): void {
     this.fechaSeleccionada.setHours(0);
@@ -89,12 +89,12 @@ export class CajaComponent implements OnInit {
     this.fechaSeleccionada.setMilliseconds(0);
     let datos = new DatosCajaDTO(caja.idArcaja.cia, caja.idArcaja.centro, caja.idArcaja.codCaja, caja.cajera)
     datos.fecha = moment(this.fechaSeleccionada).format('YYYY-MM-DDTHH:mm:ss');
-    this.cajaService.eliminar(caja.idArcaja).pipe(switchMap(() => {
+    /*this.cajaService.eliminar(caja.idArcaja).pipe(switchMap(() => {
       return this.cajaService.totalCajas(datos);
     })).subscribe(data => {
       this.cajaService.cajasCreadas.next(data);
       this.cajaService.mensajeCambio.next('SE ELIMINÓ');
-    })
+    })*/
   }
 
   abrirDialogo(caja?: Arcaaccaj): void {

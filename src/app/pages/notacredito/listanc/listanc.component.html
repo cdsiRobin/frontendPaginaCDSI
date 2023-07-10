@@ -1,0 +1,85 @@
+
+<br>
+<div class="example-container mat-elevation-z8">
+
+  <div class="example-header">
+    <mat-form-field>
+      <input matInput (keyup)="filtrar($event.target.value)" placeholder="Buscar Nota Credito">
+    </mat-form-field>
+  </div>
+
+  <mat-table [dataSource]="dataSource" matSort>
+    <!--
+    <ng-container matColumnDef="tipoDoc">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Tipo </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.tipoDoc}} </mat-cell>
+    </ng-container>
+    -->
+    <ng-container matColumnDef="noFactu">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> N° N/C </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.noFactu}} </mat-cell>
+    </ng-container>
+
+
+    <ng-container matColumnDef="fecha">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.fecha | date:'d/M/yy,h:mm a'}} </mat-cell>
+    </ng-container>
+    <!--
+    <ng-container matColumnDef="tipoRefeFactu">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Doct. </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.tipoRefeFactu}} </mat-cell>
+    </ng-container>
+    -->
+    <ng-container matColumnDef="noRefeFactu">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Doct. Refer. </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.noRefeFactu}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="codTped">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Trans. </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.codTped}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="estado">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Estado </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.estado}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="noCliente">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Cod. </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.noCliente}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="nombreCli">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.nombreCli}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="moticoNc">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Concepto </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.moticoNc}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="moneda">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Moneda </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.moneda}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="total">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Total </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.total | number}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;">
+    </mat-row>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+</div>
+<br>
+
+<button mat-fab color="accent"  matTooltip="Crear Nota Credito" (click)="newNotaCredito('C')" style="float: right; margin-right: 20px; margin-top: -3%;">
+  <mat-icon>create</mat-icon>
+</button>
